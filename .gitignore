@@ -1,0 +1,25 @@
+# Project-local documentation and AI working notes
+documentation/
+.agents/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+
+# Android / Gradle generated files
+android/.gradle/
+android/local.properties
+android/**/generated/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
