@@ -1,5 +1,7 @@
-# Project-local documentation and AI working notes
-documentation/
+# Local documentation sources and AI working notes
+documentation/source documentation/
+documentation/feature planning/
+documentation/AI log/
 .agents/
 
 # Flutter / Dart
