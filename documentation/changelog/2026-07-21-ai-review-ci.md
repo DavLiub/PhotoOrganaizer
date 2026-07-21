@@ -7,6 +7,7 @@
 - The workflow runs from the base commit with `pull_request_target` and reads PR diffs through the GitHub REST API.
 - AI review comments are updated in place using a stable marker.
 - OpenAI API quota, billing, and rate-limit failures are treated as advisory skips rather than required check failures.
+- GitHub comment publishing failures are treated as best-effort warnings and do not fail the advisory check.
 - Documented required `OPENAI_API_KEY` secret and optional `OPENAI_REVIEW_MODEL` variable.
 - Documented AI review scope and security limitations.
 

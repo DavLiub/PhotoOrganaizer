@@ -66,6 +66,8 @@ The workflow uses:
 
 The default model is `gpt-5-mini`. The workflow is advisory-only. If `OPENAI_API_KEY` is not configured, or if OpenAI returns quota, billing, or rate-limit errors, the workflow skips review and exits successfully.
 
+The `Run AI review` step uses `continue-on-error: true`. Comment publishing is best-effort: if GitHub denies comment creation, the review result is written to workflow logs and the job remains nonblocking.
+
 The workflow runs on `pull_request_target`, checks out the base commit, and gets the PR diff through the GitHub REST API. It must not execute code from the pull request branch.
 
 The review comment is updated on each PR push using a stable marker instead of creating duplicate comments.
@@ -96,6 +98,7 @@ Security notes:
 - Do not include repository secrets in prompts.
 - Treat PR diffs as data sent to the configured AI provider.
 - Keep the workflow advisory-only until review quality is proven.
+- Do not configure `AI Review / Advisory AI Review` as a required branch protection check.
 
 ## Local Validation
 

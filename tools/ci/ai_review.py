@@ -37,7 +37,7 @@ def main() -> int:
 
     diff = get_pull_request_diff(repo, pr_number, github_token)
     if not diff.strip():
-        post_or_update_comment(
+        post_comment_best_effort(
             repo,
             pr_number,
             github_token,
@@ -55,10 +55,10 @@ def main() -> int:
     except OpenAIRequestError as error:
         review = build_openai_skip_message(error)
         print(review)
-        post_or_update_comment(repo, pr_number, github_token, build_comment(review))
+        post_comment_best_effort(repo, pr_number, github_token, build_comment(review))
         return 0
 
-    post_or_update_comment(repo, pr_number, github_token, build_comment(review))
+    post_comment_best_effort(repo, pr_number, github_token, build_comment(review))
     return 0
 
 
@@ -201,6 +201,17 @@ def build_openai_skip_message(error: OpenAIRequestError) -> str:
         "- Required merge checks remain formatter, analyzer, and tests.\n"
         "- Check OpenAI API billing, quota, or rate limits if this review should run."
     )
+
+
+def post_comment_best_effort(
+    repo: str, pr_number: str, github_token: str, body: str
+) -> None:
+    try:
+        post_or_update_comment(repo, pr_number, github_token, body)
+    except Exception as error:
+        print(f"AI review comment was not posted: {error}", file=sys.stderr)
+        print("Advisory AI review result:", file=sys.stderr)
+        print(body, file=sys.stderr)
 
 
 def post_or_update_comment(
