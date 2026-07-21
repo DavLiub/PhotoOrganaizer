@@ -26,3 +26,7 @@ There is no concrete database schema, ORM, migration system, or persistent repos
 ## Known Deviations
 
 The original specification describes a fuller logical data model with persistence rules and migrations. The current implementation intentionally contains only skeleton-level models until storage technology and schema are selected.
+
+## Persistence Direction
+
+Drift is the approved persistence technology for the future local photo index. No physical schema has been implemented yet.
