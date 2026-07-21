@@ -44,6 +44,58 @@ Configure GitHub branch protection for `main`:
 - block direct pushes;
 - keep tag creation limited to the release workflow.
 
+## AI Review
+
+Pull requests run an advisory AI review workflow:
+
+```text
+.github/workflows/ai-review.yml
+```
+
+Implementation:
+
+```text
+tools/ci/ai_review.py
+```
+
+The workflow uses:
+
+- `GITHUB_TOKEN` to create or update a pull request comment;
+- `OPENAI_API_KEY` repository secret to call the OpenAI Responses API;
+- optional `OPENAI_REVIEW_MODEL` repository variable to override the default model.
+
+The default model is `gpt-5-mini`. The workflow is advisory-only. If `OPENAI_API_KEY` is not configured, the workflow skips review and exits successfully.
+
+The workflow runs on `pull_request_target`, checks out the base commit, and gets the PR diff through the GitHub REST API. It must not execute code from the pull request branch.
+
+The review comment is updated on each PR push using a stable marker instead of creating duplicate comments.
+
+Review scope:
+
+- architecture layer violations;
+- direct `presentation -> infrastructure` dependencies;
+- duplicated project-specific logic;
+- poor file/function/class names, especially names containing more than three words;
+- potential bugs and behavioral regressions;
+- optimization opportunities;
+- missing or weak automated tests;
+- missing documentation updates for significant changes;
+- mismatch between PR plan, code changes, and actual documentation.
+
+Ignored local documentation is excluded from review context:
+
+- `documentation/source documentation/**`
+- `documentation/feature planning/**`
+- `documentation/AI log/**`
+
+Security notes:
+
+- `OPENAI_API_KEY` is an OpenAI API credential. ChatGPT subscription access and OpenAI API billing are managed separately.
+- Do not print `OPENAI_API_KEY`.
+- Do not include repository secrets in prompts.
+- Treat PR diffs as data sent to the configured AI provider.
+- Keep the workflow advisory-only until review quality is proven.
+
 ## Local Validation
 
 Preferred local commands:
