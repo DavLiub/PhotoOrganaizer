@@ -4,6 +4,7 @@ import '../application/ports/entitlement_gateway.dart';
 import '../application/ports/media_library_gateway.dart';
 import '../application/ports/observability_sink.dart';
 import '../application/ports/photo_index_repository.dart';
+import '../application/policies/access_policy.dart';
 import '../application/use_cases/observe_protection_summary_use_case.dart';
 import '../application/use_cases/start_backup_use_case.dart';
 import '../domain/models/protection_summary.dart';
@@ -21,6 +22,7 @@ class AppCompositionRoot {
     required this.cloudProvider,
     required this.backgroundScheduler,
     required this.entitlementGateway,
+    required this.accessPolicy,
     required this.observabilitySink,
     required this.observeProtectionSummary,
     required this.startBackup,
@@ -31,6 +33,7 @@ class AppCompositionRoot {
   final CloudProvider cloudProvider;
   final BackgroundScheduler backgroundScheduler;
   final EntitlementGateway entitlementGateway;
+  final AccessPolicy accessPolicy;
   final ObservabilitySink observabilitySink;
   final ObserveProtectionSummaryUseCase observeProtectionSummary;
   final StartBackupUseCase startBackup;
@@ -41,6 +44,7 @@ class AppCompositionRoot {
     final cloudProvider = GoogleDriveCloudProvider();
     final backgroundScheduler = WorkManagerBackgroundScheduler();
     final entitlementGateway = StaticEntitlementGateway();
+    final accessPolicy = AccessPolicy(entitlementGateway: entitlementGateway);
     final observabilitySink = DebugObservabilitySink();
 
     return AppCompositionRoot._(
@@ -49,6 +53,7 @@ class AppCompositionRoot {
       cloudProvider: cloudProvider,
       backgroundScheduler: backgroundScheduler,
       entitlementGateway: entitlementGateway,
+      accessPolicy: accessPolicy,
       observabilitySink: observabilitySink,
       observeProtectionSummary: ObserveProtectionSummaryUseCase(
         initialSummary: ProtectionSummary.empty(),
@@ -58,6 +63,7 @@ class AppCompositionRoot {
         photoIndexRepository: photoIndexRepository,
         cloudProvider: cloudProvider,
         backgroundScheduler: backgroundScheduler,
+        accessPolicy: accessPolicy,
       ),
     );
   }

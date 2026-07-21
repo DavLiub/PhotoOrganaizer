@@ -23,3 +23,4 @@ Each ADR should include:
 - [0008-use-flutter-secure-storage-for-secrets.md](0008-use-flutter-secure-storage-for-secrets.md)
 - [0009-use-logging-package-for-observability.md](0009-use-logging-package-for-observability.md)
 - [0010-avoid-di-and-model-codegen-in-foundation.md](0010-avoid-di-and-model-codegen-in-foundation.md)
+- [0011-centralize-access-policy.md](0011-centralize-access-policy.md)

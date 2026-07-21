@@ -1,5 +1,5 @@
-enum AccessLevel { free, premium }
+import '../../domain/entities/access_profile.dart';
 
 abstract interface class EntitlementGateway {
-  Future<AccessLevel> currentAccessLevel();
+  Future<AccessProfile> currentProfile();
 }

@@ -1,8 +1,13 @@
 import '../../application/ports/entitlement_gateway.dart';
+import '../../domain/entities/access_profile.dart';
 
 class StaticEntitlementGateway implements EntitlementGateway {
+  const StaticEntitlementGateway({this.profile = AccessProfile.free});
+
+  final AccessProfile profile;
+
   @override
-  Future<AccessLevel> currentAccessLevel() async {
-    return AccessLevel.free;
+  Future<AccessProfile> currentProfile() async {
+    return profile;
   }
 }

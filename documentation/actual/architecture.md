@@ -42,6 +42,14 @@ lib/infrastructure/
 - Real persistence is not implemented.
 - Background scheduling is represented by a placeholder adapter.
 
+## Access Model
+
+- Domain defines access concepts such as capability, profile, decision, status, reason, and tier.
+- Application owns `AccessPolicy` and decides if a capability is allowed, limited, denied, or unavailable.
+- Infrastructure implements `EntitlementGateway` and provides entitlement facts.
+- Test/debug access is represented through `AccessOverride` and `TestEntitlementGateway`.
+- Presentation must not make Free/Premium decisions directly.
+
 ## Approved Integration Direction
 
 - Persistence will use Drift behind Infrastructure storage adapters.

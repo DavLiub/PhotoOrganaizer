@@ -1,0 +1,1 @@
+enum AccessTier { free, premium }
