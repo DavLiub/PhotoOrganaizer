@@ -239,6 +239,22 @@ test/app_smoke_test.dart
 
 When adding feature logic, place tests close to the behavior being validated and include edge cases for backup state, idempotency, and failure handling.
 
+## AI Review Expectations
+
+Pull requests may run an advisory AI review in GitHub Actions. This review does not replace human review and should not be treated as a required merge gate unless branch protection is changed.
+
+The AI review should check:
+
+- architecture layer violations;
+- direct `presentation -> infrastructure` dependencies;
+- duplicated project-specific logic;
+- poor file/function/class names, especially names containing more than three words;
+- potential bugs and behavioral regressions;
+- optimization opportunities;
+- missing or weak automated tests;
+- missing documentation updates for significant changes;
+- mismatch between PR plan, code changes, and actual documentation.
+
 ## Commit & Pull Request Guidelines
 
 Current history uses conventional-style commit prefixes:
