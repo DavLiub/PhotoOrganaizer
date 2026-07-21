@@ -8,6 +8,7 @@
 - Added static and test entitlement gateways.
 - `StartBackupUseCase` now checks access before scheduling backup work.
 - Added tests for access policy and backup scheduling behavior.
+- Added ADR 0011 for centralized access policy.
 - Updated actual and requirements documentation.
 
 ## Notes
