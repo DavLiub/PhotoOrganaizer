@@ -26,6 +26,7 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
 
       - name: Run AI review
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
