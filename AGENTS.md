@@ -75,11 +75,11 @@ Documentation is part of every implementation. When changing the project, update
 
 Changes require updates to:
 
-- Architecture: `documentation/Architecture`
-- Data Model: `documentation/Data Model`
-- Functional behavior: `documentation/Functional Specification`
-- UI: `documentation/UI`
-- Non-functional requirements: `documentation/Non-Functional`
+- Architecture: `documentation/requirements/architecture`
+- Data Model: `documentation/requirements/data-model`
+- Functional behavior: `documentation/requirements/functional-specification`
+- UI: `documentation/requirements/ui`
+- Non-functional requirements: `documentation/requirements/non-functional`
 
 In addition to the original specifications, maintain an Actual Documentation folder:
 
@@ -93,7 +93,7 @@ Recommended documentation layout:
 
 ```text
 documentation/
-  requirements/   original requirements, product docs, roadmap
+  requirements/   English working requirements, product docs, roadmap
   actual/         current implemented design
   decisions/      architecture decision records
   changelog/      changes between versions
