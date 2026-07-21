@@ -16,6 +16,14 @@ OPENAI_URL = "https://api.openai.com/v1/responses"
 GITHUB_API = "https://api.github.com"
 
 
+class OpenAIRequestError(RuntimeError):
+    def __init__(self, *, status: int, code: str, message: str) -> None:
+        super().__init__(message)
+        self.status = status
+        self.code = code
+        self.message = message
+
+
 def main() -> int:
     repo = require_env("GITHUB_REPOSITORY")
     pr_number = require_env("PR_NUMBER")
@@ -37,12 +45,18 @@ def main() -> int:
         )
         return 0
 
-    review = request_review(
-        openai_key=openai_key,
-        model=os.environ.get("OPENAI_MODEL", "gpt-5-mini"),
-        pr_title=pr_title,
-        diff=truncate_diff(diff),
-    )
+    try:
+        review = request_review(
+            openai_key=openai_key,
+            model=os.environ.get("OPENAI_MODEL", "gpt-5-mini"),
+            pr_title=pr_title,
+            diff=truncate_diff(diff),
+        )
+    except OpenAIRequestError as error:
+        review = build_openai_skip_message(error)
+        print(review)
+        post_or_update_comment(repo, pr_number, github_token, build_comment(review))
+        return 0
 
     post_or_update_comment(repo, pr_number, github_token, build_comment(review))
     return 0
@@ -179,6 +193,16 @@ def build_comment(review: str) -> str:
     )
 
 
+def build_openai_skip_message(error: OpenAIRequestError) -> str:
+    return (
+        "AI review was skipped because the OpenAI API request did not succeed.\n\n"
+        f"- Status: `{error.status}`\n"
+        f"- Code: `{error.code or 'unknown'}`\n"
+        "- Required merge checks remain formatter, analyzer, and tests.\n"
+        "- Check OpenAI API billing, quota, or rate limits if this review should run."
+    )
+
+
 def post_or_update_comment(
     repo: str, pr_number: str, github_token: str, body: str
 ) -> None:
@@ -236,6 +260,21 @@ def http_json(
             body = response.read().decode("utf-8")
     except urllib.error.HTTPError as error:
         detail = error.read().decode("utf-8", errors="replace")
+        if api == "openai":
+            code = ""
+            message = detail
+            try:
+                payload = json.loads(detail)
+                error_payload = payload.get("error", {})
+                code = str(error_payload.get("code") or "")
+                message = str(error_payload.get("message") or detail)
+            except json.JSONDecodeError:
+                pass
+            raise OpenAIRequestError(
+                status=error.code,
+                code=code,
+                message=message,
+            ) from error
         raise RuntimeError(f"{api} request failed: {error.code} {detail}") from error
 
     return json.loads(body) if body else {}
