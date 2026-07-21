@@ -64,7 +64,7 @@ The workflow uses:
 - `OPENAI_API_KEY` repository secret to call the OpenAI Responses API;
 - optional `OPENAI_REVIEW_MODEL` repository variable to override the default model.
 
-The default model is `gpt-5-mini`. The workflow is advisory-only. If `OPENAI_API_KEY` is not configured, the workflow skips review and exits successfully.
+The default model is `gpt-5-mini`. The workflow is advisory-only. If `OPENAI_API_KEY` is not configured, or if OpenAI returns quota, billing, or rate-limit errors, the workflow skips review and exits successfully.
 
 The workflow runs on `pull_request_target`, checks out the base commit, and gets the PR diff through the GitHub REST API. It must not execute code from the pull request branch.
 
@@ -91,6 +91,7 @@ Ignored local documentation is excluded from review context:
 Security notes:
 
 - `OPENAI_API_KEY` is an OpenAI API credential. ChatGPT subscription access and OpenAI API billing are managed separately.
+- `insufficient_quota` means OpenAI API billing/quota must be fixed in the OpenAI Platform account, not in GitHub.
 - Do not print `OPENAI_API_KEY`.
 - Do not include repository secrets in prompts.
 - Treat PR diffs as data sent to the configured AI provider.
