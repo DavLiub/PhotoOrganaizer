@@ -12,6 +12,10 @@ The current codebase contains Dart model classes for the initial domain shape:
 - `CloudAccount`
 - `ProtectionSummary`
 - `OperationResult`
+- `AccessProfile`
+- `AccessDecision`
+- `Capability`
+- `AccessTier`
 
 ## Current Persistence State
 
@@ -30,3 +34,16 @@ The original specification describes a fuller logical data model with persistenc
 ## Persistence Direction
 
 Drift is the approved persistence technology for the future local photo index. No physical schema has been implemented yet.
+
+## Access Model State
+
+Access state is currently modeled in memory only. There is no persisted entitlement schema yet.
+
+Current access model concepts:
+
+- capability being requested;
+- access tier;
+- entitlement state;
+- decision status;
+- decision reason;
+- optional free-tier limit.

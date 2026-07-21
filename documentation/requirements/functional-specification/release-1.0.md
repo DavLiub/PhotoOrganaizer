@@ -35,6 +35,8 @@
 
 Free and Premium behavior must be enforced through Application-level entitlement rules, not hardcoded in UI widgets.
 
+Feature use cases must request an access decision before performing restricted work. Access decisions must distinguish allowed, limited, denied, and unavailable states.
+
 ## Diagnostics
 
 User-visible errors must be understandable. Internal diagnostic detail should be available through observability/logging infrastructure.

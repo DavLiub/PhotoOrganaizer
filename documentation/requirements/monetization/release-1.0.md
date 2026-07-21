@@ -8,6 +8,10 @@ Release 1.0 supports a Free/Premium model without weakening data safety.
 
 Feature availability must be checked through Application-level entitlement interfaces. UI may display Premium prompts, but it must not be the source of truth for access control.
 
+Access checks must be centralized in an Application-level policy. The policy must return structured decisions that include capability, status, reason, and optional limits.
+
+Testing and debug builds may use deterministic access profiles or overrides, but production builds must not contain hidden entitlement bypasses.
+
 ## Free Tier
 
 The Free tier may limit capacity, automation, or advanced features according to product rules.
