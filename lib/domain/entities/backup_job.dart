@@ -1,11 +1,4 @@
-enum BackupJobStatus {
-  queued,
-  running,
-  completed,
-  paused,
-  failed,
-  cancelled,
-}
+enum BackupJobStatus { queued, running, completed, paused, failed, cancelled }
 
 class BackupJob {
   const BackupJob({

@@ -9,10 +9,7 @@ class OperationSuccess<T> extends OperationResult<T> {
 }
 
 class OperationFailure<T> extends OperationResult<T> {
-  const OperationFailure({
-    required this.code,
-    required this.message,
-  });
+  const OperationFailure({required this.code, required this.message});
 
   final String code;
   final String message;

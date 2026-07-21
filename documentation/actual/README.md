@@ -19,6 +19,7 @@ Business functionality is represented by domain models, application ports, use c
 - [architecture.md](architecture.md): current module layout and dependency direction.
 - [data-model.md](data-model.md): currently implemented domain model skeleton.
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
+- [validation.md](validation.md): local and CI validation path.
 
 ## Synchronization Rule
 

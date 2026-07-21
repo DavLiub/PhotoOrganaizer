@@ -1,10 +1,6 @@
 import '../value_objects/photo_identity.dart';
 
-enum PhotoAvailabilityStatus {
-  available,
-  missing,
-  inaccessible,
-}
+enum PhotoAvailabilityStatus { available, missing, inaccessible }
 
 class PhotoAsset {
   const PhotoAsset({

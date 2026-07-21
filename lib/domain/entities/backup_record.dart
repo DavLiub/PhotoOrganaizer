@@ -1,10 +1,4 @@
-enum BackupRecordStatus {
-  pending,
-  uploaded,
-  confirmed,
-  failed,
-  skipped,
-}
+enum BackupRecordStatus { pending, uploaded, confirmed, failed, skipped }
 
 class BackupRecord {
   const BackupRecord({
