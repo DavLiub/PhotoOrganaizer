@@ -41,3 +41,14 @@ lib/infrastructure/
 - Real billing and entitlement verification are not implemented.
 - Real persistence is not implemented.
 - Background scheduling is represented by a placeholder adapter.
+
+## Approved Integration Direction
+
+- Persistence will use Drift behind Infrastructure storage adapters.
+- Presentation state will use Riverpod and expose Application use cases to widgets.
+- Background work will use Workmanager behind Application scheduling ports.
+- Media access will use Photo Manager behind Infrastructure media adapters.
+- Google Drive integration will use Google Sign-In, the Google APIs auth bridge, and typed Google APIs clients.
+- Secrets will use Flutter Secure Storage.
+- Observability will use Dart `logging` behind project observability ports.
+- Bootstrap remains the composition root; no DI container is approved yet.
