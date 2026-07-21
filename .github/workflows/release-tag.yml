@@ -1,0 +1,55 @@
+name: Release Tag
+
+on:
+  workflow_run:
+    workflows:
+      - Flutter Checks
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    name: Tag main commit
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.head_branch == 'main' ||
+       github.event.workflow_run.head_branch == 'master') &&
+      github.event.workflow_run.event == 'push'
+
+    steps:
+      - name: Checkout checked commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create next patch tag
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git tag --points-at HEAD | grep -Eq '^v0\.0\.[0-9]+$'; then
+            echo "HEAD is already tagged with a v0.0.x tag."
+            exit 0
+          fi
+
+          latest_tag="$(git tag --list 'v0.0.*' --sort=-v:refname | head -n 1)"
+
+          if [[ -z "${latest_tag}" ]]; then
+            next_tag="v0.0.1"
+          else
+            patch="${latest_tag##*.}"
+            next_tag="v0.0.$((patch + 1))"
+          fi
+
+          git tag "${next_tag}" HEAD
+          git push origin "${next_tag}"

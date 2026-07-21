@@ -2,7 +2,7 @@
 
 ## CI Validation
 
-GitHub Actions runs Flutter checks for pull requests and pushes to `main`.
+GitHub Actions runs Flutter checks for pull requests and pushes to `main` or `master`.
 
 Workflow:
 
@@ -16,6 +16,33 @@ Checks:
 - `dart format --set-exit-if-changed .`
 - `flutter analyze`
 - `flutter test`
+
+## Main Branch Tags
+
+Successful push validation on `main` or `master` triggers:
+
+```text
+.github/workflows/release-tag.yml
+```
+
+The release tag workflow creates a patch tag for the checked commit:
+
+```text
+v0.0.1
+v0.0.2
+v0.0.3
+```
+
+Tags are created only for successful push events on `main` or `master`. Pull request branches are not tagged.
+
+## Branch Protection
+
+Configure GitHub branch protection for `main`:
+
+- require pull requests before merging;
+- require `Flutter Checks / Format, Analyze, Test`;
+- block direct pushes;
+- keep tag creation limited to the release workflow.
 
 ## Local Validation
 
