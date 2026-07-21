@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum MainDestination {
-  home(
-    label: 'Home',
-    icon: Icons.home_outlined,
-    selectedIcon: Icons.home,
-  ),
+  home(label: 'Home', icon: Icons.home_outlined, selectedIcon: Icons.home),
   photos(
     label: 'Photos',
     icon: Icons.photo_library_outlined,

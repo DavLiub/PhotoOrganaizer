@@ -1,7 +1,4 @@
-enum BackupNetworkPolicy {
-  wifiOnly,
-  anyNetwork,
-}
+enum BackupNetworkPolicy { wifiOnly, anyNetwork }
 
 class BackupProfile {
   const BackupProfile({

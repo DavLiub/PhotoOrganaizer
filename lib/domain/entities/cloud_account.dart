@@ -1,9 +1,4 @@
-enum CloudAccountStatus {
-  connected,
-  expired,
-  revoked,
-  disconnected,
-}
+enum CloudAccountStatus { connected, expired, revoked, disconnected }
 
 class CloudAccount {
   const CloudAccount({

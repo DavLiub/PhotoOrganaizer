@@ -3,3 +3,5 @@
 This directory records notable changes to documentation, architecture structure, and project workflow.
 
 Use one file per meaningful change or release.
+
+- [2026-07-21-foundation-validation-ci.md](2026-07-21-foundation-validation-ci.md)

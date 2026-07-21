@@ -5,10 +5,7 @@ import '../navigation/main_scaffold.dart';
 import '../theme/app_theme.dart';
 
 class SmartPhotoArchiveApp extends StatelessWidget {
-  const SmartPhotoArchiveApp({
-    required this.compositionRoot,
-    super.key,
-  });
+  const SmartPhotoArchiveApp({required this.compositionRoot, super.key});
 
   final AppCompositionRoot compositionRoot;
 

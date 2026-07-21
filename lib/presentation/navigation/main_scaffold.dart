@@ -9,10 +9,7 @@ import '../screens/settings/settings_screen.dart';
 import 'main_destination.dart';
 
 class MainScaffold extends StatefulWidget {
-  const MainScaffold({
-    required this.compositionRoot,
-    super.key,
-  });
+  const MainScaffold({required this.compositionRoot, super.key});
 
   final AppCompositionRoot compositionRoot;
 
@@ -34,9 +31,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const SettingsScreen(),
-                ),
+                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
               );
             },
           ),
@@ -65,10 +60,10 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget _buildBody() {
     return switch (_destination) {
       MainDestination.home => HomeScreen(
-          observeProtectionSummary:
-              widget.compositionRoot.observeProtectionSummary,
-          startBackup: widget.compositionRoot.startBackup,
-        ),
+        observeProtectionSummary:
+            widget.compositionRoot.observeProtectionSummary,
+        startBackup: widget.compositionRoot.startBackup,
+      ),
       MainDestination.photos => const PhotosScreen(),
       MainDestination.history => const HistoryScreen(),
       MainDestination.premium => const PremiumScreen(),

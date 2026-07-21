@@ -5,9 +5,7 @@ import 'package:photo_organaizer/presentation/app/smart_photo_archive_app.dart';
 void main() {
   testWidgets('renders application shell', (tester) async {
     await tester.pumpWidget(
-      SmartPhotoArchiveApp(
-        compositionRoot: AppCompositionRoot.configure(),
-      ),
+      SmartPhotoArchiveApp(compositionRoot: AppCompositionRoot.configure()),
     );
 
     expect(find.text('Smart Photo Archive'), findsOneWidget);
