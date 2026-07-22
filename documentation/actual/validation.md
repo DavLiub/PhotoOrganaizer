@@ -12,26 +12,59 @@ Workflow:
 
 Jobs:
 
-- `Project Checks / Flutter Checks`
-- `Project Checks / Project Guards`
+- `Project Checks / Flutter Format`
+- `Project Checks / Flutter Analyze`
+- `Project Checks / Flutter Test`
+- `Project Checks / Architecture Layers`
+- `Project Checks / Test Import Guard`
+- `Project Checks / SDK Leak Guard`
+- `Project Checks / Secret Guard`
+- `Project Checks / Naming Report`
 
-Flutter Checks:
+Flutter Format:
+
+- `dart format --set-exit-if-changed .`
+
+Flutter Analyze:
 
 - `flutter pub get`
-- `dart format --set-exit-if-changed .`
 - `flutter analyze`
+
+Flutter Test:
+
+- `flutter pub get`
 - `flutter test`
 
-Project Guards:
+Architecture Layers:
 
 - `python tools/ci/architecture_guard.py --base <base-sha> --head <head-sha>`
 
-## Architecture Guard
+Test Import Guard:
 
-The architecture guard is implemented in:
+- `python tools/ci/test_import_guard.py --base <base-sha> --head <head-sha>`
+
+SDK Leak Guard:
+
+- `python tools/ci/sdk_leak_guard.py --base <base-sha> --head <head-sha>`
+
+Secret Guard:
+
+- `python tools/ci/secret_guard.py --base <base-sha> --head <head-sha>`
+
+Naming Report:
+
+- `python tools/ci/naming_report.py --base <base-sha> --head <head-sha>`
+
+## Project Guards
+
+Project guard scripts are implemented in:
 
 ```text
 tools/ci/architecture_guard.py
+tools/ci/test_import_guard.py
+tools/ci/sdk_leak_guard.py
+tools/ci/secret_guard.py
+tools/ci/naming_report.py
 ```
 
 Default behavior is diff-based:
@@ -46,13 +79,16 @@ Blocking checks:
 - Domain must not import other layers.
 - Application must not import Presentation, Infrastructure, or Bootstrap.
 - Presentation must not import Infrastructure.
+- Production code must not import test/debug packages or files.
+- Domain/Application must not import blocked SDK/plugin packages.
+- Changed files and lines must not contain common secret files or secret assignments.
 
 Advisory checks:
 
 - suspicious generic names such as `Utils`, `Helpers`, `Managers`, and `Common`;
 - file, class, and function names that usually contain more than three words.
 
-Advisory naming findings are emitted as warnings and do not fail CI by themselves.
+Advisory naming findings are emitted as warnings and do not fail CI by themselves. In normal diff mode, naming checks inspect declarations in changed lines. File-name recommendations are part of manual `--all` audits.
 
 ## Main Branch Tags
 
@@ -85,8 +121,14 @@ Flutter maps this value to Android `versionName` and `versionCode`. Keep the sou
 Configure GitHub branch protection for `main`:
 
 - require pull requests before merging;
-- require `Project Checks / Flutter Checks`;
-- require `Project Checks / Project Guards`;
+- require `Project Checks / Flutter Format`;
+- require `Project Checks / Flutter Analyze`;
+- require `Project Checks / Flutter Test`;
+- require `Project Checks / Architecture Layers`;
+- require `Project Checks / Test Import Guard`;
+- require `Project Checks / SDK Leak Guard`;
+- require `Project Checks / Secret Guard`;
+- require `Project Checks / Naming Report`;
 - block direct pushes;
 - keep tag creation limited to the release workflow.
 
@@ -154,6 +196,10 @@ Preferred local commands:
 flutter pub get
 dart format --set-exit-if-changed .
 python tools/ci/architecture_guard.py
+python tools/ci/test_import_guard.py
+python tools/ci/sdk_leak_guard.py
+python tools/ci/secret_guard.py
+python tools/ci/naming_report.py
 flutter analyze
 flutter test
 ```

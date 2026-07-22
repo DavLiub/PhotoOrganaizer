@@ -8,15 +8,18 @@ Running every custom check across the full repository on every PR can become noi
 
 ## Decision
 
-Add a script-based architecture guard in `tools/ci/architecture_guard.py`.
+Add script-based project guards under `tools/ci`.
 
-The guard inspects changed Dart lines from the Git diff by default. In CI it receives base and head SHAs from GitHub Actions. Local runs without arguments inspect unstaged and staged changes. A manual `--all` mode can inspect all tracked Dart files.
+Each guard inspects changed lines or changed files from the Git diff by default. In CI, guards receive base and head SHAs from GitHub Actions. Local runs without arguments inspect unstaged and staged changes. Manual `--all` modes can inspect all tracked target files where supported.
 
 Blocking checks:
 
 - Domain must not import other layers.
 - Application must not import Presentation, Infrastructure, or Bootstrap.
 - Presentation must not import Infrastructure.
+- Production code must not import test/debug-only packages or files.
+- Domain/Application must not import blocked platform SDK or plugin packages.
+- Changed files and changed lines must not include common secret files or secret assignments.
 
 Advisory checks:
 
@@ -26,6 +29,7 @@ Advisory checks:
 ## Consequences
 
 - Layer violations can block PRs without depending on AI review.
+- Test/debug imports, SDK/plugin leaks, and secret leaks can block PRs through deterministic checks.
 - Naming feedback is visible in CI without becoming a merge gate.
 - Existing code is not re-litigated on unrelated PRs because CI checks changed lines.
 - A full repository scan remains available for audits.

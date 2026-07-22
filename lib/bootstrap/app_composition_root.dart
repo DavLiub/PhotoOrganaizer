@@ -12,9 +12,8 @@ import '../domain/models/protection_summary.dart';
 import '../infrastructure/background/work_manager_background_scheduler.dart';
 import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
-import '../infrastructure/entitlements/test_entitlement_gateway.dart';
 import '../infrastructure/media/android_media_library_gateway.dart';
-import '../infrastructure/observability/debug_observability_sink.dart';
+import '../infrastructure/observability/console_observability_sink.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
 import 'app_mode.dart';
 
@@ -64,7 +63,7 @@ class AppCompositionRoot {
       entitlementGateway: resolvedEntitlementGateway,
       override: accessOverride,
     );
-    final observabilitySink = DebugObservabilitySink();
+    final observabilitySink = ConsoleObservabilitySink();
 
     return AppCompositionRoot._(
       mode: mode,
@@ -101,9 +100,9 @@ class AppCompositionRoot {
       throw StateError('AccessOverride cannot be used in production mode.');
     }
 
-    if (entitlementGateway is TestEntitlementGateway) {
+    if (entitlementGateway != null && !entitlementGateway.isProductionSafe) {
       throw StateError(
-        'TestEntitlementGateway cannot be used in production mode.',
+        'Unsafe EntitlementGateway cannot be used in production mode.',
       );
     }
   }

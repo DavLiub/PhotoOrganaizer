@@ -64,15 +64,19 @@ Supported modes:
 
 The default mode is `production`. Runtime startup reads `APP_MODE` through a compile-time Dart environment value and passes the selected mode into the composition root. App mode is not exposed as a global singleton.
 
-## Architecture Guard
+## Project Guards
 
-Custom architecture checks are implemented in:
+Custom project checks are implemented in:
 
 ```text
 tools/ci/architecture_guard.py
+tools/ci/test_import_guard.py
+tools/ci/sdk_leak_guard.py
+tools/ci/secret_guard.py
+tools/ci/naming_report.py
 ```
 
-CI runs the guard on changed Dart lines only. Layer violations are blocking. Naming findings are advisory and are printed as CI warnings.
+CI runs guards on changed lines/files only. Layer violations, test/debug imports, SDK/plugin leaks, and secret findings are blocking. Naming findings are advisory and are printed as CI warnings.
 
 ## Approved Integration Direction
 

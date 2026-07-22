@@ -6,6 +6,9 @@ class TestEntitlementGateway implements EntitlementGateway {
 
   AccessProfile _profile;
 
+  @override
+  bool get isProductionSafe => false;
+
   void setProfile(AccessProfile profile) {
     _profile = profile;
   }

@@ -23,6 +23,10 @@ Tracked documentation includes requirements, actual implementation documentation
 flutter pub get
 dart format --set-exit-if-changed .
 python tools/ci/architecture_guard.py
+python tools/ci/test_import_guard.py
+python tools/ci/sdk_leak_guard.py
+python tools/ci/secret_guard.py
+python tools/ci/naming_report.py
 flutter analyze
 flutter test
 flutter run
