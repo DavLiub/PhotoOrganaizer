@@ -21,6 +21,7 @@ Business functionality is represented by domain models, application ports, use c
 - [app-identity.md](app-identity.md): current app name, package identifiers, versioning, and signing policy.
 - [data-model.md](data-model.md): currently implemented domain model skeleton.
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
+- [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.
 - [library-decisions.md](library-decisions.md): approved dependency and integration direction.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [validation.md](validation.md): local and CI validation path.

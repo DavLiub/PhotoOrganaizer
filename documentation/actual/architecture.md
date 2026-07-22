@@ -52,6 +52,16 @@ lib/infrastructure/
 - Presentation must not make Free/Premium decisions directly.
 - Production composition rejects `AccessOverride` and `TestEntitlementGateway`.
 
+## Error Model and Observability
+
+- Domain defines `OperationResult`, `OperationSuccess`, `OperationFailure`, `FailureInfo`, and `FailureKind`.
+- Application use cases and ports can return structured failures without depending on Flutter, platform SDKs, or logging SDKs.
+- `FailureInfo` separates stable technical codes from optional safe user-facing messages.
+- Retryable and user-action-required flags distinguish permanent failures from deferred phone/system states.
+- Application defines `ObservabilitySink`.
+- Infrastructure implements the sink through `ConsoleObservabilitySink`.
+- Observability attributes are sanitized before output and must not contain photo paths, file names, EXIF/location data, account identifiers, cloud object IDs, tokens, secrets, or credentials.
+
 ## App Mode
 
 App mode is represented by `AppMode` in `lib/bootstrap/app_mode.dart`.

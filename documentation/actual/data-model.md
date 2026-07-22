@@ -12,6 +12,8 @@ The current codebase contains Dart model classes for the initial domain shape:
 - `CloudAccount`
 - `ProtectionSummary`
 - `OperationResult`
+- `FailureInfo`
+- `FailureKind`
 - `AccessProfile`
 - `AccessDecision`
 - `Capability`
@@ -47,3 +49,9 @@ Current access model concepts:
 - decision status;
 - decision reason;
 - optional free-tier limit.
+
+## Error Model State
+
+Operation failures are currently represented by `FailureInfo` and `FailureKind`.
+
+This model is not persisted. It is workflow/result metadata used by application ports, use cases, and observability adapters.

@@ -7,9 +7,11 @@ class GoogleDriveCloudProvider implements CloudProvider {
   Future<OperationResult<CloudUploadConfirmation>> uploadPhoto(
     PhotoAsset photo,
   ) async {
-    return const OperationFailure(
+    return OperationFailure(
+      kind: FailureKind.cloudAuth,
       code: 'cloud.not_implemented',
-      message: 'Cloud upload is not implemented yet.',
+      safeMessage: 'Cloud upload is not implemented yet.',
+      userActionRequired: true,
     );
   }
 }

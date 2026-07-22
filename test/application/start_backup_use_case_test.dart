@@ -108,8 +108,9 @@ class _FakeCloudProvider implements CloudProvider {
     PhotoAsset photo,
   ) async {
     return OperationFailure(
+      kind: FailureKind.cloudAuth,
       code: 'not_implemented',
-      message: 'Fake cloud provider does not upload photos.',
+      safeMessage: 'Fake cloud provider does not upload photos.',
     );
   }
 }
