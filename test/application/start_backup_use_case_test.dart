@@ -77,6 +77,9 @@ class _FakeEntitlementGateway implements EntitlementGateway {
   final AccessProfile profile;
 
   @override
+  bool get isProductionSafe => true;
+
+  @override
   Future<AccessProfile> currentProfile() async {
     return profile;
   }

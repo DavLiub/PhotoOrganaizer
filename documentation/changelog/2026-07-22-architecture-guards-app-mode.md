@@ -6,7 +6,7 @@
 - Wired app mode through the Bootstrap composition root.
 - Rejected active `AccessOverride` and `TestEntitlementGateway` in production composition.
 - Added a diff-based architecture guard script.
-- Added the architecture guard to Flutter Checks CI.
+- Added the architecture guard to CI.
 - Added advisory naming warnings for changed Dart lines.
 - Added ADR 0013 and actual documentation updates.
 

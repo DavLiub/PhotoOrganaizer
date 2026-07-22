@@ -1,6 +1,6 @@
 import '../../application/ports/observability_sink.dart';
 
-class DebugObservabilitySink implements ObservabilitySink {
+class ConsoleObservabilitySink implements ObservabilitySink {
   @override
   void recordEvent(String name, Map<String, Object?> attributes) {}
 
