@@ -54,6 +54,11 @@ Implemented Infrastructure concepts:
 
 These are not production users and must not be wired as a hidden production bypass.
 
+Production composition rejects both:
+
+- active `AccessOverride`;
+- `TestEntitlementGateway`.
+
 ## Known Limitations
 
 - No real billing integration exists yet.

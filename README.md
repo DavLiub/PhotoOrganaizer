@@ -22,6 +22,7 @@ Tracked documentation includes requirements, actual implementation documentation
 ```powershell
 flutter pub get
 dart format --set-exit-if-changed .
+python tools/ci/architecture_guard.py
 flutter analyze
 flutter test
 flutter run
