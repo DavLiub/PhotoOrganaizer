@@ -16,6 +16,7 @@ The app must respect battery, network, and storage constraints. Background proce
 
 - Do not expose cloud tokens in logs.
 - Do not commit secrets or signing credentials.
+- Do not commit Android keystore files, keystore passwords, service account credentials, or generated signing material.
 - Store sensitive configuration through platform-appropriate mechanisms.
 
 ## Compatibility

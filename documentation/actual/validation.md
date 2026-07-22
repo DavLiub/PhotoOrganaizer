@@ -35,6 +35,14 @@ v0.0.3
 
 Tags are created only for successful push events on `main` or `master`. Pull request branches are not tagged.
 
+The source app version in `pubspec.yaml` follows the matching pre-release line:
+
+```text
+0.0.x+build
+```
+
+Flutter maps this value to Android `versionName` and `versionCode`. Keep the source version aligned with the expected next `v0.0.x` tag before merging release-affecting changes.
+
 ## Branch Protection
 
 Configure GitHub branch protection for `main`:

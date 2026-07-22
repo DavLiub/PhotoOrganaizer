@@ -1,18 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:photo_organaizer/application/policies/access_override.dart';
-import 'package:photo_organaizer/application/policies/access_policy.dart';
-import 'package:photo_organaizer/application/ports/background_scheduler.dart';
-import 'package:photo_organaizer/application/ports/cloud_provider.dart';
-import 'package:photo_organaizer/application/ports/entitlement_gateway.dart';
-import 'package:photo_organaizer/application/ports/media_library_gateway.dart';
-import 'package:photo_organaizer/application/ports/photo_index_repository.dart';
-import 'package:photo_organaizer/application/use_cases/start_backup_use_case.dart';
-import 'package:photo_organaizer/domain/entities/access_profile.dart';
-import 'package:photo_organaizer/domain/entities/photo_asset.dart';
-import 'package:photo_organaizer/domain/models/protection_summary.dart';
-import 'package:photo_organaizer/domain/value_objects/access_decision.dart';
-import 'package:photo_organaizer/domain/value_objects/capability.dart';
-import 'package:photo_organaizer/domain/value_objects/operation_result.dart';
+import 'package:photo_organizer/application/policies/access_override.dart';
+import 'package:photo_organizer/application/policies/access_policy.dart';
+import 'package:photo_organizer/application/ports/background_scheduler.dart';
+import 'package:photo_organizer/application/ports/cloud_provider.dart';
+import 'package:photo_organizer/application/ports/entitlement_gateway.dart';
+import 'package:photo_organizer/application/ports/media_library_gateway.dart';
+import 'package:photo_organizer/application/ports/photo_index_repository.dart';
+import 'package:photo_organizer/application/use_cases/start_backup_use_case.dart';
+import 'package:photo_organizer/domain/entities/access_profile.dart';
+import 'package:photo_organizer/domain/entities/photo_asset.dart';
+import 'package:photo_organizer/domain/models/protection_summary.dart';
+import 'package:photo_organizer/domain/value_objects/access_decision.dart';
+import 'package:photo_organizer/domain/value_objects/capability.dart';
+import 'package:photo_organizer/domain/value_objects/operation_result.dart';
 
 void main() {
   group('StartBackupUseCase', () {

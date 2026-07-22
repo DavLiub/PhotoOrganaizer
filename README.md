@@ -1,6 +1,6 @@
-# PhotoOrganaizer
+# Photo Organizer
 
-Smart Photo Archive / PhotoOrganaizer is a Flutter Android application for safe photo backup.
+Photo Organizer is a Flutter Android application for safe photo backup.
 
 ## Authorship
 

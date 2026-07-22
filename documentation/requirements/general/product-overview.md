@@ -1,6 +1,6 @@
 # Product Overview
 
-Smart Photo Archive is an Android application for reliable photo backup and protection.
+Photo Organizer is an Android application for reliable photo backup and protection. Smart Photo Archive remains the product concept name used in earlier planning material.
 
 ## Product Goal
 
