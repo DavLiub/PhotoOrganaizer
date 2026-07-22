@@ -24,3 +24,4 @@ Each ADR should include:
 - [0009-use-logging-package-for-observability.md](0009-use-logging-package-for-observability.md)
 - [0010-avoid-di-and-model-codegen-in-foundation.md](0010-avoid-di-and-model-codegen-in-foundation.md)
 - [0011-centralize-access-policy.md](0011-centralize-access-policy.md)
+- [0012-use-stable-app-identity-and-signing-policy.md](0012-use-stable-app-identity-and-signing-policy.md)

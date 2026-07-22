@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:photo_organaizer/bootstrap/app_composition_root.dart';
-import 'package:photo_organaizer/presentation/app/smart_photo_archive_app.dart';
+import 'package:photo_organizer/bootstrap/app_composition_root.dart';
+import 'package:photo_organizer/presentation/app/smart_photo_archive_app.dart';
 
 void main() {
   testWidgets('renders application shell', (tester) async {

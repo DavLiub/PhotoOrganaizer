@@ -1,4 +1,4 @@
-package com.davliub.photo_organaizer
+package com.davliub.photoorganizer
 
 import io.flutter.embedding.android.FlutterActivity
 

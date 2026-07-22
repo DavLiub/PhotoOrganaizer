@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:photo_organaizer/application/policies/access_override.dart';
-import 'package:photo_organaizer/application/policies/access_policy.dart';
-import 'package:photo_organaizer/application/ports/entitlement_gateway.dart';
-import 'package:photo_organaizer/domain/entities/access_profile.dart';
-import 'package:photo_organaizer/domain/value_objects/access_decision.dart';
-import 'package:photo_organaizer/domain/value_objects/access_tier.dart';
-import 'package:photo_organaizer/domain/value_objects/capability.dart';
+import 'package:photo_organizer/application/policies/access_override.dart';
+import 'package:photo_organizer/application/policies/access_policy.dart';
+import 'package:photo_organizer/application/ports/entitlement_gateway.dart';
+import 'package:photo_organizer/domain/entities/access_profile.dart';
+import 'package:photo_organizer/domain/value_objects/access_decision.dart';
+import 'package:photo_organizer/domain/value_objects/access_tier.dart';
+import 'package:photo_organizer/domain/value_objects/capability.dart';
 
 void main() {
   group('AccessPolicy', () {

@@ -17,6 +17,14 @@ android/.gradle/
 android/local.properties
 android/**/generated/
 
+# Android signing secrets
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+android/app/upload-keystore.*
+*.jks
+*.keystore
+
 # IDE
 .idea/
 .vscode/

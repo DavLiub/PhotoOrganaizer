@@ -24,3 +24,5 @@ This ownership documentation is attribution-only. It does not define:
 ## Signing Note
 
 Android app signing is a separate release engineering topic. Keystore files, passwords, and signing credentials must not be committed.
+
+Current signing policy is documented in [app-identity.md](app-identity.md).
