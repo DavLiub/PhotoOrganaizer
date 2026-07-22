@@ -62,11 +62,13 @@ Object? _safeValue(Object? value) {
 
 bool _looksSensitiveText(String value) {
   final lower = value.toLowerCase();
+  final normalized = lower.replaceAll(RegExp('[^a-z0-9]'), '');
+
   return RegExp(r'^[a-z]:[\\/]').hasMatch(lower) ||
       lower.contains('/storage/') ||
       lower.contains('/dcim/') ||
-      lower.contains('api_key=') ||
-      lower.contains('client_secret') ||
-      lower.contains('private_key') ||
+      normalized.contains('apikey') ||
+      normalized.contains('clientsecret') ||
+      normalized.contains('privatekey') ||
       lower.contains('@');
 }
