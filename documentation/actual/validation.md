@@ -2,21 +2,29 @@
 
 ## CI Validation
 
-GitHub Actions runs Flutter checks for pull requests and pushes to `main` or `master`.
+GitHub Actions runs project checks for pull requests and pushes to `main` or `master`.
 
 Workflow:
 
 ```text
-.github/workflows/flutter-checks.yml
+.github/workflows/project-checks.yml
 ```
 
-Checks:
+Jobs:
+
+- `Project Checks / Flutter Checks`
+- `Project Checks / Project Guards`
+
+Flutter Checks:
 
 - `flutter pub get`
 - `dart format --set-exit-if-changed .`
-- `python tools/ci/architecture_guard.py --base <base-sha> --head <head-sha>`
 - `flutter analyze`
 - `flutter test`
+
+Project Guards:
+
+- `python tools/ci/architecture_guard.py --base <base-sha> --head <head-sha>`
 
 ## Architecture Guard
 
@@ -77,7 +85,8 @@ Flutter maps this value to Android `versionName` and `versionCode`. Keep the sou
 Configure GitHub branch protection for `main`:
 
 - require pull requests before merging;
-- require `Flutter Checks / Format, Analyze, Test`;
+- require `Project Checks / Flutter Checks`;
+- require `Project Checks / Project Guards`;
 - block direct pushes;
 - keep tag creation limited to the release workflow.
 

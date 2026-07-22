@@ -1,4 +1,4 @@
-name: Flutter Checks
+name: Project Checks
 
 on:
   pull_request:
@@ -8,15 +8,13 @@ on:
       - master
 
 jobs:
-  validate:
-    name: Format, Analyze, Test
+  flutter-checks:
+    name: Flutter Checks
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -34,14 +32,24 @@ jobs:
       - name: Check formatting
         run: dart format --set-exit-if-changed .
 
-      - name: Architecture guard
-        env:
-          GUARD_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          GUARD_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-        run: python tools/ci/architecture_guard.py --base "$GUARD_BASE_SHA" --head "$GUARD_HEAD_SHA"
-
       - name: Analyze
         run: flutter analyze
 
       - name: Test
         run: flutter test
+
+  project-guards:
+    name: Project Guards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Architecture guard
+        env:
+          GUARD_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          GUARD_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: python tools/ci/architecture_guard.py --base "$GUARD_BASE_SHA" --head "$GUARD_HEAD_SHA"

@@ -3,7 +3,7 @@ name: Release Tag
 on:
   workflow_run:
     workflows:
-      - Flutter Checks
+      - Project Checks
     types:
       - completed
 
