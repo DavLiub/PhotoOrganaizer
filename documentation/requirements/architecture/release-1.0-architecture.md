@@ -29,6 +29,14 @@ Composition Root
 - Presentation talks to Application use cases and view models only.
 - Bootstrap wires concrete Infrastructure implementations into Application services.
 
+## Enforcement Direction
+
+Deterministic architecture guards should run in CI for changed code. Layer violations are blocking. Naming recommendations are advisory until proven accurate enough to become stricter.
+
+## App Mode Direction
+
+Runtime mode must be explicit and owned by Bootstrap. Production mode must not use test-only entitlement sources or access overrides.
+
 ## Module Responsibilities
 
 - `domain`: entities, value objects, domain models, and domain rules.

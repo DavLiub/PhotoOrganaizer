@@ -39,6 +39,8 @@ class AccessOverride {
 
   final Map<Capability, AccessDecision> _decisions;
 
+  bool get isActive => _decisions.isNotEmpty;
+
   AccessDecision? decisionFor(Capability capability) {
     return _decisions[capability];
   }

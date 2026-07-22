@@ -16,6 +16,7 @@ lib/
 
 - `main.dart` delegates startup to `bootstrap`.
 - `bootstrap` creates the application composition root.
+- `bootstrap` owns app mode selection and production safety checks.
 - `application` depends on `domain` and defines ports.
 - `infrastructure` implements application ports with placeholder adapters.
 - `presentation` displays shell screens and consumes composed application dependencies through the app shell.
@@ -49,6 +50,29 @@ lib/infrastructure/
 - Infrastructure implements `EntitlementGateway` and provides entitlement facts.
 - Test/debug access is represented through `AccessOverride` and `TestEntitlementGateway`.
 - Presentation must not make Free/Premium decisions directly.
+- Production composition rejects `AccessOverride` and `TestEntitlementGateway`.
+
+## App Mode
+
+App mode is represented by `AppMode` in `lib/bootstrap/app_mode.dart`.
+
+Supported modes:
+
+- `production`
+- `debug`
+- `test`
+
+The default mode is `production`. Runtime startup reads `APP_MODE` through a compile-time Dart environment value and passes the selected mode into the composition root. App mode is not exposed as a global singleton.
+
+## Architecture Guard
+
+Custom architecture checks are implemented in:
+
+```text
+tools/ci/architecture_guard.py
+```
+
+CI runs the guard on changed Dart lines only. Layer violations are blocking. Naming findings are advisory and are printed as CI warnings.
 
 ## Approved Integration Direction
 

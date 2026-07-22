@@ -14,8 +14,37 @@ Checks:
 
 - `flutter pub get`
 - `dart format --set-exit-if-changed .`
+- `python tools/ci/architecture_guard.py --base <base-sha> --head <head-sha>`
 - `flutter analyze`
 - `flutter test`
+
+## Architecture Guard
+
+The architecture guard is implemented in:
+
+```text
+tools/ci/architecture_guard.py
+```
+
+Default behavior is diff-based:
+
+- GitHub pull requests are checked against the PR base and head SHAs.
+- Pushes to `main` or `master` are checked against the previous and current commit SHAs.
+- Local runs without arguments inspect unstaged and staged changes.
+- `--all` performs a full tracked Dart file scan for manual audits.
+
+Blocking checks:
+
+- Domain must not import other layers.
+- Application must not import Presentation, Infrastructure, or Bootstrap.
+- Presentation must not import Infrastructure.
+
+Advisory checks:
+
+- suspicious generic names such as `Utils`, `Helpers`, `Managers`, and `Common`;
+- file, class, and function names that usually contain more than three words.
+
+Advisory naming findings are emitted as warnings and do not fail CI by themselves.
 
 ## Main Branch Tags
 
@@ -115,6 +144,7 @@ Preferred local commands:
 ```powershell
 flutter pub get
 dart format --set-exit-if-changed .
+python tools/ci/architecture_guard.py
 flutter analyze
 flutter test
 ```
