@@ -18,6 +18,8 @@ The current codebase contains Dart model classes for the initial domain shape:
 - `AccessDecision`
 - `Capability`
 - `AccessTier`
+- `MediaPermission`
+- `MediaPermissionState`
 
 ## Current Persistence State
 
@@ -55,3 +57,9 @@ Current access model concepts:
 Operation failures are currently represented by `FailureInfo` and `FailureKind`.
 
 This model is not persisted. It is workflow/result metadata used by application ports, use cases, and observability adapters.
+
+## Media Permission State
+
+Media permission state is represented by `MediaPermission` and `MediaPermissionState`.
+
+This state is runtime workflow metadata and is not persisted in the current implementation.

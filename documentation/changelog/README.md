@@ -13,3 +13,4 @@ Use one file per meaningful change or release.
 - [2026-07-22-architecture-guards-app-mode.md](2026-07-22-architecture-guards-app-mode.md)
 - [2026-07-22-project-checks-workflow.md](2026-07-22-project-checks-workflow.md)
 - [2026-07-22-error-model-observability.md](2026-07-22-error-model-observability.md)
+- [2026-07-23-permission-privacy-boundary.md](2026-07-23-permission-privacy-boundary.md)

@@ -62,6 +62,15 @@ lib/infrastructure/
 - Infrastructure implements the sink through `ConsoleObservabilitySink`.
 - Observability attributes are sanitized before output and must not contain photo paths, file names, EXIF/location data, account identifiers, cloud object IDs, tokens, secrets, or credentials.
 
+## Media Permissions
+
+- Domain defines `MediaPermission` and `MediaPermissionState`.
+- Application defines `MediaPermissionGateway`.
+- Application exposes media permission flow through `CheckMediaAccess` and `RequestMediaAccess`.
+- Infrastructure implements the current placeholder through `AndroidMediaAccess`.
+- Presentation consumes only Application use cases for permission state and request actions.
+- Android permission APIs and future plugin types must stay inside Infrastructure.
+
 ## App Mode
 
 App mode is represented by `AppMode` in `lib/bootstrap/app_mode.dart`.

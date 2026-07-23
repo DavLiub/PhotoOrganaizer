@@ -19,6 +19,13 @@ The app must respect battery, network, and storage constraints. Background proce
 - Do not commit Android keystore files, keystore passwords, service account credentials, or generated signing material.
 - Store sensitive configuration through platform-appropriate mechanisms.
 
+## Privacy
+
+- Do not log local photo paths, file names, EXIF data, location metadata, account identifiers, or cloud object identifiers.
+- Keep permission state as runtime workflow state unless a later requirement explicitly approves persistence.
+- Treat limited photo access as a privacy boundary, not as full-library access.
+- Keep Android permission and media plugin details inside Infrastructure.
+
 ## Compatibility
 
 Android is the primary Release 1.0 platform. Flutter desktop/web support is not part of the product acceptance scope.
