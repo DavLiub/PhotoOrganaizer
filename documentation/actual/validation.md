@@ -90,6 +90,8 @@ Advisory checks:
 
 Advisory naming findings are emitted as warnings and do not fail CI by themselves. In normal diff mode, naming checks inspect declarations in changed lines. File-name recommendations are part of manual `--all` audits.
 
+Generated Dart files such as `*.g.dart`, `*.freezed.dart`, and `*.mocks.dart` are excluded from advisory naming reports because their identifiers are produced by tools.
+
 ## Main Branch Tags
 
 Successful push validation on `main` or `master` triggers:

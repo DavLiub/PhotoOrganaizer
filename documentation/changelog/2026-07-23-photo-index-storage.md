@@ -7,6 +7,7 @@
 - Implemented `LocalPhotoIndexRepository` behind the Application repository port.
 - Added in-memory repository tests for lookup, upsert, idempotency, and protection summary streaming.
 - Documented that media source catalog persistence, backup queue state, and cloud ids are deferred.
+- Excluded generated Dart files from the advisory naming report to avoid Drift codegen noise.
 
 ## Validation
 
