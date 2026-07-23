@@ -21,11 +21,11 @@ class MediaAdapters {
         permissionGateway: const AndroidMediaAccess(),
       ),
       AppPlatform.ios => MediaAdapters(
-        libraryGateway: IosMediaLibraryGateway(),
+        libraryGateway: IosMediaLibrary(),
         permissionGateway: const IosMediaAccess(),
       ),
       AppPlatform.unsupported => MediaAdapters(
-        libraryGateway: UnsupportedMediaLibraryGateway(),
+        libraryGateway: UnsupportedMediaLibrary(),
         permissionGateway: const UnsupportedMediaAccess(),
       ),
     };

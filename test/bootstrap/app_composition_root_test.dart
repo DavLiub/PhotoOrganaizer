@@ -36,7 +36,7 @@ void main() {
 
       expect(root.platform, AppPlatform.ios);
       expect(root.mediaPermissionGateway, isA<IosMediaAccess>());
-      expect(root.mediaLibraryGateway, isA<IosMediaLibraryGateway>());
+      expect(root.mediaLibraryGateway, isA<IosMediaLibrary>());
 
       final status = await root.mediaPermissionGateway.currentStatus();
 
@@ -54,7 +54,7 @@ void main() {
 
       expect(root.platform, AppPlatform.unsupported);
       expect(root.mediaPermissionGateway, isA<UnsupportedMediaAccess>());
-      expect(root.mediaLibraryGateway, isA<UnsupportedMediaLibraryGateway>());
+      expect(root.mediaLibraryGateway, isA<UnsupportedMediaLibrary>());
     });
 
     test('rejects access override in production mode', () {
