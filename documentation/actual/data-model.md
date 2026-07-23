@@ -8,6 +8,8 @@ The current codebase contains Dart model classes for the initial domain shape:
 - `PhotoIdentity`
 - `PhotoIndexEntry`
 - `PhotoIndexStatus`
+- `MediaSource`
+- `MediaSourceStatus`
 - `IndexScope`
 - `IndexScopeMode`
 - `BackupProfile`
@@ -32,10 +34,11 @@ The project uses Drift for the first local SQLite persistence implementation.
 Implemented database:
 
 - `AppDatabase`
-- schema version `1`
+- schema version `2`
 - table `photo_index_entries`
+- table `media_sources`
 
-`LocalPhotoIndexRepository` implements the Application `PhotoIndexRepository` port using this table. Drift classes, generated rows, and SQLite details remain inside Infrastructure.
+`LocalPhotoIndexRepository` implements the Application `PhotoIndexRepository` port using `photo_index_entries`. `LocalMediaSourceRepository` implements the Application `MediaSourceRepository` port using `media_sources`. Drift classes, generated rows, and SQLite details remain inside Infrastructure.
 
 ## Current Data Model Boundaries
 
@@ -45,11 +48,11 @@ Implemented database:
 
 ## Known Deviations
 
-The original specification describes a fuller logical data model with persistence rules and migrations. The current implementation intentionally contains only skeleton-level models until storage technology and schema are selected.
+The original specification describes a fuller logical data model with backup records, cloud copies, variants, and migration rules. The current implementation intentionally contains only the photo index, media source catalog, and logical backup state foundation.
 
 ## Persistence Direction
 
-Drift is the approved persistence technology for local state. The first implemented schema persists photo index entries only.
+Drift is the approved persistence technology for local state. The implemented schema persists photo index entries and media sources.
 
 ## Photo Index State
 
@@ -74,7 +77,31 @@ Repeated scan results for the same local asset id refresh the existing entry ins
 
 True duplicate detection across different local asset ids is not implemented yet because no checksum or perceptual hash exists.
 
-The physical photo index schema currently stores the local asset metadata snapshot together with the index entry status and timestamps. Backup state, retry metadata, cloud ids, and media source catalog records are not persisted yet.
+The physical photo index schema currently stores the local asset metadata snapshot together with the index entry status, optional source id, and timestamps. Backup state, retry metadata, and cloud ids are not persisted yet.
+
+## Media Source State
+
+`MediaSource` represents a platform-neutral source or album catalog entry.
+
+Current fields:
+
+- source id;
+- provider;
+- display name;
+- optional path hint;
+- asset count;
+- last seen timestamp;
+- availability status;
+- camera-like flag;
+- system-like flag.
+
+Current statuses:
+
+- `available`
+- `missing`
+- `inaccessible`
+
+`sourceId` on `PhotoAsset` and `photo_index_entries` links a photo to the project-owned media source catalog when available. `albumId` remains raw platform metadata.
 
 ## Access Model State
 

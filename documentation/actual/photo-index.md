@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-The current implementation defines the Domain/Application photo index slice and a Drift-backed Infrastructure storage adapter. It does not include Android media scanning, cloud backup, media source catalog persistence, or image hashing.
+The current implementation defines the Domain/Application photo index slice and a Drift-backed Infrastructure storage adapter. It does not include Android media scanning, cloud backup, or image hashing.
 
 ## Identity
 
@@ -51,7 +51,7 @@ Current statuses:
 - excluded source names;
 - screenshot inclusion flag.
 
-The current scope model is Domain-only. Android album/source mapping is deferred.
+The current scope model is Domain-only. Android album/source mapping will use the media source catalog when the Android media scan adapter is implemented.
 
 ## Application Use Cases
 
@@ -78,15 +78,14 @@ The default database is created lazily so Bootstrap can construct the compositio
 
 ## Physical Schema
 
-Schema version `1` contains one table:
+Schema version `2` contains the photo index table:
 
 - `photo_index_entries`
 
-The table stores stable index id, current identity key, local asset id, source metadata, file metadata, availability status, index status, and index/update timestamps.
+The table stores stable index id, current identity key, local asset id, optional source id, source metadata, file metadata, availability status, index status, and index/update timestamps.
 
 ## Known Limitations
 
-- No separate media source or album catalog table exists yet.
 - No image checksum or perceptual hash exists yet.
 - True duplicate detection across different local assets is not implemented.
 - Cloud copies, optimized files, thumbnails, and other variants are not modeled yet.

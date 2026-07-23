@@ -25,6 +25,7 @@ Business functionality is represented by domain models, application ports, use c
 - [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.
 - [library-decisions.md](library-decisions.md): approved dependency and integration direction.
 - [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
+- [media-source-index.md](media-source-index.md): current media source and album catalog model.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.
 - [platform-boundary.md](platform-boundary.md): current Android-first, iOS-ready platform adapter boundary.
