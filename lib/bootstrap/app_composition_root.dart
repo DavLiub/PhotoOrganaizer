@@ -20,7 +20,7 @@ import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
 import '../infrastructure/observability/console_observability_sink.dart';
 import '../infrastructure/storage/app_database.dart';
-import '../infrastructure/storage/local_media_source_repository.dart';
+import '../infrastructure/storage/media_source_store.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
 import 'app_mode.dart';
 import 'app_platform.dart';
@@ -82,7 +82,7 @@ class AppCompositionRoot {
     final mediaPermissionGateway = mediaAdapters.permissionGateway;
     AppDatabase? database;
     AppDatabase createDatabase() => database ??= AppDatabase.defaults();
-    final mediaSourceRepository = LocalMediaSourceRepository(
+    final mediaSourceRepository = MediaSourceStore(
       createDatabase: createDatabase,
     );
     final photoIndexRepository = LocalPhotoIndexRepository(

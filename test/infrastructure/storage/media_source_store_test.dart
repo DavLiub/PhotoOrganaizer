@@ -2,16 +2,16 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/domain/entities/media_source.dart';
 import 'package:photo_organizer/infrastructure/storage/app_database.dart';
-import 'package:photo_organizer/infrastructure/storage/local_media_source_repository.dart';
+import 'package:photo_organizer/infrastructure/storage/media_source_store.dart';
 
 void main() {
-  group('LocalMediaSourceRepository', () {
+  group('MediaSourceStore', () {
     late AppDatabase database;
-    late LocalMediaSourceRepository repository;
+    late MediaSourceStore repository;
 
     setUp(() {
       database = AppDatabase(NativeDatabase.memory());
-      repository = LocalMediaSourceRepository(database: database);
+      repository = MediaSourceStore(database: database);
     });
 
     tearDown(() async {

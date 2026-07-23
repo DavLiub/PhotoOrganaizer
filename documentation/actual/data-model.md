@@ -38,7 +38,7 @@ Implemented database:
 - table `photo_index_entries`
 - table `media_sources`
 
-`LocalPhotoIndexRepository` implements the Application `PhotoIndexRepository` port using `photo_index_entries`. `LocalMediaSourceRepository` implements the Application `MediaSourceRepository` port using `media_sources`. Drift classes, generated rows, and SQLite details remain inside Infrastructure.
+`LocalPhotoIndexRepository` implements the Application `PhotoIndexRepository` port using `photo_index_entries`. `MediaSourceStore` implements the Application `MediaSourceRepository` port using `media_sources`. Drift classes, generated rows, and SQLite details remain inside Infrastructure.
 
 ## Current Data Model Boundaries
 

@@ -41,7 +41,7 @@ Drift schema version `2` adds:
 - `media_sources`
 - nullable `photo_index_entries.source_id`
 
-`LocalMediaSourceRepository` implements the Application `MediaSourceRepository` port.
+`MediaSourceStore` implements the Application `MediaSourceRepository` port.
 
 ## Platform Boundary
 

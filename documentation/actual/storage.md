@@ -10,7 +10,7 @@ Implemented components:
 - `PhotoIndexEntries`
 - `MediaSources`
 - `LocalPhotoIndexRepository`
-- `LocalMediaSourceRepository`
+- `MediaSourceStore`
 - `photo_index_mapper.dart`
 - `media_source_mapper.dart`
 
@@ -81,7 +81,7 @@ Columns:
 - upsert of photo index entries;
 - protection summary streaming from stored rows.
 
-`LocalMediaSourceRepository` supports:
+`MediaSourceStore` supports:
 
 - lookup of all media sources;
 - lookup by source id;

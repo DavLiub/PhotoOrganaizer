@@ -3,8 +3,8 @@ import '../../domain/entities/media_source.dart';
 import 'app_database.dart';
 import 'media_source_mapper.dart';
 
-class LocalMediaSourceRepository implements MediaSourceRepository {
-  LocalMediaSourceRepository({
+class MediaSourceStore implements MediaSourceRepository {
+  MediaSourceStore({
     AppDatabase? database,
     AppDatabase Function()? createDatabase,
   }) : _database = database,
