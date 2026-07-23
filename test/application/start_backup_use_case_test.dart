@@ -9,10 +9,12 @@ import 'package:photo_organizer/application/ports/photo_index_repository.dart';
 import 'package:photo_organizer/application/use_cases/start_backup_use_case.dart';
 import 'package:photo_organizer/domain/entities/access_profile.dart';
 import 'package:photo_organizer/domain/entities/photo_asset.dart';
+import 'package:photo_organizer/domain/entities/photo_index_entry.dart';
 import 'package:photo_organizer/domain/models/protection_summary.dart';
 import 'package:photo_organizer/domain/value_objects/access_decision.dart';
 import 'package:photo_organizer/domain/value_objects/capability.dart';
 import 'package:photo_organizer/domain/value_objects/operation_result.dart';
+import 'package:photo_organizer/domain/value_objects/photo_identity.dart';
 
 void main() {
   group('StartBackupUseCase', () {
@@ -94,7 +96,17 @@ class _FakeMediaGateway implements MediaLibraryGateway {
 
 class _FakePhotoIndex implements PhotoIndexRepository {
   @override
-  Future<void> upsertPhotos(List<PhotoAsset> photos) async {}
+  Future<List<PhotoIndexEntry>> findByAssetIds(Set<String> assetIds) async {
+    return const [];
+  }
+
+  @override
+  Future<PhotoIndexEntry?> findByIdentity(PhotoIdentity identity) async {
+    return null;
+  }
+
+  @override
+  Future<void> upsertEntries(List<PhotoIndexEntry> entries) async {}
 
   @override
   Stream<ProtectionSummary> watchProtectionSummary() {

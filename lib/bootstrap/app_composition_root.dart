@@ -8,8 +8,10 @@ import '../application/ports/photo_index_repository.dart';
 import '../application/policies/access_override.dart';
 import '../application/policies/access_policy.dart';
 import '../application/use_cases/check_media_access.dart';
+import '../application/use_cases/index_photos.dart';
 import '../application/use_cases/observe_protection_summary_use_case.dart';
 import '../application/use_cases/request_media_access.dart';
+import '../application/use_cases/resolve_photo_identity.dart';
 import '../application/use_cases/start_backup_use_case.dart';
 import '../domain/models/protection_summary.dart';
 import '../infrastructure/background/work_manager_background_scheduler.dart';
@@ -33,7 +35,9 @@ class AppCompositionRoot {
     required this.accessPolicy,
     required this.observabilitySink,
     required this.checkMediaAccess,
+    required this.indexPhotos,
     required this.requestMediaAccess,
+    required this.resolvePhotoIdentity,
     required this.observeProtectionSummary,
     required this.startBackup,
   });
@@ -48,7 +52,9 @@ class AppCompositionRoot {
   final AccessPolicy accessPolicy;
   final ObservabilitySink observabilitySink;
   final CheckMediaAccess checkMediaAccess;
+  final IndexPhotos indexPhotos;
   final RequestMediaAccess requestMediaAccess;
+  final ResolvePhotoIdentity resolvePhotoIdentity;
   final ObserveProtectionSummaryUseCase observeProtectionSummary;
   final StartBackupUseCase startBackup;
 
@@ -87,7 +93,12 @@ class AppCompositionRoot {
       accessPolicy: accessPolicy,
       observabilitySink: observabilitySink,
       checkMediaAccess: CheckMediaAccess(mediaPermissionGateway),
+      indexPhotos: IndexPhotos(
+        repository: photoIndexRepository,
+        permissionGateway: mediaPermissionGateway,
+      ),
       requestMediaAccess: RequestMediaAccess(mediaPermissionGateway),
+      resolvePhotoIdentity: ResolvePhotoIdentity(photoIndexRepository),
       observeProtectionSummary: ObserveProtectionSummaryUseCase(
         initialSummary: ProtectionSummary.empty(),
       ),
