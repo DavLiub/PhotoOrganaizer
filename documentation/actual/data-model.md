@@ -100,3 +100,36 @@ This model is not persisted. It is workflow/result metadata used by application 
 Media permission state is represented by `MediaPermission` and `MediaPermissionState`.
 
 This state is runtime workflow metadata and is not persisted in the current implementation.
+
+## Backup State
+
+Backup lifecycle is modeled in Domain only.
+
+Per-photo `BackupRecordStatus` values:
+
+- `queued`
+- `uploading`
+- `uploaded`
+- `confirmed`
+- `failed`
+- `cancelled`
+
+Retry metadata on `BackupRecord`:
+
+- attempt count;
+- last attempt timestamp;
+- next retry timestamp;
+- last failure code.
+
+Retryable failures return records to `queued` and keep retry metadata. Non-retryable failures move records to `failed`.
+
+Backup process `BackupJobStatus` values:
+
+- `queued`
+- `running`
+- `completed`
+- `paused`
+- `failed`
+- `cancelled`
+
+`paused` is a job/process state only, not a per-photo state. Local photo deletion remains out of scope.

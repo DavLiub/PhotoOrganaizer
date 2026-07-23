@@ -17,3 +17,4 @@ Use one file per meaningful change or release.
 - [2026-07-23-photo-index-domain.md](2026-07-23-photo-index-domain.md)
 - [2026-07-23-platform-boundary.md](2026-07-23-platform-boundary.md)
 - [2026-07-23-photo-index-storage.md](2026-07-23-photo-index-storage.md)
+- [2026-07-23-backup-state-machine.md](2026-07-23-backup-state-machine.md)
