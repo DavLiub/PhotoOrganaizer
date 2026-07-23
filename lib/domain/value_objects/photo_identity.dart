@@ -1,21 +1,43 @@
 class PhotoIdentity {
   const PhotoIdentity({
-    required this.id,
-    required this.photoId,
+    required this.assetId,
     required this.fileSize,
     required this.createdAt,
-    this.checksum,
-    this.checksumAlgorithm,
-    this.modifiedAt,
-    this.perceptualHash,
+    required this.modifiedAt,
   });
 
-  final String id;
-  final String photoId;
+  final String assetId;
   final int fileSize;
   final DateTime createdAt;
-  final String? checksum;
-  final String? checksumAlgorithm;
-  final DateTime? modifiedAt;
-  final String? perceptualHash;
+
+  final DateTime modifiedAt;
+
+  String get key {
+    return [
+      assetId,
+      fileSize,
+      createdAt.toUtc().microsecondsSinceEpoch,
+      modifiedAt.toUtc().microsecondsSinceEpoch,
+    ].join('|');
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is PhotoIdentity &&
+            other.assetId == assetId &&
+            other.fileSize == fileSize &&
+            other.createdAt.toUtc() == createdAt.toUtc() &&
+            other.modifiedAt.toUtc() == modifiedAt.toUtc();
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      assetId,
+      fileSize,
+      createdAt.toUtc(),
+      modifiedAt.toUtc(),
+    );
+  }
 }
