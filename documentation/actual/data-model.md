@@ -6,6 +6,10 @@ The current codebase contains Dart model classes for the initial domain shape:
 
 - `PhotoAsset`
 - `PhotoIdentity`
+- `PhotoIndexEntry`
+- `PhotoIndexStatus`
+- `IndexScope`
+- `IndexScopeMode`
 - `BackupProfile`
 - `BackupJob`
 - `BackupRecord`
@@ -25,6 +29,8 @@ The current codebase contains Dart model classes for the initial domain shape:
 
 There is no concrete database schema, ORM, migration system, or persistent repository implementation yet. Storage is represented by an Application port and a placeholder Infrastructure adapter.
 
+The photo index repository contract now supports identity lookup, asset-id lookup, and index-entry upserts. The concrete storage implementation is still deferred.
+
 ## Current Data Model Boundaries
 
 - Domain models are platform-independent.
@@ -38,6 +44,29 @@ The original specification describes a fuller logical data model with persistenc
 ## Persistence Direction
 
 Drift is the approved persistence technology for the future local photo index. No physical schema has been implemented yet.
+
+## Photo Index State
+
+Local photo identity is currently derived from:
+
+- local asset id;
+- file size;
+- creation timestamp;
+- modification timestamp.
+
+`PhotoIndexEntry` is the current in-memory/domain representation of an indexed local photo. It stores the current identity, local asset metadata, index status, and index/update timestamps.
+
+Index statuses:
+
+- `indexed`
+- `pendingBackup`
+- `protected`
+- `failed`
+- `ignored`
+
+Repeated scan results for the same local asset id refresh the existing entry instead of creating duplicates. If file size or modification timestamp changes, the entry keeps its stable index id and receives a new identity.
+
+True duplicate detection across different local asset ids is not implemented yet because no checksum or perceptual hash exists.
 
 ## Access Model State
 

@@ -28,3 +28,4 @@ Each ADR should include:
 - [0013-use-diff-based-architecture-guards.md](0013-use-diff-based-architecture-guards.md)
 - [0014-use-typed-failure-model.md](0014-use-typed-failure-model.md)
 - [0015-centralize-media-permissions.md](0015-centralize-media-permissions.md)
+- [0016-use-local-asset-identity.md](0016-use-local-asset-identity.md)

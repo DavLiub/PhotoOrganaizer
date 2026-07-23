@@ -35,3 +35,16 @@ The current repository contains skeleton Domain models only. A concrete database
 - Cloud identifiers must be stored after successful upload.
 - Partial failures must remain recoverable.
 - User-facing status must be derived from persisted state, not transient UI state.
+
+## Photo Identity Direction
+
+Initial local photo identity is based on:
+
+- local asset id;
+- file size;
+- creation timestamp;
+- modification timestamp.
+
+Image checksum and perceptual hash are deferred until media byte access and duplicate-detection requirements are implemented.
+
+Derived copies such as optimized uploads, cloud objects, thumbnails, and previews must be modeled as related artifacts or variants in a later design step, not as new local source assets.
