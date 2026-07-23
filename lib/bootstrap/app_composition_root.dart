@@ -17,15 +17,16 @@ import '../domain/models/protection_summary.dart';
 import '../infrastructure/background/work_manager_background_scheduler.dart';
 import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
-import '../infrastructure/media/android_media_access.dart';
-import '../infrastructure/media/android_media_library_gateway.dart';
 import '../infrastructure/observability/console_observability_sink.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
 import 'app_mode.dart';
+import 'app_platform.dart';
+import 'media_adapters.dart';
 
 class AppCompositionRoot {
   AppCompositionRoot._({
     required this.mode,
+    required this.platform,
     required this.mediaLibraryGateway,
     required this.mediaPermissionGateway,
     required this.photoIndexRepository,
@@ -43,6 +44,7 @@ class AppCompositionRoot {
   });
 
   final AppMode mode;
+  final AppPlatform platform;
   final MediaLibraryGateway mediaLibraryGateway;
   final MediaPermissionGateway mediaPermissionGateway;
   final PhotoIndexRepository photoIndexRepository;
@@ -60,6 +62,7 @@ class AppCompositionRoot {
 
   factory AppCompositionRoot.configure({
     AppMode mode = AppMode.production,
+    AppPlatform platform = AppPlatform.android,
     EntitlementGateway? entitlementGateway,
     AccessOverride accessOverride = AccessOverride.none,
   }) {
@@ -69,8 +72,9 @@ class AppCompositionRoot {
       accessOverride: accessOverride,
     );
 
-    final mediaLibraryGateway = AndroidMediaLibraryGateway();
-    const mediaPermissionGateway = AndroidMediaAccess();
+    final mediaAdapters = MediaAdapters.forPlatform(platform);
+    final mediaLibraryGateway = mediaAdapters.libraryGateway;
+    final mediaPermissionGateway = mediaAdapters.permissionGateway;
     final photoIndexRepository = LocalPhotoIndexRepository();
     final cloudProvider = GoogleDriveCloudProvider();
     final backgroundScheduler = WorkManagerBackgroundScheduler();
@@ -84,6 +88,7 @@ class AppCompositionRoot {
 
     return AppCompositionRoot._(
       mode: mode,
+      platform: platform,
       mediaLibraryGateway: mediaLibraryGateway,
       mediaPermissionGateway: mediaPermissionGateway,
       photoIndexRepository: photoIndexRepository,

@@ -30,6 +30,8 @@ The app must respect battery, network, and storage constraints. Background proce
 
 Android is the primary Release 1.0 platform. Flutter desktop/web support is not part of the product acceptance scope.
 
+iOS is not an active Release 1.0 target, but platform-specific assumptions must not leak into Domain, Application, or Presentation.
+
 ## Observability
 
 Errors, retries, background jobs, and cloud operations must be observable enough for debugging without leaking private user data.

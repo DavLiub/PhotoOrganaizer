@@ -41,7 +41,7 @@ Runtime mode must be explicit and owned by Bootstrap. Production mode must not u
 
 - `domain`: entities, value objects, domain models, and domain rules.
 - `application`: use cases, ports, orchestration, and app-specific policies.
-- `infrastructure`: Android, storage, cloud, billing, background, and observability adapters.
+- `infrastructure`: platform, storage, cloud, billing, background, and observability adapters.
 - `presentation`: Flutter UI, navigation, screens, widgets, and theme.
 - `bootstrap`: dependency composition and app startup.
 
@@ -51,4 +51,8 @@ Infrastructure must not define business rules. It converts platform/cloud/storag
 
 ## Current Constraint
 
-Release 1.0 targets Android first. Other Flutter platforms may exist in generated tooling but are not part of the product scope.
+Release 1.0 targets Android first. Other Flutter platforms may exist in generated tooling but are not part of the product acceptance scope.
+
+Platform-specific code must be isolated in Infrastructure and selected by Bootstrap. Domain, Application, and Presentation must remain Android/iOS independent.
+
+iOS readiness means keeping adapter boundaries available, not implementing iOS behavior during Android-first development.

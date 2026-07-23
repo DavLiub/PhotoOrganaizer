@@ -26,6 +26,7 @@ Business functionality is represented by domain models, application ports, use c
 - [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.
+- [platform-boundary.md](platform-boundary.md): current Android-first, iOS-ready platform adapter boundary.
 - [validation.md](validation.md): local and CI validation path.
 
 ## Synchronization Rule

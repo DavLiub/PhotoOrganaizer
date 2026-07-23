@@ -29,3 +29,4 @@ Each ADR should include:
 - [0014-use-typed-failure-model.md](0014-use-typed-failure-model.md)
 - [0015-centralize-media-permissions.md](0015-centralize-media-permissions.md)
 - [0016-use-local-asset-identity.md](0016-use-local-asset-identity.md)
+- [0017-use-platform-adapter-boundary.md](0017-use-platform-adapter-boundary.md)

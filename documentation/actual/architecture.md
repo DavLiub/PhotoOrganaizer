@@ -35,9 +35,19 @@ lib/infrastructure/
   storage/
 ```
 
+## Platform Boundary
+
+- Development targets Android first.
+- Bootstrap owns platform selection through `AppPlatform` and `MediaAdapters`.
+- The default platform is Android.
+- iOS and unsupported platforms currently use placeholder media adapters.
+- Domain, Application, and Presentation must not depend on Android or iOS APIs directly.
+- Platform-specific behavior belongs in Infrastructure adapters selected by Bootstrap.
+
 ## Known Limitations
 
 - Real Android media access is not implemented.
+- Real iOS media access is not implemented.
 - Real Google Drive integration is not implemented.
 - Real billing and entitlement verification are not implemented.
 - Real persistence is not implemented.
@@ -67,9 +77,9 @@ lib/infrastructure/
 - Domain defines `MediaPermission` and `MediaPermissionState`.
 - Application defines `MediaPermissionGateway`.
 - Application exposes media permission flow through `CheckMediaAccess` and `RequestMediaAccess`.
-- Infrastructure implements the current placeholder through `AndroidMediaAccess`.
+- Infrastructure implements the current platform placeholders through `AndroidMediaAccess`, `IosMediaAccess`, and `UnsupportedMediaAccess`.
 - Presentation consumes only Application use cases for permission state and request actions.
-- Android permission APIs and future plugin types must stay inside Infrastructure.
+- Android/iOS permission APIs and future plugin types must stay inside Infrastructure.
 
 ## Photo Index
 
