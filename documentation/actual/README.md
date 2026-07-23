@@ -19,6 +19,7 @@ Business functionality is represented by domain models, application ports, use c
 - [architecture.md](architecture.md): current module layout and dependency direction.
 - [access-model.md](access-model.md): current capability and entitlement access model.
 - [app-identity.md](app-identity.md): current app name, package identifiers, versioning, and signing policy.
+- [backup-state.md](backup-state.md): current backup job and per-photo record state machine.
 - [data-model.md](data-model.md): currently implemented domain model skeleton.
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
 - [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.

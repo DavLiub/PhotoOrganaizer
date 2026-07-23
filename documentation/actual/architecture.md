@@ -91,6 +91,15 @@ lib/infrastructure/
 - Drift database and generated row types stay inside `lib/infrastructure/storage`.
 - Presentation does not depend on photo index storage or Infrastructure adapters directly.
 
+## Backup State
+
+- Domain defines backup job and per-photo backup record transitions.
+- Per-photo backup records use `queued`, `uploading`, `uploaded`, `confirmed`, `failed`, and `cancelled`.
+- Retryable record failures return the record to `queued` with retry metadata instead of using a per-photo paused state.
+- `paused` exists only for the backup job/process state.
+- Background schedulers and cloud adapters must reuse these Domain transitions instead of inventing their own state rules.
+- Backup state is not persisted yet.
+
 ## App Mode
 
 App mode is represented by `AppMode` in `lib/bootstrap/app_mode.dart`.
