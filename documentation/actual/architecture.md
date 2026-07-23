@@ -71,6 +71,15 @@ lib/infrastructure/
 - Presentation consumes only Application use cases for permission state and request actions.
 - Android permission APIs and future plugin types must stay inside Infrastructure.
 
+## Photo Index
+
+- Domain defines local photo identity, photo index entry, index status, and index scope.
+- Application exposes `IndexPhotos` and `ResolvePhotoIdentity`.
+- `IndexPhotos` checks `MediaPermissionGateway` before writing index entries.
+- `PhotoIndexRepository` is the Application port for identity lookup, asset-id lookup, entry upsert, and protection summary streaming.
+- Infrastructure storage remains a placeholder and does not implement real persistence yet.
+- Presentation does not depend on photo index storage or Infrastructure adapters directly.
+
 ## App Mode
 
 App mode is represented by `AppMode` in `lib/bootstrap/app_mode.dart`.
