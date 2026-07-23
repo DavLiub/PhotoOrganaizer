@@ -2,16 +2,20 @@ import '../application/ports/background_scheduler.dart';
 import '../application/ports/cloud_provider.dart';
 import '../application/ports/entitlement_gateway.dart';
 import '../application/ports/media_library_gateway.dart';
+import '../application/ports/media_permission_gateway.dart';
 import '../application/ports/observability_sink.dart';
 import '../application/ports/photo_index_repository.dart';
 import '../application/policies/access_override.dart';
 import '../application/policies/access_policy.dart';
+import '../application/use_cases/check_media_access.dart';
 import '../application/use_cases/observe_protection_summary_use_case.dart';
+import '../application/use_cases/request_media_access.dart';
 import '../application/use_cases/start_backup_use_case.dart';
 import '../domain/models/protection_summary.dart';
 import '../infrastructure/background/work_manager_background_scheduler.dart';
 import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
+import '../infrastructure/media/android_media_access.dart';
 import '../infrastructure/media/android_media_library_gateway.dart';
 import '../infrastructure/observability/console_observability_sink.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
@@ -21,24 +25,30 @@ class AppCompositionRoot {
   AppCompositionRoot._({
     required this.mode,
     required this.mediaLibraryGateway,
+    required this.mediaPermissionGateway,
     required this.photoIndexRepository,
     required this.cloudProvider,
     required this.backgroundScheduler,
     required this.entitlementGateway,
     required this.accessPolicy,
     required this.observabilitySink,
+    required this.checkMediaAccess,
+    required this.requestMediaAccess,
     required this.observeProtectionSummary,
     required this.startBackup,
   });
 
   final AppMode mode;
   final MediaLibraryGateway mediaLibraryGateway;
+  final MediaPermissionGateway mediaPermissionGateway;
   final PhotoIndexRepository photoIndexRepository;
   final CloudProvider cloudProvider;
   final BackgroundScheduler backgroundScheduler;
   final EntitlementGateway entitlementGateway;
   final AccessPolicy accessPolicy;
   final ObservabilitySink observabilitySink;
+  final CheckMediaAccess checkMediaAccess;
+  final RequestMediaAccess requestMediaAccess;
   final ObserveProtectionSummaryUseCase observeProtectionSummary;
   final StartBackupUseCase startBackup;
 
@@ -54,6 +64,7 @@ class AppCompositionRoot {
     );
 
     final mediaLibraryGateway = AndroidMediaLibraryGateway();
+    const mediaPermissionGateway = AndroidMediaAccess();
     final photoIndexRepository = LocalPhotoIndexRepository();
     final cloudProvider = GoogleDriveCloudProvider();
     final backgroundScheduler = WorkManagerBackgroundScheduler();
@@ -68,12 +79,15 @@ class AppCompositionRoot {
     return AppCompositionRoot._(
       mode: mode,
       mediaLibraryGateway: mediaLibraryGateway,
+      mediaPermissionGateway: mediaPermissionGateway,
       photoIndexRepository: photoIndexRepository,
       cloudProvider: cloudProvider,
       backgroundScheduler: backgroundScheduler,
       entitlementGateway: resolvedEntitlementGateway,
       accessPolicy: accessPolicy,
       observabilitySink: observabilitySink,
+      checkMediaAccess: CheckMediaAccess(mediaPermissionGateway),
+      requestMediaAccess: RequestMediaAccess(mediaPermissionGateway),
       observeProtectionSummary: ObserveProtectionSummaryUseCase(
         initialSummary: ProtectionSummary.empty(),
       ),
