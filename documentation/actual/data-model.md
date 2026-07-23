@@ -27,9 +27,15 @@ The current codebase contains Dart model classes for the initial domain shape:
 
 ## Current Persistence State
 
-There is no concrete database schema, ORM, migration system, or persistent repository implementation yet. Storage is represented by an Application port and a placeholder Infrastructure adapter.
+The project uses Drift for the first local SQLite persistence implementation.
 
-The photo index repository contract now supports identity lookup, asset-id lookup, and index-entry upserts. The concrete storage implementation is still deferred.
+Implemented database:
+
+- `AppDatabase`
+- schema version `1`
+- table `photo_index_entries`
+
+`LocalPhotoIndexRepository` implements the Application `PhotoIndexRepository` port using this table. Drift classes, generated rows, and SQLite details remain inside Infrastructure.
 
 ## Current Data Model Boundaries
 
@@ -43,7 +49,7 @@ The original specification describes a fuller logical data model with persistenc
 
 ## Persistence Direction
 
-Drift is the approved persistence technology for the future local photo index. No physical schema has been implemented yet.
+Drift is the approved persistence technology for local state. The first implemented schema persists photo index entries only.
 
 ## Photo Index State
 
@@ -67,6 +73,8 @@ Index statuses:
 Repeated scan results for the same local asset id refresh the existing entry instead of creating duplicates. If file size or modification timestamp changes, the entry keeps its stable index id and receives a new identity.
 
 True duplicate detection across different local asset ids is not implemented yet because no checksum or perceptual hash exists.
+
+The physical photo index schema currently stores the local asset metadata snapshot together with the index entry status and timestamps. Backup state, retry metadata, cloud ids, and media source catalog records are not persisted yet.
 
 ## Access Model State
 

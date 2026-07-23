@@ -27,6 +27,7 @@ Business functionality is represented by domain models, application ports, use c
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.
 - [platform-boundary.md](platform-boundary.md): current Android-first, iOS-ready platform adapter boundary.
+- [storage.md](storage.md): current Drift database schema and storage adapter behavior.
 - [validation.md](validation.md): local and CI validation path.
 
 ## Synchronization Rule

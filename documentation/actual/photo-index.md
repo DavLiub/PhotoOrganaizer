@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-The current implementation defines the Domain/Application photo index slice. It does not include Android media scanning, database persistence, cloud backup, or image hashing.
+The current implementation defines the Domain/Application photo index slice and a Drift-backed Infrastructure storage adapter. It does not include Android media scanning, cloud backup, media source catalog persistence, or image hashing.
 
 ## Identity
 
@@ -63,7 +63,7 @@ Application exposes:
 
 `IndexPhotos` checks media permission through `MediaPermissionGateway` before writing index entries. If photo access is not available, it returns a structured permission failure.
 
-## Repository Port
+## Repository Port And Storage
 
 `PhotoIndexRepository` supports:
 
@@ -72,11 +72,22 @@ Application exposes:
 - upsert of `PhotoIndexEntry` records;
 - protection summary stream.
 
-The current Infrastructure implementation is still a placeholder. Real persistence is deferred to the storage schema PR.
+`LocalPhotoIndexRepository` implements this port with Drift. The repository maps between project Domain models and the generated `photo_index_entries` row model through an Infrastructure mapper.
+
+The default database is created lazily so Bootstrap can construct the composition root without opening SQLite. Repository tests use an in-memory Drift database.
+
+## Physical Schema
+
+Schema version `1` contains one table:
+
+- `photo_index_entries`
+
+The table stores stable index id, current identity key, local asset id, source metadata, file metadata, availability status, index status, and index/update timestamps.
 
 ## Known Limitations
 
-- No physical database schema exists yet.
+- No separate media source or album catalog table exists yet.
 - No image checksum or perceptual hash exists yet.
 - True duplicate detection across different local assets is not implemented.
 - Cloud copies, optimized files, thumbnails, and other variants are not modeled yet.
+- Backup queue state, retry counters, and cloud object ids are not part of this table.

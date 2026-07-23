@@ -18,7 +18,7 @@ lib/
 - `bootstrap` creates the application composition root.
 - `bootstrap` owns app mode selection and production safety checks.
 - `application` depends on `domain` and defines ports.
-- `infrastructure` implements application ports with placeholder adapters.
+- `infrastructure` implements application ports with concrete or placeholder adapters.
 - `presentation` displays shell screens and consumes composed application dependencies through the app shell.
 - `domain` has no Flutter or platform dependencies.
 
@@ -50,7 +50,7 @@ lib/infrastructure/
 - Real iOS media access is not implemented.
 - Real Google Drive integration is not implemented.
 - Real billing and entitlement verification are not implemented.
-- Real persistence is not implemented.
+- Photo index persistence is implemented; other persistence areas are not implemented yet.
 - Background scheduling is represented by a placeholder adapter.
 
 ## Access Model
@@ -87,7 +87,8 @@ lib/infrastructure/
 - Application exposes `IndexPhotos` and `ResolvePhotoIdentity`.
 - `IndexPhotos` checks `MediaPermissionGateway` before writing index entries.
 - `PhotoIndexRepository` is the Application port for identity lookup, asset-id lookup, entry upsert, and protection summary streaming.
-- Infrastructure storage remains a placeholder and does not implement real persistence yet.
+- Infrastructure storage implements `PhotoIndexRepository` with Drift-backed SQLite persistence.
+- Drift database and generated row types stay inside `lib/infrastructure/storage`.
 - Presentation does not depend on photo index storage or Infrastructure adapters directly.
 
 ## App Mode
@@ -118,7 +119,7 @@ CI runs guards on changed lines/files only. Layer violations, test/debug imports
 
 ## Approved Integration Direction
 
-- Persistence will use Drift behind Infrastructure storage adapters.
+- Persistence uses Drift behind Infrastructure storage adapters for the local photo index.
 - Presentation state will use Riverpod and expose Application use cases to widgets.
 - Background work will use Workmanager behind Application scheduling ports.
 - Media access will use Photo Manager behind Infrastructure media adapters.

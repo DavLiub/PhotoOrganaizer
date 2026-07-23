@@ -10,6 +10,7 @@ from diff_lines import Finding, collect_lines, emit_annotation, selected_lines
 
 
 GENERIC_NAMES = {"utils", "helper", "helpers", "manager", "managers", "common"}
+GENERATED_SUFFIXES = (".g.dart", ".freezed.dart", ".mocks.dart")
 TYPE_DECL_RE = re.compile(
     r"\b(?:abstract\s+interface\s+class|class|enum|mixin|extension|typedef)\s+([A-Za-z_]\w*)"
 )
@@ -22,6 +23,11 @@ FUNCTION_DECL_RE = re.compile(
 def main() -> int:
     args = parse_args()
     changed = collect_lines(args.base, args.head, args.all, ["**/*.dart"])
+    changed = {
+        path: lines
+        for path, lines in changed.items()
+        if not is_generated_file(path)
+    }
 
     if not changed:
         print("Naming report: no changed Dart lines.")
@@ -71,6 +77,11 @@ def find_recommendations(changed: dict[str, set[int]], include_file_names: bool)
                     findings.append(Finding(path, line_number, f"Review `{name}`: {message}"))
 
     return deduplicate(findings)
+
+
+def is_generated_file(path: str) -> bool:
+    normalized = path.replace("\\", "/")
+    return normalized.endswith(GENERATED_SUFFIXES)
 
 
 def names_from_line(line: str) -> list[str]:
