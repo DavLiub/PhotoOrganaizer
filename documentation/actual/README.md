@@ -23,6 +23,7 @@ Business functionality is represented by domain models, application ports, use c
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
 - [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.
 - [library-decisions.md](library-decisions.md): approved dependency and integration direction.
+- [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [validation.md](validation.md): local and CI validation path.
 

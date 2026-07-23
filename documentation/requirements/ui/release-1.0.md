@@ -28,6 +28,12 @@ Screens must handle:
 - empty library;
 - offline or limited connectivity.
 
+## Permission UI
+
+Permission screens must display current media access state and request access through Application use cases.
+
+The UI must not expose Android API details or plugin-specific permission names.
+
 ## Design Direction
 
 The application should use Material Design 3 conventions, clear status hierarchy, readable progress indicators, and concise error states.

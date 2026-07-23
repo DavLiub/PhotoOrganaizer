@@ -37,6 +37,14 @@ Free and Premium behavior must be enforced through Application-level entitlement
 
 Feature use cases must request an access decision before performing restricted work. Access decisions must distinguish allowed, limited, denied, and unavailable states.
 
+## Media Permissions
+
+Photo access must be handled through Application-level permission use cases. UI widgets must not call Android permission APIs or plugin APIs directly.
+
+Media permission states must distinguish granted, limited, denied, permanently denied, unavailable, and unknown states.
+
+Scanning and backup workflows must not proceed as if full media access exists when permission is limited, denied, unavailable, or unknown.
+
 ## Diagnostics
 
 User-visible errors must be understandable. Internal diagnostic detail should be available through observability/logging infrastructure.
