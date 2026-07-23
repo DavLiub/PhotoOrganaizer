@@ -30,6 +30,7 @@ void main() {
       expect(result, hasLength(1));
       expect(result.single.id, second.id);
       expect(result.single.asset.id, 'asset-2');
+      expect(result.single.asset.sourceId, 'media-store:camera');
     });
 
     test('finds entry by photo identity', () async {
@@ -115,6 +116,7 @@ PhotoAsset _asset({required String id, required int fileSize}) {
     id: id,
     sourceUri: 'content://media/$id',
     sourceProvider: 'media_store',
+    sourceId: 'media-store:camera',
     sourceName: 'Camera',
     albumId: 'camera',
     filename: '$id.jpg',

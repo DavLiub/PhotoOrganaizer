@@ -14,6 +14,7 @@ import 'package:photo_organizer/infrastructure/media/ios_media_library_gateway.d
 import 'package:photo_organizer/infrastructure/media/unsupported_media_access.dart';
 import 'package:photo_organizer/infrastructure/media/unsupported_media_library_gateway.dart';
 import 'package:photo_organizer/infrastructure/entitlements/test_entitlement_gateway.dart';
+import 'package:photo_organizer/infrastructure/storage/local_media_source_repository.dart';
 
 void main() {
   group('AppCompositionRoot', () {
@@ -29,6 +30,7 @@ void main() {
 
       expect(root.mediaPermissionGateway, isA<AndroidMediaAccess>());
       expect(root.mediaLibraryGateway, isA<AndroidMediaLibraryGateway>());
+      expect(root.mediaSourceRepository, isA<LocalMediaSourceRepository>());
     });
 
     test('selects iOS placeholder media adapters when requested', () async {

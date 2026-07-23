@@ -62,6 +62,17 @@ class $PhotoIndexEntriesTable extends PhotoIndexEntries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _sourceNameMeta = const VerificationMeta(
     'sourceName',
   );
@@ -228,6 +239,7 @@ class $PhotoIndexEntriesTable extends PhotoIndexEntries
     identityKey,
     sourceUri,
     sourceProvider,
+    sourceId,
     sourceName,
     albumId,
     filename,
@@ -298,6 +310,12 @@ class $PhotoIndexEntriesTable extends PhotoIndexEntries
       );
     } else if (isInserting) {
       context.missing(_sourceProviderMeta);
+    }
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
     }
     if (data.containsKey('source_name')) {
       context.handle(
@@ -449,6 +467,10 @@ class $PhotoIndexEntriesTable extends PhotoIndexEntries
         DriftSqlType.string,
         data['${effectivePrefix}source_provider'],
       )!,
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      ),
       sourceName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_name'],
@@ -524,6 +546,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
   final String identityKey;
   final String sourceUri;
   final String sourceProvider;
+  final String? sourceId;
   final String? sourceName;
   final String? albumId;
   final String filename;
@@ -545,6 +568,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
     required this.identityKey,
     required this.sourceUri,
     required this.sourceProvider,
+    this.sourceId,
     this.sourceName,
     this.albumId,
     required this.filename,
@@ -569,6 +593,9 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
     map['identity_key'] = Variable<String>(identityKey);
     map['source_uri'] = Variable<String>(sourceUri);
     map['source_provider'] = Variable<String>(sourceProvider);
+    if (!nullToAbsent || sourceId != null) {
+      map['source_id'] = Variable<String>(sourceId);
+    }
     if (!nullToAbsent || sourceName != null) {
       map['source_name'] = Variable<String>(sourceName);
     }
@@ -602,6 +629,9 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
       identityKey: Value(identityKey),
       sourceUri: Value(sourceUri),
       sourceProvider: Value(sourceProvider),
+      sourceId: sourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceId),
       sourceName: sourceName == null && nullToAbsent
           ? const Value.absent()
           : Value(sourceName),
@@ -639,6 +669,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
       identityKey: serializer.fromJson<String>(json['identityKey']),
       sourceUri: serializer.fromJson<String>(json['sourceUri']),
       sourceProvider: serializer.fromJson<String>(json['sourceProvider']),
+      sourceId: serializer.fromJson<String?>(json['sourceId']),
       sourceName: serializer.fromJson<String?>(json['sourceName']),
       albumId: serializer.fromJson<String?>(json['albumId']),
       filename: serializer.fromJson<String>(json['filename']),
@@ -667,6 +698,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
       'identityKey': serializer.toJson<String>(identityKey),
       'sourceUri': serializer.toJson<String>(sourceUri),
       'sourceProvider': serializer.toJson<String>(sourceProvider),
+      'sourceId': serializer.toJson<String?>(sourceId),
       'sourceName': serializer.toJson<String?>(sourceName),
       'albumId': serializer.toJson<String?>(albumId),
       'filename': serializer.toJson<String>(filename),
@@ -691,6 +723,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
     String? identityKey,
     String? sourceUri,
     String? sourceProvider,
+    Value<String?> sourceId = const Value.absent(),
     Value<String?> sourceName = const Value.absent(),
     Value<String?> albumId = const Value.absent(),
     String? filename,
@@ -712,6 +745,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
     identityKey: identityKey ?? this.identityKey,
     sourceUri: sourceUri ?? this.sourceUri,
     sourceProvider: sourceProvider ?? this.sourceProvider,
+    sourceId: sourceId.present ? sourceId.value : this.sourceId,
     sourceName: sourceName.present ? sourceName.value : this.sourceName,
     albumId: albumId.present ? albumId.value : this.albumId,
     filename: filename ?? this.filename,
@@ -739,6 +773,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
       sourceProvider: data.sourceProvider.present
           ? data.sourceProvider.value
           : this.sourceProvider,
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
       sourceName: data.sourceName.present
           ? data.sourceName.value
           : this.sourceName,
@@ -775,6 +810,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
           ..write('identityKey: $identityKey, ')
           ..write('sourceUri: $sourceUri, ')
           ..write('sourceProvider: $sourceProvider, ')
+          ..write('sourceId: $sourceId, ')
           ..write('sourceName: $sourceName, ')
           ..write('albumId: $albumId, ')
           ..write('filename: $filename, ')
@@ -795,12 +831,13 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     assetId,
     identityKey,
     sourceUri,
     sourceProvider,
+    sourceId,
     sourceName,
     albumId,
     filename,
@@ -816,7 +853,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
     status,
     indexedAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -826,6 +863,7 @@ class PhotoIndexRow extends DataClass implements Insertable<PhotoIndexRow> {
           other.identityKey == this.identityKey &&
           other.sourceUri == this.sourceUri &&
           other.sourceProvider == this.sourceProvider &&
+          other.sourceId == this.sourceId &&
           other.sourceName == this.sourceName &&
           other.albumId == this.albumId &&
           other.filename == this.filename &&
@@ -849,6 +887,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
   final Value<String> identityKey;
   final Value<String> sourceUri;
   final Value<String> sourceProvider;
+  final Value<String?> sourceId;
   final Value<String?> sourceName;
   final Value<String?> albumId;
   final Value<String> filename;
@@ -871,6 +910,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
     this.identityKey = const Value.absent(),
     this.sourceUri = const Value.absent(),
     this.sourceProvider = const Value.absent(),
+    this.sourceId = const Value.absent(),
     this.sourceName = const Value.absent(),
     this.albumId = const Value.absent(),
     this.filename = const Value.absent(),
@@ -894,6 +934,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
     required String identityKey,
     required String sourceUri,
     required String sourceProvider,
+    this.sourceId = const Value.absent(),
     this.sourceName = const Value.absent(),
     this.albumId = const Value.absent(),
     required String filename,
@@ -932,6 +973,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
     Expression<String>? identityKey,
     Expression<String>? sourceUri,
     Expression<String>? sourceProvider,
+    Expression<String>? sourceId,
     Expression<String>? sourceName,
     Expression<String>? albumId,
     Expression<String>? filename,
@@ -955,6 +997,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
       if (identityKey != null) 'identity_key': identityKey,
       if (sourceUri != null) 'source_uri': sourceUri,
       if (sourceProvider != null) 'source_provider': sourceProvider,
+      if (sourceId != null) 'source_id': sourceId,
       if (sourceName != null) 'source_name': sourceName,
       if (albumId != null) 'album_id': albumId,
       if (filename != null) 'filename': filename,
@@ -980,6 +1023,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
     Value<String>? identityKey,
     Value<String>? sourceUri,
     Value<String>? sourceProvider,
+    Value<String?>? sourceId,
     Value<String?>? sourceName,
     Value<String?>? albumId,
     Value<String>? filename,
@@ -1003,6 +1047,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
       identityKey: identityKey ?? this.identityKey,
       sourceUri: sourceUri ?? this.sourceUri,
       sourceProvider: sourceProvider ?? this.sourceProvider,
+      sourceId: sourceId ?? this.sourceId,
       sourceName: sourceName ?? this.sourceName,
       albumId: albumId ?? this.albumId,
       filename: filename ?? this.filename,
@@ -1039,6 +1084,9 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
     }
     if (sourceProvider.present) {
       map['source_provider'] = Variable<String>(sourceProvider.value);
+    }
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
     }
     if (sourceName.present) {
       map['source_name'] = Variable<String>(sourceName.value);
@@ -1099,6 +1147,7 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
           ..write('identityKey: $identityKey, ')
           ..write('sourceUri: $sourceUri, ')
           ..write('sourceProvider: $sourceProvider, ')
+          ..write('sourceId: $sourceId, ')
           ..write('sourceName: $sourceName, ')
           ..write('albumId: $albumId, ')
           ..write('filename: $filename, ')
@@ -1120,16 +1169,599 @@ class PhotoIndexEntriesCompanion extends UpdateCompanion<PhotoIndexRow> {
   }
 }
 
+class $MediaSourcesTable extends MediaSources
+    with TableInfo<$MediaSourcesTable, MediaSourceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MediaSourcesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _providerMeta = const VerificationMeta(
+    'provider',
+  );
+  @override
+  late final GeneratedColumn<String> provider = GeneratedColumn<String>(
+    'provider',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pathHintMeta = const VerificationMeta(
+    'pathHint',
+  );
+  @override
+  late final GeneratedColumn<String> pathHint = GeneratedColumn<String>(
+    'path_hint',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _assetCountMeta = const VerificationMeta(
+    'assetCount',
+  );
+  @override
+  late final GeneratedColumn<int> assetCount = GeneratedColumn<int>(
+    'asset_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSeenAtMeta = const VerificationMeta(
+    'lastSeenAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSeenAt = GeneratedColumn<DateTime>(
+    'last_seen_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _availabilityStatusMeta =
+      const VerificationMeta('availabilityStatus');
+  @override
+  late final GeneratedColumn<String> availabilityStatus =
+      GeneratedColumn<String>(
+        'availability_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cameraLikeMeta = const VerificationMeta(
+    'cameraLike',
+  );
+  @override
+  late final GeneratedColumn<bool> cameraLike = GeneratedColumn<bool>(
+    'camera_like',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("camera_like" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _systemLikeMeta = const VerificationMeta(
+    'systemLike',
+  );
+  @override
+  late final GeneratedColumn<bool> systemLike = GeneratedColumn<bool>(
+    'system_like',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("system_like" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    provider,
+    name,
+    pathHint,
+    assetCount,
+    lastSeenAt,
+    availabilityStatus,
+    cameraLike,
+    systemLike,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'media_sources';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MediaSourceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('provider')) {
+      context.handle(
+        _providerMeta,
+        provider.isAcceptableOrUnknown(data['provider']!, _providerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_providerMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('path_hint')) {
+      context.handle(
+        _pathHintMeta,
+        pathHint.isAcceptableOrUnknown(data['path_hint']!, _pathHintMeta),
+      );
+    }
+    if (data.containsKey('asset_count')) {
+      context.handle(
+        _assetCountMeta,
+        assetCount.isAcceptableOrUnknown(data['asset_count']!, _assetCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_assetCountMeta);
+    }
+    if (data.containsKey('last_seen_at')) {
+      context.handle(
+        _lastSeenAtMeta,
+        lastSeenAt.isAcceptableOrUnknown(
+          data['last_seen_at']!,
+          _lastSeenAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastSeenAtMeta);
+    }
+    if (data.containsKey('availability_status')) {
+      context.handle(
+        _availabilityStatusMeta,
+        availabilityStatus.isAcceptableOrUnknown(
+          data['availability_status']!,
+          _availabilityStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_availabilityStatusMeta);
+    }
+    if (data.containsKey('camera_like')) {
+      context.handle(
+        _cameraLikeMeta,
+        cameraLike.isAcceptableOrUnknown(data['camera_like']!, _cameraLikeMeta),
+      );
+    }
+    if (data.containsKey('system_like')) {
+      context.handle(
+        _systemLikeMeta,
+        systemLike.isAcceptableOrUnknown(data['system_like']!, _systemLikeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MediaSourceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MediaSourceRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      provider: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      pathHint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path_hint'],
+      ),
+      assetCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}asset_count'],
+      )!,
+      lastSeenAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_seen_at'],
+      )!,
+      availabilityStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}availability_status'],
+      )!,
+      cameraLike: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}camera_like'],
+      )!,
+      systemLike: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}system_like'],
+      )!,
+    );
+  }
+
+  @override
+  $MediaSourcesTable createAlias(String alias) {
+    return $MediaSourcesTable(attachedDatabase, alias);
+  }
+}
+
+class MediaSourceRow extends DataClass implements Insertable<MediaSourceRow> {
+  final String id;
+  final String provider;
+  final String name;
+  final String? pathHint;
+  final int assetCount;
+  final DateTime lastSeenAt;
+  final String availabilityStatus;
+  final bool cameraLike;
+  final bool systemLike;
+  const MediaSourceRow({
+    required this.id,
+    required this.provider,
+    required this.name,
+    this.pathHint,
+    required this.assetCount,
+    required this.lastSeenAt,
+    required this.availabilityStatus,
+    required this.cameraLike,
+    required this.systemLike,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['provider'] = Variable<String>(provider);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || pathHint != null) {
+      map['path_hint'] = Variable<String>(pathHint);
+    }
+    map['asset_count'] = Variable<int>(assetCount);
+    map['last_seen_at'] = Variable<DateTime>(lastSeenAt);
+    map['availability_status'] = Variable<String>(availabilityStatus);
+    map['camera_like'] = Variable<bool>(cameraLike);
+    map['system_like'] = Variable<bool>(systemLike);
+    return map;
+  }
+
+  MediaSourcesCompanion toCompanion(bool nullToAbsent) {
+    return MediaSourcesCompanion(
+      id: Value(id),
+      provider: Value(provider),
+      name: Value(name),
+      pathHint: pathHint == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pathHint),
+      assetCount: Value(assetCount),
+      lastSeenAt: Value(lastSeenAt),
+      availabilityStatus: Value(availabilityStatus),
+      cameraLike: Value(cameraLike),
+      systemLike: Value(systemLike),
+    );
+  }
+
+  factory MediaSourceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MediaSourceRow(
+      id: serializer.fromJson<String>(json['id']),
+      provider: serializer.fromJson<String>(json['provider']),
+      name: serializer.fromJson<String>(json['name']),
+      pathHint: serializer.fromJson<String?>(json['pathHint']),
+      assetCount: serializer.fromJson<int>(json['assetCount']),
+      lastSeenAt: serializer.fromJson<DateTime>(json['lastSeenAt']),
+      availabilityStatus: serializer.fromJson<String>(
+        json['availabilityStatus'],
+      ),
+      cameraLike: serializer.fromJson<bool>(json['cameraLike']),
+      systemLike: serializer.fromJson<bool>(json['systemLike']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'provider': serializer.toJson<String>(provider),
+      'name': serializer.toJson<String>(name),
+      'pathHint': serializer.toJson<String?>(pathHint),
+      'assetCount': serializer.toJson<int>(assetCount),
+      'lastSeenAt': serializer.toJson<DateTime>(lastSeenAt),
+      'availabilityStatus': serializer.toJson<String>(availabilityStatus),
+      'cameraLike': serializer.toJson<bool>(cameraLike),
+      'systemLike': serializer.toJson<bool>(systemLike),
+    };
+  }
+
+  MediaSourceRow copyWith({
+    String? id,
+    String? provider,
+    String? name,
+    Value<String?> pathHint = const Value.absent(),
+    int? assetCount,
+    DateTime? lastSeenAt,
+    String? availabilityStatus,
+    bool? cameraLike,
+    bool? systemLike,
+  }) => MediaSourceRow(
+    id: id ?? this.id,
+    provider: provider ?? this.provider,
+    name: name ?? this.name,
+    pathHint: pathHint.present ? pathHint.value : this.pathHint,
+    assetCount: assetCount ?? this.assetCount,
+    lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+    availabilityStatus: availabilityStatus ?? this.availabilityStatus,
+    cameraLike: cameraLike ?? this.cameraLike,
+    systemLike: systemLike ?? this.systemLike,
+  );
+  MediaSourceRow copyWithCompanion(MediaSourcesCompanion data) {
+    return MediaSourceRow(
+      id: data.id.present ? data.id.value : this.id,
+      provider: data.provider.present ? data.provider.value : this.provider,
+      name: data.name.present ? data.name.value : this.name,
+      pathHint: data.pathHint.present ? data.pathHint.value : this.pathHint,
+      assetCount: data.assetCount.present
+          ? data.assetCount.value
+          : this.assetCount,
+      lastSeenAt: data.lastSeenAt.present
+          ? data.lastSeenAt.value
+          : this.lastSeenAt,
+      availabilityStatus: data.availabilityStatus.present
+          ? data.availabilityStatus.value
+          : this.availabilityStatus,
+      cameraLike: data.cameraLike.present
+          ? data.cameraLike.value
+          : this.cameraLike,
+      systemLike: data.systemLike.present
+          ? data.systemLike.value
+          : this.systemLike,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MediaSourceRow(')
+          ..write('id: $id, ')
+          ..write('provider: $provider, ')
+          ..write('name: $name, ')
+          ..write('pathHint: $pathHint, ')
+          ..write('assetCount: $assetCount, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('availabilityStatus: $availabilityStatus, ')
+          ..write('cameraLike: $cameraLike, ')
+          ..write('systemLike: $systemLike')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    provider,
+    name,
+    pathHint,
+    assetCount,
+    lastSeenAt,
+    availabilityStatus,
+    cameraLike,
+    systemLike,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MediaSourceRow &&
+          other.id == this.id &&
+          other.provider == this.provider &&
+          other.name == this.name &&
+          other.pathHint == this.pathHint &&
+          other.assetCount == this.assetCount &&
+          other.lastSeenAt == this.lastSeenAt &&
+          other.availabilityStatus == this.availabilityStatus &&
+          other.cameraLike == this.cameraLike &&
+          other.systemLike == this.systemLike);
+}
+
+class MediaSourcesCompanion extends UpdateCompanion<MediaSourceRow> {
+  final Value<String> id;
+  final Value<String> provider;
+  final Value<String> name;
+  final Value<String?> pathHint;
+  final Value<int> assetCount;
+  final Value<DateTime> lastSeenAt;
+  final Value<String> availabilityStatus;
+  final Value<bool> cameraLike;
+  final Value<bool> systemLike;
+  final Value<int> rowid;
+  const MediaSourcesCompanion({
+    this.id = const Value.absent(),
+    this.provider = const Value.absent(),
+    this.name = const Value.absent(),
+    this.pathHint = const Value.absent(),
+    this.assetCount = const Value.absent(),
+    this.lastSeenAt = const Value.absent(),
+    this.availabilityStatus = const Value.absent(),
+    this.cameraLike = const Value.absent(),
+    this.systemLike = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MediaSourcesCompanion.insert({
+    required String id,
+    required String provider,
+    required String name,
+    this.pathHint = const Value.absent(),
+    required int assetCount,
+    required DateTime lastSeenAt,
+    required String availabilityStatus,
+    this.cameraLike = const Value.absent(),
+    this.systemLike = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       provider = Value(provider),
+       name = Value(name),
+       assetCount = Value(assetCount),
+       lastSeenAt = Value(lastSeenAt),
+       availabilityStatus = Value(availabilityStatus);
+  static Insertable<MediaSourceRow> custom({
+    Expression<String>? id,
+    Expression<String>? provider,
+    Expression<String>? name,
+    Expression<String>? pathHint,
+    Expression<int>? assetCount,
+    Expression<DateTime>? lastSeenAt,
+    Expression<String>? availabilityStatus,
+    Expression<bool>? cameraLike,
+    Expression<bool>? systemLike,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (provider != null) 'provider': provider,
+      if (name != null) 'name': name,
+      if (pathHint != null) 'path_hint': pathHint,
+      if (assetCount != null) 'asset_count': assetCount,
+      if (lastSeenAt != null) 'last_seen_at': lastSeenAt,
+      if (availabilityStatus != null) 'availability_status': availabilityStatus,
+      if (cameraLike != null) 'camera_like': cameraLike,
+      if (systemLike != null) 'system_like': systemLike,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MediaSourcesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? provider,
+    Value<String>? name,
+    Value<String?>? pathHint,
+    Value<int>? assetCount,
+    Value<DateTime>? lastSeenAt,
+    Value<String>? availabilityStatus,
+    Value<bool>? cameraLike,
+    Value<bool>? systemLike,
+    Value<int>? rowid,
+  }) {
+    return MediaSourcesCompanion(
+      id: id ?? this.id,
+      provider: provider ?? this.provider,
+      name: name ?? this.name,
+      pathHint: pathHint ?? this.pathHint,
+      assetCount: assetCount ?? this.assetCount,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      availabilityStatus: availabilityStatus ?? this.availabilityStatus,
+      cameraLike: cameraLike ?? this.cameraLike,
+      systemLike: systemLike ?? this.systemLike,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (provider.present) {
+      map['provider'] = Variable<String>(provider.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (pathHint.present) {
+      map['path_hint'] = Variable<String>(pathHint.value);
+    }
+    if (assetCount.present) {
+      map['asset_count'] = Variable<int>(assetCount.value);
+    }
+    if (lastSeenAt.present) {
+      map['last_seen_at'] = Variable<DateTime>(lastSeenAt.value);
+    }
+    if (availabilityStatus.present) {
+      map['availability_status'] = Variable<String>(availabilityStatus.value);
+    }
+    if (cameraLike.present) {
+      map['camera_like'] = Variable<bool>(cameraLike.value);
+    }
+    if (systemLike.present) {
+      map['system_like'] = Variable<bool>(systemLike.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MediaSourcesCompanion(')
+          ..write('id: $id, ')
+          ..write('provider: $provider, ')
+          ..write('name: $name, ')
+          ..write('pathHint: $pathHint, ')
+          ..write('assetCount: $assetCount, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('availabilityStatus: $availabilityStatus, ')
+          ..write('cameraLike: $cameraLike, ')
+          ..write('systemLike: $systemLike, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $PhotoIndexEntriesTable photoIndexEntries =
       $PhotoIndexEntriesTable(this);
+  late final $MediaSourcesTable mediaSources = $MediaSourcesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [photoIndexEntries];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    photoIndexEntries,
+    mediaSources,
+  ];
 }
 
 typedef $$PhotoIndexEntriesTableCreateCompanionBuilder =
@@ -1139,6 +1771,7 @@ typedef $$PhotoIndexEntriesTableCreateCompanionBuilder =
       required String identityKey,
       required String sourceUri,
       required String sourceProvider,
+      Value<String?> sourceId,
       Value<String?> sourceName,
       Value<String?> albumId,
       required String filename,
@@ -1163,6 +1796,7 @@ typedef $$PhotoIndexEntriesTableUpdateCompanionBuilder =
       Value<String> identityKey,
       Value<String> sourceUri,
       Value<String> sourceProvider,
+      Value<String?> sourceId,
       Value<String?> sourceName,
       Value<String?> albumId,
       Value<String> filename,
@@ -1212,6 +1846,11 @@ class $$PhotoIndexEntriesTableFilterComposer
 
   ColumnFilters<String> get sourceProvider => $composableBuilder(
     column: $table.sourceProvider,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1325,6 +1964,11 @@ class $$PhotoIndexEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get sourceName => $composableBuilder(
     column: $table.sourceName,
     builder: (column) => ColumnOrderings(column),
@@ -1429,6 +2073,9 @@ class $$PhotoIndexEntriesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get sourceId =>
+      $composableBuilder(column: $table.sourceId, builder: (column) => column);
+
   GeneratedColumn<String> get sourceName => $composableBuilder(
     column: $table.sourceName,
     builder: (column) => column,
@@ -1530,6 +2177,7 @@ class $$PhotoIndexEntriesTableTableManager
                 Value<String> identityKey = const Value.absent(),
                 Value<String> sourceUri = const Value.absent(),
                 Value<String> sourceProvider = const Value.absent(),
+                Value<String?> sourceId = const Value.absent(),
                 Value<String?> sourceName = const Value.absent(),
                 Value<String?> albumId = const Value.absent(),
                 Value<String> filename = const Value.absent(),
@@ -1552,6 +2200,7 @@ class $$PhotoIndexEntriesTableTableManager
                 identityKey: identityKey,
                 sourceUri: sourceUri,
                 sourceProvider: sourceProvider,
+                sourceId: sourceId,
                 sourceName: sourceName,
                 albumId: albumId,
                 filename: filename,
@@ -1576,6 +2225,7 @@ class $$PhotoIndexEntriesTableTableManager
                 required String identityKey,
                 required String sourceUri,
                 required String sourceProvider,
+                Value<String?> sourceId = const Value.absent(),
                 Value<String?> sourceName = const Value.absent(),
                 Value<String?> albumId = const Value.absent(),
                 required String filename,
@@ -1598,6 +2248,7 @@ class $$PhotoIndexEntriesTableTableManager
                 identityKey: identityKey,
                 sourceUri: sourceUri,
                 sourceProvider: sourceProvider,
+                sourceId: sourceId,
                 sourceName: sourceName,
                 albumId: albumId,
                 filename: filename,
@@ -1640,10 +2291,298 @@ typedef $$PhotoIndexEntriesTableProcessedTableManager =
       PhotoIndexRow,
       PrefetchHooks Function()
     >;
+typedef $$MediaSourcesTableCreateCompanionBuilder =
+    MediaSourcesCompanion Function({
+      required String id,
+      required String provider,
+      required String name,
+      Value<String?> pathHint,
+      required int assetCount,
+      required DateTime lastSeenAt,
+      required String availabilityStatus,
+      Value<bool> cameraLike,
+      Value<bool> systemLike,
+      Value<int> rowid,
+    });
+typedef $$MediaSourcesTableUpdateCompanionBuilder =
+    MediaSourcesCompanion Function({
+      Value<String> id,
+      Value<String> provider,
+      Value<String> name,
+      Value<String?> pathHint,
+      Value<int> assetCount,
+      Value<DateTime> lastSeenAt,
+      Value<String> availabilityStatus,
+      Value<bool> cameraLike,
+      Value<bool> systemLike,
+      Value<int> rowid,
+    });
+
+class $$MediaSourcesTableFilterComposer
+    extends Composer<_$AppDatabase, $MediaSourcesTable> {
+  $$MediaSourcesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pathHint => $composableBuilder(
+    column: $table.pathHint,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get assetCount => $composableBuilder(
+    column: $table.assetCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get availabilityStatus => $composableBuilder(
+    column: $table.availabilityStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get cameraLike => $composableBuilder(
+    column: $table.cameraLike,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get systemLike => $composableBuilder(
+    column: $table.systemLike,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MediaSourcesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MediaSourcesTable> {
+  $$MediaSourcesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pathHint => $composableBuilder(
+    column: $table.pathHint,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get assetCount => $composableBuilder(
+    column: $table.assetCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get availabilityStatus => $composableBuilder(
+    column: $table.availabilityStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get cameraLike => $composableBuilder(
+    column: $table.cameraLike,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get systemLike => $composableBuilder(
+    column: $table.systemLike,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MediaSourcesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MediaSourcesTable> {
+  $$MediaSourcesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get pathHint =>
+      $composableBuilder(column: $table.pathHint, builder: (column) => column);
+
+  GeneratedColumn<int> get assetCount => $composableBuilder(
+    column: $table.assetCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get availabilityStatus => $composableBuilder(
+    column: $table.availabilityStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get cameraLike => $composableBuilder(
+    column: $table.cameraLike,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get systemLike => $composableBuilder(
+    column: $table.systemLike,
+    builder: (column) => column,
+  );
+}
+
+class $$MediaSourcesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MediaSourcesTable,
+          MediaSourceRow,
+          $$MediaSourcesTableFilterComposer,
+          $$MediaSourcesTableOrderingComposer,
+          $$MediaSourcesTableAnnotationComposer,
+          $$MediaSourcesTableCreateCompanionBuilder,
+          $$MediaSourcesTableUpdateCompanionBuilder,
+          (
+            MediaSourceRow,
+            BaseReferences<_$AppDatabase, $MediaSourcesTable, MediaSourceRow>,
+          ),
+          MediaSourceRow,
+          PrefetchHooks Function()
+        > {
+  $$MediaSourcesTableTableManager(_$AppDatabase db, $MediaSourcesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MediaSourcesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MediaSourcesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MediaSourcesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> provider = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> pathHint = const Value.absent(),
+                Value<int> assetCount = const Value.absent(),
+                Value<DateTime> lastSeenAt = const Value.absent(),
+                Value<String> availabilityStatus = const Value.absent(),
+                Value<bool> cameraLike = const Value.absent(),
+                Value<bool> systemLike = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MediaSourcesCompanion(
+                id: id,
+                provider: provider,
+                name: name,
+                pathHint: pathHint,
+                assetCount: assetCount,
+                lastSeenAt: lastSeenAt,
+                availabilityStatus: availabilityStatus,
+                cameraLike: cameraLike,
+                systemLike: systemLike,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String provider,
+                required String name,
+                Value<String?> pathHint = const Value.absent(),
+                required int assetCount,
+                required DateTime lastSeenAt,
+                required String availabilityStatus,
+                Value<bool> cameraLike = const Value.absent(),
+                Value<bool> systemLike = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MediaSourcesCompanion.insert(
+                id: id,
+                provider: provider,
+                name: name,
+                pathHint: pathHint,
+                assetCount: assetCount,
+                lastSeenAt: lastSeenAt,
+                availabilityStatus: availabilityStatus,
+                cameraLike: cameraLike,
+                systemLike: systemLike,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MediaSourcesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MediaSourcesTable,
+      MediaSourceRow,
+      $$MediaSourcesTableFilterComposer,
+      $$MediaSourcesTableOrderingComposer,
+      $$MediaSourcesTableAnnotationComposer,
+      $$MediaSourcesTableCreateCompanionBuilder,
+      $$MediaSourcesTableUpdateCompanionBuilder,
+      (
+        MediaSourceRow,
+        BaseReferences<_$AppDatabase, $MediaSourcesTable, MediaSourceRow>,
+      ),
+      MediaSourceRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$PhotoIndexEntriesTableTableManager get photoIndexEntries =>
       $$PhotoIndexEntriesTableTableManager(_db, _db.photoIndexEntries);
+  $$MediaSourcesTableTableManager get mediaSources =>
+      $$MediaSourcesTableTableManager(_db, _db.mediaSources);
 }

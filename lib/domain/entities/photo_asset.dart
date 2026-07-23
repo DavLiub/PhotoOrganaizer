@@ -15,6 +15,7 @@ class PhotoAsset {
     required this.discoveredAt,
     required this.lastSeenAt,
     required this.availabilityStatus,
+    this.sourceId,
     this.albumId,
     this.sourceName,
     this.width,
@@ -33,6 +34,7 @@ class PhotoAsset {
   final DateTime discoveredAt;
   final DateTime lastSeenAt;
   final PhotoAvailabilityStatus availabilityStatus;
+  final String? sourceId;
   final String? albumId;
   final String? sourceName;
   final int? width;
