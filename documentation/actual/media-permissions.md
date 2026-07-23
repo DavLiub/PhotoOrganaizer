@@ -18,13 +18,17 @@ Application defines `MediaPermissionGateway` and exposes permission flow through
 - `CheckMediaAccess`
 - `RequestMediaAccess`
 
-Infrastructure implements the current placeholder adapter:
+Infrastructure implements the current placeholder adapters:
 
 ```text
 lib/infrastructure/media/android_media_access.dart
+lib/infrastructure/media/ios_media_access.dart
+lib/infrastructure/media/unsupported_media_access.dart
 ```
 
-The adapter currently returns `unavailable` with detail code `media.permission_adapter_deferred` because the real Android permission plugin integration is intentionally deferred.
+Android currently returns `unavailable` with detail code `media.permission_adapter_deferred` because the real Android permission plugin integration is intentionally deferred.
+
+iOS currently returns `unavailable` with detail code `media.ios_not_implemented`. This is a placeholder boundary only, not active iOS feature development.
 
 ## UI Boundary
 
@@ -47,5 +51,6 @@ Permission state is runtime state. It is not persisted in the current implementa
 ## Known Limitations
 
 - Real Android permission status mapping is not implemented yet.
+- Real iOS permission status mapping is not implemented yet.
 - The setup screen is not wired into the main navigation flow yet.
 - Limited-access photo selection behavior is modeled but not implemented.
