@@ -2,8 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/application/policies/access_override.dart';
 import 'package:photo_organizer/bootstrap/app_composition_root.dart';
 import 'package:photo_organizer/bootstrap/app_mode.dart';
+import 'package:photo_organizer/bootstrap/app_platform.dart';
 import 'package:photo_organizer/domain/entities/access_profile.dart';
+import 'package:photo_organizer/domain/value_objects/media_permission.dart';
+import 'package:photo_organizer/domain/value_objects/operation_result.dart';
 import 'package:photo_organizer/domain/value_objects/capability.dart';
+import 'package:photo_organizer/infrastructure/media/android_media_access.dart';
+import 'package:photo_organizer/infrastructure/media/android_media_library_gateway.dart';
+import 'package:photo_organizer/infrastructure/media/ios_media_access.dart';
+import 'package:photo_organizer/infrastructure/media/ios_media_library_gateway.dart';
+import 'package:photo_organizer/infrastructure/media/unsupported_media_access.dart';
+import 'package:photo_organizer/infrastructure/media/unsupported_media_library_gateway.dart';
 import 'package:photo_organizer/infrastructure/entitlements/test_entitlement_gateway.dart';
 
 void main() {
@@ -12,6 +21,40 @@ void main() {
       final root = AppCompositionRoot.configure();
 
       expect(root.mode, AppMode.production);
+      expect(root.platform, AppPlatform.android);
+    });
+
+    test('selects Android media adapters by default', () {
+      final root = AppCompositionRoot.configure();
+
+      expect(root.mediaPermissionGateway, isA<AndroidMediaAccess>());
+      expect(root.mediaLibraryGateway, isA<AndroidMediaLibraryGateway>());
+    });
+
+    test('selects iOS placeholder media adapters when requested', () async {
+      final root = AppCompositionRoot.configure(platform: AppPlatform.ios);
+
+      expect(root.platform, AppPlatform.ios);
+      expect(root.mediaPermissionGateway, isA<IosMediaAccess>());
+      expect(root.mediaLibraryGateway, isA<IosMediaLibraryGateway>());
+
+      final status = await root.mediaPermissionGateway.currentStatus();
+
+      expect(status, isA<OperationSuccess<MediaPermission>>());
+      expect(
+        (status as OperationSuccess<MediaPermission>).value.detailCode,
+        'media.ios_not_implemented',
+      );
+    });
+
+    test('selects unsupported placeholder media adapters', () {
+      final root = AppCompositionRoot.configure(
+        platform: AppPlatform.unsupported,
+      );
+
+      expect(root.platform, AppPlatform.unsupported);
+      expect(root.mediaPermissionGateway, isA<UnsupportedMediaAccess>());
+      expect(root.mediaLibraryGateway, isA<UnsupportedMediaLibraryGateway>());
     });
 
     test('rejects access override in production mode', () {
@@ -62,6 +105,18 @@ void main() {
 
     test('rejects unsupported names', () {
       expect(() => AppMode.fromName('staging'), throwsArgumentError);
+    });
+  });
+
+  group('AppPlatform', () {
+    test('parses supported names', () {
+      expect(appPlatformFromName('android'), AppPlatform.android);
+      expect(appPlatformFromName('ios'), AppPlatform.ios);
+    });
+
+    test('uses unsupported for unknown names', () {
+      expect(appPlatformFromName('windows'), AppPlatform.unsupported);
+      expect(appPlatformFromName(null), AppPlatform.unsupported);
     });
   });
 }
