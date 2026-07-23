@@ -10,6 +10,8 @@ Use `drift` as the local persistence library. Use `drift_dev` and `build_runner`
 
 Do not add persistence dependencies until the first storage implementation PR. Keep the current repository dependency-free until a real adapter is implemented.
 
+Generated Drift files are committed with the schema implementation so repository analysis and tests work from a clean checkout without an implicit build step.
+
 ## Consequences
 
 - Storage schema and migrations can be explicit and reviewable.
