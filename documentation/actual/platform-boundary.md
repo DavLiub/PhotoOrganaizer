@@ -34,7 +34,9 @@ lib/infrastructure/media/unsupported_media_access.dart
 lib/infrastructure/media/unsupported_media_library_gateway.dart
 ```
 
-Android adapters are the active production direction. iOS and unsupported adapters are placeholders that return empty media results or unavailable permission state.
+Android adapters are the active production direction. Android media permissions and image metadata scanning are implemented through `photo_manager`.
+
+iOS and unsupported adapters are placeholders that return empty media results or unavailable permission state.
 
 ## Layer Rules
 
@@ -48,5 +50,5 @@ Android adapters are the active production direction. iOS and unsupported adapte
 
 - No real iOS native project work is implemented.
 - No iOS permission or media scanning behavior exists.
-- Android media scanning is still deferred.
 - Platform selection currently affects media adapters only.
+- iOS remains architecture-ready only; no iOS project or native permission behavior is implemented.

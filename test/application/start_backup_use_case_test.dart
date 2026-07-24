@@ -89,8 +89,8 @@ class _FakeEntitlementGateway implements EntitlementGateway {
 
 class _FakeMediaGateway implements MediaLibraryGateway {
   @override
-  Future<List<PhotoAsset>> scanPhotos() async {
-    return const [];
+  Future<LibraryScan> scanLibrary({int pageSize = 100}) async {
+    return const LibraryScan.empty();
   }
 }
 

@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-The current implementation defines the Domain/Application photo index slice and a Drift-backed Infrastructure storage adapter. It does not include Android media scanning, cloud backup, or image hashing.
+The current implementation defines the Domain/Application photo index slice, a Drift-backed Infrastructure storage adapter, and Android photo metadata scanning. It does not include cloud backup, thumbnails, video, or image hashing.
 
 ## Identity
 
@@ -58,10 +58,13 @@ The current scope model is Domain-only. Android album/source mapping will use th
 Application exposes:
 
 - `IndexPhotos`
+- `ScanMediaLibrary`
 - `ResolvePhotoIdentity`
 - existing `ObserveProtectionSummaryUseCase`
 
 `IndexPhotos` checks media permission through `MediaPermissionGateway` before writing index entries. If photo access is not available, it returns a structured permission failure.
+
+`ScanMediaLibrary` checks permission, scans Android-visible photo metadata through `MediaLibraryGateway`, upserts media sources, and then delegates photo writes to `IndexPhotos`.
 
 ## Repository Port And Storage
 
@@ -90,3 +93,4 @@ The table stores stable index id, current identity key, local asset id, optional
 - True duplicate detection across different local assets is not implemented.
 - Cloud copies, optimized files, thumbnails, and other variants are not modeled yet.
 - Backup queue state, retry counters, and cloud object ids are not part of this table.
+- Deleted or inaccessible Android assets are not reconciled into existing index rows yet.

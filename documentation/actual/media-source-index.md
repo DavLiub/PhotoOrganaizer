@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-The current implementation defines a platform-neutral media source catalog and stores it locally with Drift. It does not scan Android MediaStore, iOS PhotoKit, or filesystem folders yet.
+The current implementation defines a platform-neutral media source catalog, stores it locally with Drift, and populates it from Android-visible photo albums through `photo_manager`.
 
 ## Model
 
@@ -49,9 +49,16 @@ The model intentionally avoids mandatory filesystem paths.
 
 Android bucket ids, Android album names, iOS PhotoKit collections, and future provider-specific source details must be mapped inside Infrastructure before reaching Application or Domain.
 
+Current Android source id format:
+
+```text
+photo_manager:<albumId>
+```
+
+`albumId` remains the raw `AssetPathEntity.id` from `photo_manager`.
+
 ## Known Limitations
 
-- No real Android source discovery is implemented yet.
 - No user-facing include/exclude source settings exist yet.
 - No explicit source relationship constraint exists between `photo_index_entries.source_id` and `media_sources.id`.
-- Source id normalization may change when the real Android adapter is implemented.
+- Source id normalization may still change if a native Android adapter replaces `photo_manager`.
