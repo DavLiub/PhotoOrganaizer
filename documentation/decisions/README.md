@@ -31,3 +31,4 @@ Each ADR should include:
 - [0016-use-local-asset-identity.md](0016-use-local-asset-identity.md)
 - [0017-use-platform-adapter-boundary.md](0017-use-platform-adapter-boundary.md)
 - [0018-centralize-backup-state-machine.md](0018-centralize-backup-state-machine.md)
+- [0019-use-media-source-index.md](0019-use-media-source-index.md)

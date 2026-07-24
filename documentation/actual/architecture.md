@@ -81,6 +81,16 @@ lib/infrastructure/
 - Presentation consumes only Application use cases for permission state and request actions.
 - Android/iOS permission APIs and future plugin types must stay inside Infrastructure.
 
+## Media Source Index
+
+- Domain defines `MediaSource` as a platform-neutral source/album model.
+- Application defines `MediaSourceRepository`.
+- Infrastructure storage implements media source persistence with Drift.
+- Photo assets and persisted photo index rows can reference an optional `sourceId`.
+- `albumId` remains platform metadata; `sourceId` is the project-owned source catalog link.
+- Bootstrap wires media source and photo index repositories through a shared lazy `AppDatabase` factory.
+- Android bucket and iOS PhotoKit details must be mapped into `MediaSource` before leaving Infrastructure.
+
 ## Photo Index
 
 - Domain defines local photo identity, photo index entry, index status, and index scope.
@@ -128,7 +138,7 @@ CI runs guards on changed lines/files only. Layer violations, test/debug imports
 
 ## Approved Integration Direction
 
-- Persistence uses Drift behind Infrastructure storage adapters for the local photo index.
+- Persistence uses Drift behind Infrastructure storage adapters for the local photo index and media source catalog.
 - Presentation state will use Riverpod and expose Application use cases to widgets.
 - Background work will use Workmanager behind Application scheduling ports.
 - Media access will use Photo Manager behind Infrastructure media adapters.

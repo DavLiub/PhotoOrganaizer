@@ -3,6 +3,7 @@ import '../application/ports/cloud_provider.dart';
 import '../application/ports/entitlement_gateway.dart';
 import '../application/ports/media_library_gateway.dart';
 import '../application/ports/media_permission_gateway.dart';
+import '../application/ports/media_source_repository.dart';
 import '../application/ports/observability_sink.dart';
 import '../application/ports/photo_index_repository.dart';
 import '../application/policies/access_override.dart';
@@ -18,6 +19,8 @@ import '../infrastructure/background/work_manager_background_scheduler.dart';
 import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
 import '../infrastructure/observability/console_observability_sink.dart';
+import '../infrastructure/storage/app_database.dart';
+import '../infrastructure/storage/media_source_store.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
 import 'app_mode.dart';
 import 'app_platform.dart';
@@ -29,6 +32,7 @@ class AppCompositionRoot {
     required this.platform,
     required this.mediaLibraryGateway,
     required this.mediaPermissionGateway,
+    required this.mediaSourceRepository,
     required this.photoIndexRepository,
     required this.cloudProvider,
     required this.backgroundScheduler,
@@ -47,6 +51,7 @@ class AppCompositionRoot {
   final AppPlatform platform;
   final MediaLibraryGateway mediaLibraryGateway;
   final MediaPermissionGateway mediaPermissionGateway;
+  final MediaSourceRepository mediaSourceRepository;
   final PhotoIndexRepository photoIndexRepository;
   final CloudProvider cloudProvider;
   final BackgroundScheduler backgroundScheduler;
@@ -75,7 +80,14 @@ class AppCompositionRoot {
     final mediaAdapters = MediaAdapters.forPlatform(platform);
     final mediaLibraryGateway = mediaAdapters.libraryGateway;
     final mediaPermissionGateway = mediaAdapters.permissionGateway;
-    final photoIndexRepository = LocalPhotoIndexRepository();
+    AppDatabase? database;
+    AppDatabase createDatabase() => database ??= AppDatabase.defaults();
+    final mediaSourceRepository = MediaSourceStore(
+      createDatabase: createDatabase,
+    );
+    final photoIndexRepository = LocalPhotoIndexRepository(
+      createDatabase: createDatabase,
+    );
     final cloudProvider = GoogleDriveCloudProvider();
     final backgroundScheduler = WorkManagerBackgroundScheduler();
     final resolvedEntitlementGateway =
@@ -91,6 +103,7 @@ class AppCompositionRoot {
       platform: platform,
       mediaLibraryGateway: mediaLibraryGateway,
       mediaPermissionGateway: mediaPermissionGateway,
+      mediaSourceRepository: mediaSourceRepository,
       photoIndexRepository: photoIndexRepository,
       cloudProvider: cloudProvider,
       backgroundScheduler: backgroundScheduler,
