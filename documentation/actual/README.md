@@ -24,6 +24,7 @@ Business functionality is represented by domain models, application ports, use c
 - [data-model.md](data-model.md): currently implemented domain model skeleton.
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
 - [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.
+- [first-scan-ui.md](first-scan-ui.md): current welcome, media access, manual scan UI, and localization state.
 - [library-decisions.md](library-decisions.md): approved dependency and integration direction.
 - [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
 - [media-source-index.md](media-source-index.md): current media source and album catalog model.

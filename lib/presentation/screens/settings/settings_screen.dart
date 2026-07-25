@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
-        children: const [
+        children: [
           ListTile(
-            leading: Icon(Icons.language_outlined),
-            title: Text('Language'),
+            leading: const Icon(Icons.language_outlined),
+            title: Text(l10n.language),
           ),
           ListTile(
-            leading: Icon(Icons.cloud_outlined),
-            title: Text('Google Drive'),
+            leading: const Icon(Icons.cloud_outlined),
+            title: Text(l10n.googleDrive),
           ),
           ListTile(
-            leading: Icon(Icons.tune_outlined),
-            title: Text('Backup profile'),
+            leading: const Icon(Icons.tune_outlined),
+            title: Text(l10n.backupProfile),
           ),
         ],
       ),

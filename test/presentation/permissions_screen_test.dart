@@ -5,6 +5,7 @@ import 'package:photo_organizer/application/use_cases/check_media_access.dart';
 import 'package:photo_organizer/application/use_cases/request_media_access.dart';
 import 'package:photo_organizer/domain/value_objects/media_permission.dart';
 import 'package:photo_organizer/domain/value_objects/operation_result.dart';
+import 'package:photo_organizer/presentation/localization/app_localizations.dart';
 import 'package:photo_organizer/presentation/screens/setup/permissions_screen.dart';
 
 void main() {
@@ -14,6 +15,7 @@ void main() {
     );
 
     await tester.pumpWidget(_buildScreen(gateway));
+    await tester.pump();
     await tester.pump();
 
     expect(find.text('Photo access'), findsOneWidget);
@@ -30,7 +32,7 @@ void main() {
 
     await tester.pumpWidget(_buildScreen(gateway));
     await tester.pump();
-    await tester.tap(find.byTooltip('Request photo access'));
+    await tester.tap(find.byTooltip('Grant access'));
     await tester.pumpAndSettle();
 
     expect(gateway.requestCalls, 1);
@@ -40,6 +42,9 @@ void main() {
 
 Widget _buildScreen(_FakeGateway gateway) {
   return MaterialApp(
+    locale: const Locale('en'),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: PermissionsScreen(
       checkMediaAccess: CheckMediaAccess(gateway),
       requestMediaAccess: RequestMediaAccess(gateway),

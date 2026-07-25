@@ -7,8 +7,9 @@ void main() {
     await tester.pumpWidget(
       SmartPhotoArchiveApp(compositionRoot: AppCompositionRoot.configure()),
     );
+    await tester.pump();
 
-    expect(find.text('Smart Photo Archive'), findsOneWidget);
+    expect(find.text('Photo Organizer'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Photos'), findsOneWidget);
     expect(find.text('History'), findsOneWidget);

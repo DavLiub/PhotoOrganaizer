@@ -67,6 +67,8 @@ tools/ci/secret_guard.py
 tools/ci/naming_report.py
 ```
 
+Shared diff parsing lives in `tools/ci/diff_lines.py`. It decodes `git diff` output as UTF-8 so local Windows runs can inspect multilingual UI text without failing on console code pages.
+
 Default behavior is diff-based:
 
 - GitHub pull requests are checked against the PR base and head SHAs.

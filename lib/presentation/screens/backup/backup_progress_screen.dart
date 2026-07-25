@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations.dart';
 import '../../widgets/section_placeholder.dart';
 
 class BackupProgressScreen extends StatelessWidget {
@@ -7,14 +8,16 @@ class BackupProgressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Backup progress')),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      appBar: AppBar(title: Text(l10n.backupProgress)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: SectionPlaceholder(
           icon: Icons.cloud_upload_outlined,
-          title: 'Backup progress',
-          subtitle: 'Current backup job',
+          title: l10n.backupProgress,
+          subtitle: l10n.currentBackupJob,
         ),
       ),
     );

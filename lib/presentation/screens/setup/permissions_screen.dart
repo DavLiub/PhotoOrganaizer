@@ -4,6 +4,7 @@ import '../../../application/use_cases/check_media_access.dart';
 import '../../../application/use_cases/request_media_access.dart';
 import '../../../domain/value_objects/media_permission.dart';
 import '../../../domain/value_objects/operation_result.dart';
+import '../../localization/app_localizations.dart';
 
 class PermissionsScreen extends StatefulWidget {
   const PermissionsScreen({
@@ -42,10 +43,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               return Card(
                 child: ListTile(
                   leading: Icon(_icon(result)),
-                  title: const Text('Photo access'),
-                  subtitle: Text(_subtitle(result)),
+                  title: Text(AppLocalizations.of(context).photoAccess),
+                  subtitle: Text(_subtitle(context, result)),
                   trailing: IconButton(
-                    tooltip: 'Request photo access',
+                    tooltip: AppLocalizations.of(context).grantAccess,
                     icon: const Icon(Icons.lock_open_outlined),
                     onPressed: _requestAccess,
                   ),
@@ -75,25 +76,31 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     };
   }
 
-  String _subtitle(OperationResult<MediaPermission>? result) {
+  String _subtitle(
+    BuildContext context,
+    OperationResult<MediaPermission>? result,
+  ) {
+    final l10n = AppLocalizations.of(context);
+
     return switch (result) {
       OperationSuccess<MediaPermission>(value: final value) => _statusText(
+        l10n,
         value,
       ),
       OperationFailure<MediaPermission>(failure: final failure) =>
         failure.safeMessage ?? failure.code,
-      null => 'Checking',
+      null => l10n.checkingAccess,
     };
   }
 
-  String _statusText(MediaPermission permission) {
+  String _statusText(AppLocalizations l10n, MediaPermission permission) {
     return switch (permission.state) {
-      MediaPermissionState.granted => 'Granted',
-      MediaPermissionState.limited => 'Limited',
-      MediaPermissionState.denied => 'Denied',
-      MediaPermissionState.permanentlyDenied => 'Permanently denied',
-      MediaPermissionState.unavailable => 'Unavailable',
-      MediaPermissionState.unknown => 'Unknown',
+      MediaPermissionState.granted => l10n.permissionGranted,
+      MediaPermissionState.limited => l10n.permissionLimited,
+      MediaPermissionState.denied => l10n.permissionDenied,
+      MediaPermissionState.permanentlyDenied => l10n.permissionBlocked,
+      MediaPermissionState.unavailable => l10n.permissionUnavailable,
+      MediaPermissionState.unknown => l10n.permissionUnknown,
     };
   }
 }

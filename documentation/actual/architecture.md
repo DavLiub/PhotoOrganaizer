@@ -19,7 +19,7 @@ lib/
 - `bootstrap` owns app mode selection and production safety checks.
 - `application` depends on `domain` and defines ports.
 - `infrastructure` implements application ports with concrete or placeholder adapters.
-- `presentation` displays shell screens and consumes composed application dependencies through the app shell.
+- `presentation` displays shell screens and consumes Application dependencies through Riverpod providers.
 - `domain` has no Flutter or platform dependencies.
 
 ## Infrastructure Areas
@@ -46,7 +46,6 @@ lib/infrastructure/
 
 ## Known Limitations
 
-- Real Android media access is not implemented.
 - Real iOS media access is not implemented.
 - Real Google Drive integration is not implemented.
 - Real billing and entitlement verification are not implemented.
@@ -77,9 +76,18 @@ lib/infrastructure/
 - Domain defines `MediaPermission` and `MediaPermissionState`.
 - Application defines `MediaPermissionGateway`.
 - Application exposes media permission flow through `CheckMediaAccess` and `RequestMediaAccess`.
-- Infrastructure implements the current platform placeholders through `AndroidMediaAccess`, `IosMediaAccess`, and `UnsupportedMediaAccess`.
+- Infrastructure implements Android media permission access through `AndroidMediaAccess`.
+- iOS and unsupported platforms still use placeholder permission adapters.
 - Presentation consumes only Application use cases for permission state and request actions.
 - Android/iOS permission APIs and future plugin types must stay inside Infrastructure.
+
+## Presentation State and Localization
+
+- Presentation uses Riverpod for UI state and use case access.
+- `SmartPhotoArchiveApp` provides the Bootstrap composition root through `appRootProvider`.
+- First scan UI state is owned by `FirstScanController`.
+- User-visible UI strings are routed through `AppLocalizations`.
+- Supported UI locales are English and Russian.
 
 ## Media Source Index
 
@@ -139,7 +147,7 @@ CI runs guards on changed lines/files only. Layer violations, test/debug imports
 ## Approved Integration Direction
 
 - Persistence uses Drift behind Infrastructure storage adapters for the local photo index and media source catalog.
-- Presentation state will use Riverpod and expose Application use cases to widgets.
+- Presentation state uses Riverpod and exposes Application use cases to widgets.
 - Background work will use Workmanager behind Application scheduling ports.
 - Media access will use Photo Manager behind Infrastructure media adapters.
 - Google Drive integration will use Google Sign-In, the Google APIs auth bridge, and typed Google APIs clients.
