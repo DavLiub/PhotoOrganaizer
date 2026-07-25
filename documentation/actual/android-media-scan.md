@@ -10,6 +10,8 @@ The scan is image-only. Video, thumbnails, full-image reads, checksums, and clou
 
 `ScanMediaLibrary` is the Application entry point for local photo discovery.
 
+The first UI consumer is the Home first scan flow. The UI checks permission first, requests access when needed, then calls `ScanMediaLibrary` only after permission is granted or limited.
+
 Flow:
 
 ```text

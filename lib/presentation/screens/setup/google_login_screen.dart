@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations.dart';
 import '../../widgets/section_placeholder.dart';
 
 class GoogleLoginScreen extends StatelessWidget {
@@ -7,14 +8,16 @@ class GoogleLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Center(
           child: SectionPlaceholder(
             icon: Icons.account_circle_outlined,
-            title: 'Google account',
-            subtitle: 'Drive connection',
+            title: l10n.googleDrive,
+            subtitle: l10n.driveConnection,
           ),
         ),
       ),

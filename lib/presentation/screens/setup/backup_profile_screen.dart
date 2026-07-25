@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations.dart';
 import '../../widgets/section_placeholder.dart';
 
 class BackupProfileScreen extends StatelessWidget {
@@ -7,14 +8,16 @@ class BackupProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Center(
           child: SectionPlaceholder(
             icon: Icons.tune_outlined,
-            title: 'Backup profile',
-            subtitle: 'Quality and network',
+            title: l10n.backupProfile,
+            subtitle: l10n.qualityAndNetwork,
           ),
         ),
       ),

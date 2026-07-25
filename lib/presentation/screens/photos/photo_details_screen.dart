@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/app_localizations.dart';
 import '../../widgets/section_placeholder.dart';
 
 class PhotoDetailsScreen extends StatelessWidget {
@@ -7,14 +8,16 @@ class PhotoDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Photo details')),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      appBar: AppBar(title: Text(l10n.photoDetails)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: SectionPlaceholder(
           icon: Icons.image_outlined,
-          title: 'Photo details',
-          subtitle: 'Backup status and cloud location',
+          title: l10n.photoDetails,
+          subtitle: l10n.photoDetailsSubtitle,
         ),
       ),
     );
