@@ -17,6 +17,7 @@ import 'package:photo_organizer/presentation/navigation/main_scaffold.dart';
 import 'package:photo_organizer/presentation/screens/photos/photos_screen.dart';
 import 'package:photo_organizer/presentation/state/app_providers.dart';
 import 'package:photo_organizer/presentation/state/first_scan_actions.dart';
+import 'package:photo_organizer/presentation/state/photo_library_state.dart';
 import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
 
 void main() {
@@ -40,6 +41,23 @@ void main() {
     expect(find.text('Backup (0%)'), findsOneWidget);
     expect(find.text('Indexed photos'), findsNothing);
     expect(find.text('Sources'), findsNothing);
+  });
+
+  testWidgets('centers category filter when it fits screen width', (
+    tester,
+  ) async {
+    final actions = _FakeActions(library: const PhotoLibrary.empty());
+
+    await tester.pumpWidget(_buildPhotos(actions));
+    await tester.pump();
+    await tester.pump();
+
+    final screenCenter = tester.getCenter(find.byType(PhotosScreen)).dx;
+    final filterCenter = tester
+        .getCenter(find.byType(SegmentedButton<LibraryFilter>))
+        .dx;
+
+    expect(filterCenter, closeTo(screenCenter, 1));
   });
 
   testWidgets('shows indexed photo grid with backup status', (tester) async {

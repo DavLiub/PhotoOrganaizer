@@ -210,42 +210,51 @@ class _LibraryControls extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SegmentedButton<LibraryFilter>(
-              showSelectedIcon: true,
-              segments: [
-                ButtonSegment(
-                  value: LibraryFilter.all,
-                  icon: const Icon(Icons.all_inclusive),
-                  tooltip: l10n.all,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: Center(
+                    child: SegmentedButton<LibraryFilter>(
+                      showSelectedIcon: true,
+                      segments: [
+                        ButtonSegment(
+                          value: LibraryFilter.all,
+                          icon: const Icon(Icons.all_inclusive),
+                          tooltip: l10n.all,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.camera,
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          tooltip: l10n.categoryCamera,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.social,
+                          icon: const Icon(Icons.people_alt_outlined),
+                          tooltip: l10n.categorySocial,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.downloads,
+                          icon: const Icon(Icons.download_outlined),
+                          tooltip: l10n.categoryDownloads,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.screenshots,
+                          icon: const Icon(Icons.screenshot_outlined),
+                          tooltip: l10n.categoryScreenshots,
+                        ),
+                      ],
+                      selected: {state.filter},
+                      onSelectionChanged: (selection) {
+                        controller.selectFilter(selection.single);
+                      },
+                    ),
+                  ),
                 ),
-                ButtonSegment(
-                  value: LibraryFilter.camera,
-                  icon: const Icon(Icons.photo_camera_outlined),
-                  tooltip: l10n.categoryCamera,
-                ),
-                ButtonSegment(
-                  value: LibraryFilter.social,
-                  icon: const Icon(Icons.people_alt_outlined),
-                  tooltip: l10n.categorySocial,
-                ),
-                ButtonSegment(
-                  value: LibraryFilter.downloads,
-                  icon: const Icon(Icons.download_outlined),
-                  tooltip: l10n.categoryDownloads,
-                ),
-                ButtonSegment(
-                  value: LibraryFilter.screenshots,
-                  icon: const Icon(Icons.screenshot_outlined),
-                  tooltip: l10n.categoryScreenshots,
-                ),
-              ],
-              selected: {state.filter},
-              onSelectionChanged: (selection) {
-                controller.selectFilter(selection.single);
-              },
-            ),
+              );
+            },
           ),
           const SizedBox(height: 8),
           Row(

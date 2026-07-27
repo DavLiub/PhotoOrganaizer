@@ -14,7 +14,7 @@
   Expected: the app stays on the Library flow and `Scan` becomes available.
 
 - [ ] Verify the top controls.
-  Expected: icon buttons for `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a compact segmented filter and fit on phone width.
+  Expected: icon buttons for `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a compact segmented filter, fit on phone width, and the whole filter panel is centered.
 
 - [ ] Verify sort and count row.
   Expected: `Date ↓` and the current visible photo count are shown on one line.

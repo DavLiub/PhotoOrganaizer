@@ -50,7 +50,8 @@ Selecting a category filters the visible grid only. It does not persist
 include/exclude settings and does not change indexing rules.
 
 Filter labels are exposed as tooltips/accessibility text instead of permanent
-visible text so the control fits phone width.
+visible text so the control fits phone width. When the compact filter is
+narrower than the screen, the full segmented control is centered.
 
 The screen also shows a sort selector and visible photo count on one line. Sort
 state is Presentation-only for now. Repository-level ordering remains unchanged.

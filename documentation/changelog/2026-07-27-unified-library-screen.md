@@ -19,6 +19,7 @@
 - Added Android adaptive and round icon resources for Android launchers.
 - Added Android launch background and Android 12+ splash style references to the new launcher icon.
 - Changed category filters to compact icon segments with tooltips so the control fits phone width.
+- Centered the compact category filter panel when it is narrower than the screen.
 
 ## Documentation
 
