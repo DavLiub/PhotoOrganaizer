@@ -95,6 +95,36 @@ void main() {
       expect(completed, isTrue);
     });
 
+    test('indexes delivered photo batch after stop is requested', () async {
+      final source = _source(id: 'photo_manager:camera');
+      final photos = [
+        _asset(id: 'asset-1', sourceId: source.id),
+        _asset(id: 'asset-2', sourceId: source.id),
+      ];
+      final signal = ScanSignal();
+      final indexRepository = _FakeIndex();
+      final sourceRepository = _FakeSources();
+      final useCase = _useCase(
+        library: _StopBatchLibrary(
+          source: source,
+          photos: photos,
+          signal: signal,
+        ),
+        sourceRepository: sourceRepository,
+        indexRepository: indexRepository,
+      );
+
+      final result = await useCase(signal: signal);
+
+      expect(result, isA<OperationFailure<LibraryScanResult>>());
+      expect(
+        (result as OperationFailure<LibraryScanResult>).kind,
+        FailureKind.cancelled,
+      );
+      expect(sourceRepository.sources, [source]);
+      expect(indexRepository.entries, hasLength(2));
+    });
+
     test('does not scan when permission is denied', () async {
       final library = _FakeLibrary(const LibraryScan.empty());
       final useCase = _useCase(
@@ -236,6 +266,34 @@ class _StreamingLibrary implements MediaLibraryGateway {
     await finish.future;
 
     return LibraryScan(sources: [source], photos: [photo]);
+  }
+}
+
+class _StopBatchLibrary implements MediaLibraryGateway {
+  const _StopBatchLibrary({
+    required this.source,
+    required this.photos,
+    required this.signal,
+  });
+
+  final MediaSource source;
+  final List<PhotoAsset> photos;
+  final ScanSignal signal;
+
+  @override
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+    LibraryBatchCallback? onBatch,
+    ScanSignal? signal,
+  }) async {
+    onProgress?.call(
+      LibraryScanProgress(foundPhotos: photos.length, sourceCount: 1),
+    );
+    this.signal.stop();
+    await onBatch?.call(LibraryBatch(sources: [source]));
+    await onBatch?.call(LibraryBatch(photos: photos));
+    throw const ScanStopped();
   }
 }
 

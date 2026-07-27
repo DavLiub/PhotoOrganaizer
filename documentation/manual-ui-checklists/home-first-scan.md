@@ -23,10 +23,10 @@
   Expected: found/source counts increase during media discovery, and indexed count increases as photo batches are written.
 
 - [ ] Tap `Stop` while scanning.
-  Expected: scanning stops without deleting already indexed photos.
+  Expected: scanning stops after already found photos are indexed; already indexed photos remain visible.
 
 - [ ] Start scan again after stopping.
-  Expected: scan can run again and already indexed photos remain visible.
+  Expected: scan can run again, counters do not reset below the already indexed library size, and already indexed photos remain visible.
 
 - [ ] Wait for scan completion.
   Expected: the Photos tab remains visible with indexed photos or a visible error.

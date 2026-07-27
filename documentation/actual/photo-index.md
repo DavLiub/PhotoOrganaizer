@@ -70,6 +70,8 @@ Application exposes:
 
 When the gateway supports `LibraryBatch`, `ScanMediaLibrary` persists each source/photo batch immediately and delegates photo batches to `IndexPhotos` before the full media scan completes. If a gateway returns only a final `LibraryScan`, the use case falls back to the older full-result write path.
 
+If a stop request arrives after a batch has been delivered to `ScanMediaLibrary`, the delivered batch is still indexed. Stop cancels further discovery, not already delivered writes.
+
 ## Repository Port And Storage
 
 `PhotoIndexRepository` supports:

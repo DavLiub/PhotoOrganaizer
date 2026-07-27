@@ -55,6 +55,8 @@ The library controller reloads the photo list after indexed batches are written,
 
 `Stop` is available while scan/refresh is running. It requests cooperative cancellation and keeps already indexed photos visible.
 
+When a scan starts with an existing library, progress counters use the current indexed library as the baseline. This prevents retry scans after `Stop` from visually resetting indexed/found counts to zero while the app rechecks media from Android.
+
 ## Architecture
 
 Presentation uses:

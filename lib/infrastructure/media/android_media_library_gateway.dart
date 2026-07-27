@@ -128,7 +128,10 @@ Future<void> _scanPath({
 
     final pagePhotos = <PhotoAsset>[];
     for (final asset in assets) {
-      signal?.throwIfStopped();
+      if (signal?.stopped == true) {
+        break;
+      }
+
       if (asset.type != pm.AssetType.image) {
         continue;
       }
@@ -154,6 +157,8 @@ Future<void> _scanPath({
       await onBatch?.call(LibraryBatch(photos: List.unmodifiable(pagePhotos)));
     }
     onProgress();
+
+    signal?.throwIfStopped();
 
     if (assets.length < pageSize) {
       return;

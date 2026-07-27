@@ -99,7 +99,7 @@ void main() {
     await tester.pump();
 
     expect(find.textContaining('Found photos: 3'), findsOneWidget);
-    expect(find.textContaining('Indexed photos: 1'), findsOneWidget);
+    expect(find.textContaining('Indexed photos: 2'), findsOneWidget);
 
     refreshResult.complete(
       const OperationSuccess(

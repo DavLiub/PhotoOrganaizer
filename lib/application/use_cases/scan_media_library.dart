@@ -130,8 +130,6 @@ class ScanMediaLibrary {
         return;
       }
 
-      signal?.throwIfStopped();
-
       if (batch.sources.isNotEmpty) {
         try {
           await _sourceRepository.upsertSources(batch.sources);

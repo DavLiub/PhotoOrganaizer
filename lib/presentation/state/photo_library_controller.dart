@@ -28,6 +28,10 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
   bool _scanRunning = false;
   bool _reloadRunning = false;
   bool _reloadPending = false;
+  int _baseFound = 0;
+  int _baseIndexed = 0;
+  int _baseSources = 0;
+  int _newIndexed = 0;
 
   @override
   PhotoLibraryState build() {
@@ -59,12 +63,16 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
     final signal = ScanSignal();
     _scanSignal = signal;
     _scanRunning = true;
+    _baseFound = state.library.photos.length;
+    _baseIndexed = state.library.photos.length;
+    _baseSources = state.sourceCount;
+    _newIndexed = 0;
 
     state = state.copyWith(
       phase: PhotoLibraryPhase.refreshing,
-      foundPhotos: 0,
-      indexedPhotos: 0,
-      sourceCount: 0,
+      foundPhotos: _baseFound,
+      indexedPhotos: _baseIndexed,
+      sourceCount: _baseSources,
       clearError: true,
     );
 
@@ -72,8 +80,8 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
       pageSize: 100,
       signal: signal,
       onProgress: (progress) {
-        _applyProgress(progress);
-        onProgress?.call(progress);
+        final displayProgress = _applyProgress(progress);
+        onProgress?.call(displayProgress);
       },
     );
     _scanSignal = null;
@@ -100,22 +108,49 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
     _scanSignal?.stop();
   }
 
-  void _applyProgress(ScanProgress progress) {
+  ScanProgress _applyProgress(ScanProgress progress) {
     if (!_scanRunning) {
-      return;
+      return progress;
     }
 
+    final nextProgress = _displayProgress(progress);
     final previousWritten = state.indexedPhotos;
+    final hasNewIndex = progress.indexedPhotos > _newIndexed;
+    _newIndexed = progress.indexedPhotos;
     state = state.copyWith(
       phase: PhotoLibraryPhase.refreshing,
-      foundPhotos: progress.foundPhotos,
-      indexedPhotos: progress.writtenPhotos,
-      sourceCount: progress.sourceCount,
+      foundPhotos: nextProgress.foundPhotos,
+      indexedPhotos: nextProgress.writtenPhotos,
+      sourceCount: nextProgress.sourceCount,
     );
 
-    if (progress.writtenPhotos > previousWritten) {
+    if (hasNewIndex || nextProgress.writtenPhotos > previousWritten) {
       _queueReload();
     }
+
+    return nextProgress;
+  }
+
+  ScanProgress _displayProgress(ScanProgress progress) {
+    final foundPhotos = progress.foundPhotos > _baseFound
+        ? progress.foundPhotos
+        : _baseFound;
+    final writtenPhotos = progress.writtenPhotos > _baseIndexed
+        ? progress.writtenPhotos
+        : _baseIndexed;
+    final indexedPhotos = progress.indexedPhotos > writtenPhotos
+        ? progress.indexedPhotos
+        : writtenPhotos;
+    final sourceCount = progress.sourceCount > _baseSources
+        ? progress.sourceCount
+        : _baseSources;
+
+    return progress.copyWith(
+      foundPhotos: foundPhotos,
+      indexedPhotos: indexedPhotos,
+      updatedPhotos: 0,
+      sourceCount: sourceCount,
+    );
   }
 
   void selectCategory(LibraryCategory? category) {
@@ -129,6 +164,13 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
     final result = await _actions.listPhotos();
     switch (result) {
       case OperationSuccess<PhotoLibrary>(value: final value):
+        final loadedCount = value.photos.length;
+        final foundPhotos = loadedCount > state.foundPhotos
+            ? loadedCount
+            : state.foundPhotos;
+        final indexedPhotos = loadedCount > state.indexedPhotos
+            ? loadedCount
+            : state.indexedPhotos;
         final nextPhase = switch ((_scanRunning, phase)) {
           (true, PhotoLibraryPhase.loaded) => PhotoLibraryPhase.refreshing,
           (false, PhotoLibraryPhase.refreshing) => PhotoLibraryPhase.loaded,
@@ -137,6 +179,8 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
         state = state.copyWith(
           phase: nextPhase,
           library: value,
+          foundPhotos: foundPhotos,
+          indexedPhotos: indexedPhotos,
           clearError: true,
         );
       case OperationFailure<PhotoLibrary>(failure: final failure):

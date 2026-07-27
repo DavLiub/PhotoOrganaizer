@@ -39,7 +39,10 @@
   Expected: the header shows live found, indexed, and source counters; indexed photos remain visible while refresh runs.
 
 - [ ] Tap `Stop` during manual refresh.
-  Expected: refresh stops and already indexed photos remain visible.
+  Expected: refresh stops after already found photos are indexed, and already indexed photos remain visible.
+
+- [ ] Run manual refresh again after stopping.
+  Expected: progress counters start from the current indexed library size rather than dropping to zero.
 
 - [ ] Tap `Refresh` again and choose automatic refresh settings.
   Expected: the app opens Settings.
