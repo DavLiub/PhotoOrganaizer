@@ -38,7 +38,7 @@ is no durable thumbnail generation queue yet.
 
 ## Categories And Sorting
 
-The top control row supports five filters:
+The top control row supports five compact icon filters:
 
 - All
 - Camera
@@ -48,6 +48,9 @@ The top control row supports five filters:
 
 Selecting a category filters the visible grid only. It does not persist
 include/exclude settings and does not change indexing rules.
+
+Filter labels are exposed as tooltips/accessibility text instead of permanent
+visible text so the control fits phone width.
 
 The screen also shows a sort selector and visible photo count on one line. Sort
 state is Presentation-only for now. Repository-level ordering remains unchanged.
@@ -73,7 +76,8 @@ separate future workflow for reconciling deleted, changed, or permission-limited
 media and should be exposed from Settings or overflow rather than the primary
 action row.
 
-User-facing scan progress is represented by the live photo count and grid. The
+User-facing scan progress is represented by the live photo count, grid, and a
+small circular activity indicator next to the photo count while scanning. The
 technical indexed/source counters are no longer shown on the main Library UI.
 
 `Stop` cancels further discovery but lets already delivered/current page batches
@@ -86,8 +90,20 @@ reset the library to zero.
 The Library and permission states use `assets/images/library_background.png` as
 a light background image.
 
-The Android launcher icon is generated from `assets/branding/app_icon.png` into
-the standard `android/app/src/main/res/mipmap-*` density folders.
+The Android launcher icon is generated from a cropped version of
+`assets/branding/app_icon.png` into the standard
+`android/app/src/main/res/mipmap-*` density folders so legacy launchers do not
+show a white border around the icon.
+
+Android 8+ uses adaptive icon resources in
+`android/app/src/main/res/mipmap-anydpi-v26`. The adaptive background fills the
+launcher mask with brand blue, while the foreground reuses density-specific
+launcher artwork. The manifest also sets `android:roundIcon` to the same
+adaptive icon.
+
+Android launch backgrounds reference the launcher icon. Android 12+ splash
+styles in `values-v31` and `values-night-v31` set
+`android:windowSplashScreenAnimatedIcon` to the same launcher icon.
 
 ## Architecture
 

@@ -12,9 +12,13 @@
   - live thumbnail grid with backup status;
   - bottom actions `Scan` / `Stop` and `Backup (X%)`.
 - Removed user-facing indexed/source counters from the main Library screen.
+- Added a compact scan activity indicator next to the photo count while scanning.
 - Kept full Rescan out of the primary action row; it remains a future Settings/overflow workflow.
 - Added tracked visual assets for the launcher icon and Library background.
-- Regenerated Android launcher icons for all standard mipmap densities.
+- Regenerated cropped Android launcher icons for all standard mipmap densities.
+- Added Android adaptive and round icon resources for Android launchers.
+- Added Android launch background and Android 12+ splash style references to the new launcher icon.
+- Changed category filters to compact icon segments with tooltips so the control fits phone width.
 
 ## Documentation
 

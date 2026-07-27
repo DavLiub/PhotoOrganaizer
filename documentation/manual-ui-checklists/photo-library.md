@@ -14,13 +14,13 @@
   Expected: the app stays on the Library flow and `Scan` becomes available.
 
 - [ ] Verify the top controls.
-  Expected: `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a segmented filter.
+  Expected: icon buttons for `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a compact segmented filter and fit on phone width.
 
 - [ ] Verify sort and count row.
   Expected: `Date ↓` and the current visible photo count are shown on one line.
 
 - [ ] Tap `Scan` with an empty or old index.
-  Expected: `Scan` changes to `Stop`; photo tiles begin appearing before the full scan completes.
+  Expected: `Scan` changes to `Stop`; a small circular activity indicator appears next to the photo count; photo tiles begin appearing before the full scan completes.
 
 - [ ] Observe scan progress.
   Expected: the visible photo count and thumbnail grid update live; `Indexed photos` and `Sources` are not shown.
@@ -38,7 +38,7 @@
   Expected: the selected sort label changes. Actual ordering can remain unchanged until sorting implementation is added.
 
 - [ ] Tap `Stop` during scan.
-  Expected: scan stops after already found photos are indexed, and already indexed photos remain visible.
+  Expected: scan stops after already found photos are indexed, the activity indicator disappears, and already indexed photos remain visible.
 
 - [ ] Tap `Scan` again after stopping.
   Expected: visible photo count starts from the current library size rather than dropping to zero.
@@ -59,4 +59,7 @@
   Expected: thumbnail grid, bottom actions, and dialogs remain readable without overlap.
 
 - [ ] Check launcher icon on the device home/app list.
-  Expected: the new blue cloud/photo app icon is visible.
+  Expected: the new blue cloud/photo app icon fills the launcher mask without a white border or a separate white wrapper.
+
+- [ ] Force-close and launch the app again.
+  Expected: the Android startup splash shows the same new app icon, not the old Flutter/default icon.

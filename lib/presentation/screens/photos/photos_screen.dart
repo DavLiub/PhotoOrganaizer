@@ -213,24 +213,32 @@ class _LibraryControls extends StatelessWidget {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SegmentedButton<LibraryFilter>(
-              showSelectedIcon: false,
+              showSelectedIcon: true,
               segments: [
-                ButtonSegment(value: LibraryFilter.all, label: Text(l10n.all)),
+                ButtonSegment(
+                  value: LibraryFilter.all,
+                  icon: const Icon(Icons.all_inclusive),
+                  tooltip: l10n.all,
+                ),
                 ButtonSegment(
                   value: LibraryFilter.camera,
-                  label: Text(l10n.categoryCamera),
+                  icon: const Icon(Icons.photo_camera_outlined),
+                  tooltip: l10n.categoryCamera,
                 ),
                 ButtonSegment(
                   value: LibraryFilter.social,
-                  label: Text(l10n.categorySocial),
+                  icon: const Icon(Icons.people_alt_outlined),
+                  tooltip: l10n.categorySocial,
                 ),
                 ButtonSegment(
                   value: LibraryFilter.downloads,
-                  label: Text(l10n.categoryDownloads),
+                  icon: const Icon(Icons.download_outlined),
+                  tooltip: l10n.categoryDownloads,
                 ),
                 ButtonSegment(
                   value: LibraryFilter.screenshots,
-                  label: Text(l10n.categoryScreenshots),
+                  icon: const Icon(Icons.screenshot_outlined),
+                  tooltip: l10n.categoryScreenshots,
                 ),
               ],
               selected: {state.filter},
@@ -269,6 +277,15 @@ class _LibraryControls extends StatelessWidget {
                 child: _SortChip(label: _sortLabel(l10n, state.sort)),
               ),
               const Spacer(),
+              if (state.phase == PhotoLibraryPhase.refreshing) ...[
+                const SizedBox(
+                  key: ValueKey('library_scan_indicator'),
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 8),
+              ],
               Text(
                 l10n.countPhotos(state.visiblePhotos.length),
                 style: Theme.of(context).textTheme.bodyMedium,

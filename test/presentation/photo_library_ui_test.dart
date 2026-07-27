@@ -27,9 +27,14 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('All'), findsOneWidget);
+    expect(find.byTooltip('All'), findsOneWidget);
+    expect(find.byTooltip('Camera'), findsOneWidget);
+    expect(find.byTooltip('Social'), findsOneWidget);
+    expect(find.byTooltip('Downloads'), findsOneWidget);
+    expect(find.byTooltip('Screenshots'), findsOneWidget);
     expect(find.text('Date ↓'), findsOneWidget);
     expect(find.text('0 photos'), findsOneWidget);
+    expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
     expect(find.text('No indexed photos yet'), findsOneWidget);
     expect(find.text('Scan'), findsOneWidget);
     expect(find.text('Backup (0%)'), findsOneWidget);
@@ -48,6 +53,7 @@ void main() {
     expect(find.text('screen.jpg'), findsOneWidget);
     expect(find.text('No backup'), findsNWidgets(2));
     expect(find.text('2 photos'), findsOneWidget);
+    expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
     expect(find.text('Scan'), findsOneWidget);
     expect(find.text('Backup (0%)'), findsOneWidget);
     expect(find.text('Catalogs'), findsNothing);
@@ -60,12 +66,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.drag(
-      find.byType(SingleChildScrollView),
-      const Offset(-320, 0),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Screenshots'));
+    await tester.tap(find.byTooltip('Screenshots'));
     await tester.pumpAndSettle();
 
     expect(find.text('screen.jpg'), findsOneWidget);
@@ -107,6 +108,10 @@ void main() {
     await tester.pump();
 
     expect(find.text('Stop'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('library_scan_indicator')),
+      findsOneWidget,
+    );
     expect(find.text('Indexed photos'), findsNothing);
     expect(find.text('Sources'), findsNothing);
 
@@ -149,7 +154,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Все'), findsOneWidget);
+    expect(find.byTooltip('Все'), findsOneWidget);
     expect(find.text('Дата ↓'), findsOneWidget);
     expect(find.text('Нет бэкапа'), findsNWidgets(2));
     expect(find.text('Бэкап (0%)'), findsOneWidget);
