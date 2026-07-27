@@ -89,7 +89,10 @@ class _FakeEntitlementGateway implements EntitlementGateway {
 
 class _FakeMediaGateway implements MediaLibraryGateway {
   @override
-  Future<LibraryScan> scanLibrary({int pageSize = 100}) async {
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+  }) async {
     return const LibraryScan.empty();
   }
 }

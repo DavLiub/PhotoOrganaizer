@@ -13,6 +13,54 @@ class LibraryScanResult {
   final IndexResult index;
 }
 
+class ScanProgress {
+  const ScanProgress({
+    required this.foundPhotos,
+    required this.indexedPhotos,
+    required this.updatedPhotos,
+    required this.sourceCount,
+    this.scannedSources = 0,
+    this.totalSources,
+  });
+
+  const ScanProgress.empty()
+    : foundPhotos = 0,
+      indexedPhotos = 0,
+      updatedPhotos = 0,
+      sourceCount = 0,
+      scannedSources = 0,
+      totalSources = null;
+
+  final int foundPhotos;
+  final int indexedPhotos;
+  final int updatedPhotos;
+  final int sourceCount;
+  final int scannedSources;
+  final int? totalSources;
+
+  int get writtenPhotos => indexedPhotos + updatedPhotos;
+
+  ScanProgress copyWith({
+    int? foundPhotos,
+    int? indexedPhotos,
+    int? updatedPhotos,
+    int? sourceCount,
+    int? scannedSources,
+    int? totalSources,
+  }) {
+    return ScanProgress(
+      foundPhotos: foundPhotos ?? this.foundPhotos,
+      indexedPhotos: indexedPhotos ?? this.indexedPhotos,
+      updatedPhotos: updatedPhotos ?? this.updatedPhotos,
+      sourceCount: sourceCount ?? this.sourceCount,
+      scannedSources: scannedSources ?? this.scannedSources,
+      totalSources: totalSources ?? this.totalSources,
+    );
+  }
+}
+
+typedef ScanProgressCallback = void Function(ScanProgress progress);
+
 class ScanMediaLibrary {
   const ScanMediaLibrary({
     required MediaLibraryGateway libraryGateway,
@@ -33,6 +81,7 @@ class ScanMediaLibrary {
     IndexScope scope = const IndexScope.allPhotos(),
     DateTime? indexedAt,
     int pageSize = 100,
+    ScanProgressCallback? onProgress,
   }) async {
     if (pageSize <= 0) {
       return OperationFailure(
@@ -64,8 +113,21 @@ class ScanMediaLibrary {
     }
 
     final LibraryScan scan;
+    var progress = const ScanProgress.empty();
     try {
-      scan = await _libraryGateway.scanLibrary(pageSize: pageSize);
+      onProgress?.call(progress);
+      scan = await _libraryGateway.scanLibrary(
+        pageSize: pageSize,
+        onProgress: (scanProgress) {
+          progress = progress.copyWith(
+            foundPhotos: scanProgress.foundPhotos,
+            sourceCount: scanProgress.sourceCount,
+            scannedSources: scanProgress.scannedSources,
+            totalSources: scanProgress.totalSources,
+          );
+          onProgress?.call(progress);
+        },
+      );
     } catch (error) {
       return OperationFailure(
         kind: FailureKind.media,
@@ -92,6 +154,13 @@ class ScanMediaLibrary {
       scan.photos,
       scope: scope,
       indexedAt: indexedAt,
+      onProgress: (indexProgress) {
+        progress = progress.copyWith(
+          indexedPhotos: indexProgress.indexedPhotos,
+          updatedPhotos: indexProgress.updatedPhotos,
+        );
+        onProgress?.call(progress);
+      },
     );
 
     return switch (indexResult) {

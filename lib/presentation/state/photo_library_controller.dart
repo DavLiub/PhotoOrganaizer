@@ -43,10 +43,16 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
 
     state = state.copyWith(
       phase: PhotoLibraryPhase.refreshing,
+      foundPhotos: 0,
+      indexedPhotos: 0,
+      sourceCount: 0,
       clearError: true,
     );
 
-    final result = await _actions.refreshLibrary(pageSize: 100);
+    final result = await _actions.refreshLibrary(
+      pageSize: 100,
+      onProgress: _applyProgress,
+    );
     switch (result) {
       case OperationSuccess<LibraryScanResult>():
         await _loadIntoState(phase: PhotoLibraryPhase.loaded);
@@ -56,6 +62,18 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
           errorCode: failure.safeMessage ?? failure.code,
         );
     }
+  }
+
+  void _applyProgress(ScanProgress progress) {
+    if (state.phase != PhotoLibraryPhase.refreshing) {
+      return;
+    }
+
+    state = state.copyWith(
+      foundPhotos: progress.foundPhotos,
+      indexedPhotos: progress.writtenPhotos,
+      sourceCount: progress.sourceCount,
+    );
   }
 
   void selectCategory(LibraryCategory? category) {

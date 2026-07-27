@@ -49,6 +49,8 @@ The top `Refresh` action opens a dialog:
 - `Run now` starts a manual media refresh through the existing scan use case.
 - `Auto refresh settings` opens settings. Automatic refresh itself is not implemented yet.
 
+While refresh is running, the library header shows live found/indexed/source counters. If the library is still empty, the screen shows the same counters in a centered progress state instead of a spinner-only state.
+
 ## Architecture
 
 Presentation uses:

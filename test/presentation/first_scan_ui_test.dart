@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,6 +98,41 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
+  testWidgets('updates scan counters before scan completes', (tester) async {
+    final scanResult = Completer<OperationResult<LibraryScanResult>>();
+    final actions = _FakeActions(
+      currentPermission: const MediaPermission(
+        state: MediaPermissionState.granted,
+      ),
+      scanResult: scanResult,
+    );
+
+    await tester.pumpWidget(_buildHome(actions));
+    await tester.pump();
+    await tester.pump();
+    await tester.tap(find.text('Scan'));
+    await tester.pump();
+
+    expect(find.text('Scanning library'), findsOneWidget);
+    expect(find.text('5'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+
+    scanResult.complete(
+      const OperationSuccess(
+        LibraryScanResult(
+          scan: LibraryScan.empty(),
+          index: IndexResult(
+            seenPhotos: 0,
+            indexedPhotos: 0,
+            updatedPhotos: 0,
+            ignoredPhotos: 0,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+  });
+
   testWidgets('renders Russian labels when locale is Russian', (tester) async {
     final actions = _FakeActions(
       currentPermission: const MediaPermission(
@@ -128,7 +165,7 @@ class _FakeActions {
   _FakeActions({
     required this.currentPermission,
     MediaPermission? requestedPermission,
-    LibraryScanResult? scanResult,
+    Object? scanResult,
   }) : requestedPermission = requestedPermission ?? currentPermission,
        scanResult =
            scanResult ??
@@ -144,7 +181,7 @@ class _FakeActions {
 
   final MediaPermission currentPermission;
   final MediaPermission requestedPermission;
-  final LibraryScanResult scanResult;
+  final Object scanResult;
   int requestCalls = 0;
   int scanCalls = 0;
 
@@ -155,9 +192,23 @@ class _FakeActions {
         requestCalls++;
         return OperationSuccess(requestedPermission);
       },
-      scanLibrary: ({int pageSize = 100}) async {
+      scanLibrary: ({int pageSize = 100, onProgress}) async {
         scanCalls++;
-        return OperationSuccess(scanResult);
+        onProgress?.call(
+          const ScanProgress(
+            foundPhotos: 5,
+            indexedPhotos: 2,
+            updatedPhotos: 0,
+            sourceCount: 1,
+          ),
+        );
+
+        final nextResult = scanResult;
+        if (nextResult is Completer<OperationResult<LibraryScanResult>>) {
+          return nextResult.future;
+        }
+
+        return OperationSuccess(nextResult as LibraryScanResult);
       },
     );
   }

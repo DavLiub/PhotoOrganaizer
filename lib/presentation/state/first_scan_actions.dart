@@ -5,7 +5,10 @@ import '../../domain/value_objects/operation_result.dart';
 typedef CheckAccess = Future<OperationResult<MediaPermission>> Function();
 typedef RequestAccess = Future<OperationResult<MediaPermission>> Function();
 typedef ScanLibrary =
-    Future<OperationResult<LibraryScanResult>> Function({int pageSize});
+    Future<OperationResult<LibraryScanResult>> Function({
+      int pageSize,
+      ScanProgressCallback? onProgress,
+    });
 
 class FirstScanActions {
   const FirstScanActions({
