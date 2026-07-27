@@ -29,6 +29,7 @@ Business functionality is represented by domain models, application ports, use c
 - [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
 - [media-source-index.md](media-source-index.md): current media source and album catalog model.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
+- [photo-library-ui.md](photo-library-ui.md): current indexed photo grid, category filtering, refresh, and backup warning UI.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.
 - [platform-boundary.md](platform-boundary.md): current Android-first, iOS-ready platform adapter boundary.
 - [storage.md](storage.md): current Drift database schema and storage adapter behavior.
