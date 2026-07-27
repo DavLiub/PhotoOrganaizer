@@ -156,7 +156,7 @@ void main() {
     await tester.tap(find.text('Scan'));
     await tester.pumpAndSettle();
 
-    expect(scanActions.scanCalls, 1);
+    expect(libraryActions.refreshCalls, 1);
     expect(find.text('Library'), findsOneWidget);
     expect(find.text('camera.jpg'), findsOneWidget);
   });
@@ -202,7 +202,8 @@ class _FakeActions {
     return PhotoLibraryActions(
       listPhotos: () async => OperationSuccess(library),
       loadThumbnail: (assetId, {int size = 200}) async => _transparentPng(),
-      refreshLibrary: ({int pageSize = 100, onProgress}) async {
+      refreshLibrary: ({int pageSize = 100, onProgress, signal}) async {
+        signal?.throwIfStopped();
         refreshCalls++;
         onProgress?.call(
           const ScanProgress(
@@ -248,7 +249,8 @@ class _FakeScanActions {
           MediaPermission(state: MediaPermissionState.granted),
         );
       },
-      scanLibrary: ({int pageSize = 100, onProgress}) async {
+      scanLibrary: ({int pageSize = 100, onProgress, signal}) async {
+        signal?.throwIfStopped();
         scanCalls++;
         return OperationSuccess(
           LibraryScanResult(

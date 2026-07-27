@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/models/photo_library.dart';
+import '../../application/models/scan_signal.dart';
 import '../../application/use_cases/scan_media_library.dart';
 import '../../domain/value_objects/operation_result.dart';
 import 'app_providers.dart';
@@ -23,6 +24,10 @@ final photoThumbnailProvider = FutureProvider.autoDispose
 
 class PhotoLibraryController extends Notifier<PhotoLibraryState> {
   late final PhotoLibraryActions _actions;
+  ScanSignal? _scanSignal;
+  bool _scanRunning = false;
+  bool _reloadRunning = false;
+  bool _reloadPending = false;
 
   @override
   PhotoLibraryState build() {
@@ -37,9 +42,23 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
   }
 
   Future<void> refreshNow() async {
-    if (state.isBusy) {
-      return;
+    await scanNow();
+  }
+
+  Future<OperationResult<LibraryScanResult>> scanNow({
+    ScanProgressCallback? onProgress,
+  }) async {
+    if (_scanRunning) {
+      return OperationFailure(
+        kind: FailureKind.validation,
+        code: 'media_scan.already_running',
+        safeMessage: 'Photo scan is already running.',
+      );
     }
+
+    final signal = ScanSignal();
+    _scanSignal = signal;
+    _scanRunning = true;
 
     state = state.copyWith(
       phase: PhotoLibraryPhase.refreshing,
@@ -51,29 +70,52 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
 
     final result = await _actions.refreshLibrary(
       pageSize: 100,
-      onProgress: _applyProgress,
+      signal: signal,
+      onProgress: (progress) {
+        _applyProgress(progress);
+        onProgress?.call(progress);
+      },
     );
+    _scanSignal = null;
+    _scanRunning = false;
+
     switch (result) {
       case OperationSuccess<LibraryScanResult>():
         await _loadIntoState(phase: PhotoLibraryPhase.loaded);
       case OperationFailure<LibraryScanResult>(failure: final failure):
-        state = state.copyWith(
-          phase: PhotoLibraryPhase.failure,
-          errorCode: failure.safeMessage ?? failure.code,
-        );
+        if (failure.kind == FailureKind.cancelled) {
+          await _loadIntoState(phase: PhotoLibraryPhase.loaded);
+        } else {
+          state = state.copyWith(
+            phase: PhotoLibraryPhase.failure,
+            errorCode: failure.safeMessage ?? failure.code,
+          );
+        }
     }
+
+    return result;
+  }
+
+  void stopScan() {
+    _scanSignal?.stop();
   }
 
   void _applyProgress(ScanProgress progress) {
-    if (state.phase != PhotoLibraryPhase.refreshing) {
+    if (!_scanRunning) {
       return;
     }
 
+    final previousWritten = state.indexedPhotos;
     state = state.copyWith(
+      phase: PhotoLibraryPhase.refreshing,
       foundPhotos: progress.foundPhotos,
       indexedPhotos: progress.writtenPhotos,
       sourceCount: progress.sourceCount,
     );
+
+    if (progress.writtenPhotos > previousWritten) {
+      _queueReload();
+    }
   }
 
   void selectCategory(LibraryCategory? category) {
@@ -87,12 +129,41 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
     final result = await _actions.listPhotos();
     switch (result) {
       case OperationSuccess<PhotoLibrary>(value: final value):
-        state = state.copyWith(phase: phase, library: value, clearError: true);
+        final nextPhase = switch ((_scanRunning, phase)) {
+          (true, PhotoLibraryPhase.loaded) => PhotoLibraryPhase.refreshing,
+          (false, PhotoLibraryPhase.refreshing) => PhotoLibraryPhase.loaded,
+          _ => phase,
+        };
+        state = state.copyWith(
+          phase: nextPhase,
+          library: value,
+          clearError: true,
+        );
       case OperationFailure<PhotoLibrary>(failure: final failure):
         state = state.copyWith(
           phase: PhotoLibraryPhase.failure,
           errorCode: failure.safeMessage ?? failure.code,
         );
     }
+  }
+
+  void _queueReload() {
+    if (_reloadRunning) {
+      _reloadPending = true;
+      return;
+    }
+
+    unawaited(_reloadLoop());
+  }
+
+  Future<void> _reloadLoop() async {
+    _reloadRunning = true;
+
+    do {
+      _reloadPending = false;
+      await _loadIntoState(phase: PhotoLibraryPhase.refreshing);
+    } while (_reloadPending);
+
+    _reloadRunning = false;
   }
 }

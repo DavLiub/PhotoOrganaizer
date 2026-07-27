@@ -21,7 +21,11 @@ class HomeScreen extends ConsumerWidget {
       );
     }
 
-    return _FirstScanScreen(state: state, onScan: controller.scan);
+    return _FirstScanScreen(
+      state: state,
+      onScan: controller.scan,
+      onStop: controller.stop,
+    );
   }
 }
 
@@ -102,10 +106,15 @@ class _WelcomeScreen extends StatelessWidget {
 }
 
 class _FirstScanScreen extends StatelessWidget {
-  const _FirstScanScreen({required this.state, required this.onScan});
+  const _FirstScanScreen({
+    required this.state,
+    required this.onScan,
+    required this.onStop,
+  });
 
   final FirstScanState state;
   final VoidCallback onScan;
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -128,10 +137,26 @@ class _FirstScanScreen extends StatelessWidget {
           const LinearProgressIndicator(),
           const SizedBox(height: 16),
         ],
-        FilledButton.icon(
-          onPressed: state.canScan ? onScan : null,
-          icon: const Icon(Icons.search_outlined),
-          label: Text(l10n.scan),
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: state.canScan ? onScan : null,
+                icon: const Icon(Icons.search_outlined),
+                label: Text(l10n.scan),
+              ),
+            ),
+            if (state.phase == FirstScanPhase.scanning) ...[
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onStop,
+                  icon: const Icon(Icons.stop_circle_outlined),
+                  label: Text(l10n.stop),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 16),
         _ScanStatus(state: state),
@@ -175,6 +200,7 @@ class _ScanStatus extends StatelessWidget {
       FirstScanPhase.permissionRequired => Icons.lock_outline,
       FirstScanPhase.ready => Icons.check_circle_outline,
       FirstScanPhase.scanning => Icons.sync_outlined,
+      FirstScanPhase.stopped => Icons.stop_circle_outlined,
       FirstScanPhase.complete => Icons.task_alt,
       FirstScanPhase.failure => Icons.error_outline,
     };
@@ -186,6 +212,7 @@ class _ScanStatus extends StatelessWidget {
       FirstScanPhase.permissionRequired => l10n.photoAccessRequired,
       FirstScanPhase.ready => l10n.readyToScan,
       FirstScanPhase.scanning => l10n.scanningLibrary,
+      FirstScanPhase.stopped => l10n.scanStopped,
       FirstScanPhase.complete => l10n.scanComplete,
       FirstScanPhase.failure => l10n.scanFailed,
     };

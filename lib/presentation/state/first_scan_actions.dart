@@ -1,4 +1,5 @@
 import '../../application/use_cases/scan_media_library.dart';
+import '../../application/models/scan_signal.dart';
 import '../../domain/value_objects/media_permission.dart';
 import '../../domain/value_objects/operation_result.dart';
 
@@ -8,6 +9,7 @@ typedef ScanLibrary =
     Future<OperationResult<LibraryScanResult>> Function({
       int pageSize,
       ScanProgressCallback? onProgress,
+      ScanSignal? signal,
     });
 
 class FirstScanActions {

@@ -49,7 +49,11 @@ The top `Refresh` action opens a dialog:
 - `Run now` starts a manual media refresh through the existing scan use case.
 - `Auto refresh settings` opens settings. Automatic refresh itself is not implemented yet.
 
-While refresh is running, the library header shows live found/indexed/source counters. If the library is still empty, the screen shows the same counters in a centered progress state instead of a spinner-only state.
+While refresh or first scan is running, the library header shows live found/indexed/source counters. If the library is still empty, the screen shows the same counters in a centered progress state instead of a spinner-only state.
+
+The library controller reloads the photo list after indexed batches are written, so tiles can appear before the full media scan completes. Thumbnail data is still loaded lazily by visible grid tiles through `PhotoThumbnailGateway`; there is no durable thumbnail generation queue yet.
+
+`Stop` is available while scan/refresh is running. It requests cooperative cancellation and keeps already indexed photos visible.
 
 ## Architecture
 
@@ -91,3 +95,4 @@ The localization map is key-based so Hebrew can be added later without changing 
 - Backup target settings are not implemented yet.
 - Backup status is derived from current index state, not from durable backup records.
 - Full photo details and full-resolution preview remain out of scope.
+- Pause/resume controls are not implemented for photo scanning.

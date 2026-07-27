@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:photo_organizer/application/models/photo_library.dart';
 import 'package:photo_organizer/application/ports/media_library_gateway.dart';
 import 'package:photo_organizer/application/use_cases/index_photos.dart';
 import 'package:photo_organizer/application/use_cases/scan_media_library.dart';
@@ -14,6 +15,7 @@ import 'package:photo_organizer/presentation/localization/app_localizations.dart
 import 'package:photo_organizer/presentation/screens/home/home_screen.dart';
 import 'package:photo_organizer/presentation/state/app_providers.dart';
 import 'package:photo_organizer/presentation/state/first_scan_actions.dart';
+import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
 
 void main() {
   testWidgets('shows welcome screen while media access is denied', (
@@ -151,7 +153,10 @@ void main() {
 
 Widget _buildHome(_FakeActions actions, {Locale locale = const Locale('en')}) {
   return ProviderScope(
-    overrides: [firstScanActionsProvider.overrideWithValue(actions.value)],
+    overrides: [
+      firstScanActionsProvider.overrideWithValue(actions.value),
+      photoLibraryActionsProvider.overrideWithValue(actions.libraryValue),
+    ],
     child: MaterialApp(
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -192,25 +197,47 @@ class _FakeActions {
         requestCalls++;
         return OperationSuccess(requestedPermission);
       },
-      scanLibrary: ({int pageSize = 100, onProgress}) async {
-        scanCalls++;
-        onProgress?.call(
-          const ScanProgress(
-            foundPhotos: 5,
-            indexedPhotos: 2,
-            updatedPhotos: 0,
-            sourceCount: 1,
-          ),
-        );
-
-        final nextResult = scanResult;
-        if (nextResult is Completer<OperationResult<LibraryScanResult>>) {
-          return nextResult.future;
-        }
-
-        return OperationSuccess(nextResult as LibraryScanResult);
+      scanLibrary: ({int pageSize = 100, onProgress, signal}) async {
+        signal?.throwIfStopped();
+        return _runScan(onProgress);
       },
     );
+  }
+
+  PhotoLibraryActions get libraryValue {
+    return PhotoLibraryActions(
+      listPhotos: () async {
+        return const OperationSuccess(PhotoLibrary.empty());
+      },
+      loadThumbnail: (assetId, {int size = 200}) async {
+        return null;
+      },
+      refreshLibrary: ({int pageSize = 100, onProgress, signal}) async {
+        signal?.throwIfStopped();
+        return _runScan(onProgress);
+      },
+    );
+  }
+
+  Future<OperationResult<LibraryScanResult>> _runScan(
+    ScanProgressCallback? onProgress,
+  ) async {
+    scanCalls++;
+    onProgress?.call(
+      const ScanProgress(
+        foundPhotos: 5,
+        indexedPhotos: 2,
+        updatedPhotos: 0,
+        sourceCount: 1,
+      ),
+    );
+
+    final nextResult = scanResult;
+    if (nextResult is Completer<OperationResult<LibraryScanResult>>) {
+      return nextResult.future;
+    }
+
+    return OperationSuccess(nextResult as LibraryScanResult);
   }
 }
 

@@ -5,6 +5,7 @@ enum FirstScanPhase {
   permissionRequired,
   ready,
   scanning,
+  stopped,
   complete,
   failure,
 }

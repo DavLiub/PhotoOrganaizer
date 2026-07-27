@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:photo_organizer/application/models/scan_signal.dart';
 import 'package:photo_organizer/application/policies/access_override.dart';
 import 'package:photo_organizer/application/policies/access_policy.dart';
 import 'package:photo_organizer/application/ports/background_scheduler.dart';
@@ -92,6 +93,8 @@ class _FakeMediaGateway implements MediaLibraryGateway {
   Future<LibraryScan> scanLibrary({
     int pageSize = 100,
     LibraryProgressCallback? onProgress,
+    LibraryBatchCallback? onBatch,
+    ScanSignal? signal,
   }) async {
     return const LibraryScan.empty();
   }

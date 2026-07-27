@@ -52,6 +52,14 @@ The adapter reports `LibraryScanProgress` during discovery:
 - source progress after each album is completed;
 - final found photo and source totals.
 
+The adapter also emits `LibraryBatch` updates:
+
+- one source batch when a non-empty media source is discovered;
+- one photo batch after each scanned album page;
+- duplicate local asset ids are filtered within the same scan before batches are emitted.
+
+`ScanSignal` is checked before album and asset work so the user can stop a foreground scan. Stopping a scan prevents further discovery; already persisted sources and indexed photo batches remain in local storage.
+
 Android scan diagnostics are emitted through `dart:developer` with the `PhotoOrganizer.Scan` logger name. These logs are intended for local `adb logcat` troubleshooting and do not include asset ids, filenames, or paths.
 
 ## Mapping Rules
@@ -97,3 +105,4 @@ Media location is not requested.
 - Deleted or inaccessible local photos are not marked yet.
 - Source include/exclude settings are not implemented yet.
 - Scan progress is callback-based and in-process only; it is not durable and does not survive app termination.
+- Scan stop is cooperative and takes effect at the next adapter checkpoint.

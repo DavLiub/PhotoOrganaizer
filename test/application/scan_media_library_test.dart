@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:photo_organizer/application/models/scan_signal.dart';
 import 'package:photo_organizer/application/ports/media_library_gateway.dart';
 import 'package:photo_organizer/application/ports/media_permission_gateway.dart';
 import 'package:photo_organizer/application/ports/media_source_repository.dart';
@@ -63,6 +66,33 @@ void main() {
       expect(progress.map((event) => event.foundPhotos), contains(1));
       expect(progress.map((event) => event.writtenPhotos), contains(1));
       expect(progress.map((event) => event.sourceCount), contains(1));
+    });
+
+    test('indexes photo batches before full scan completes', () async {
+      final source = _source(id: 'photo_manager:camera');
+      final photo = _asset(id: 'asset-1', sourceId: source.id);
+      final library = _StreamingLibrary(source: source, photo: photo);
+      final indexRepository = _FakeIndex();
+      final useCase = _useCase(
+        library: library,
+        indexRepository: indexRepository,
+      );
+      var completed = false;
+
+      final future = useCase().whenComplete(() {
+        completed = true;
+      });
+
+      await library.batchHandled.future;
+
+      expect(indexRepository.entries, hasLength(1));
+      expect(completed, isFalse);
+
+      library.finish.complete();
+      final result = await future;
+
+      expect(result, isA<OperationSuccess<LibraryScanResult>>());
+      expect(completed, isTrue);
     });
 
     test('does not scan when permission is denied', () async {
@@ -146,7 +176,10 @@ class _FakeLibrary implements MediaLibraryGateway {
   Future<LibraryScan> scanLibrary({
     int pageSize = 100,
     LibraryProgressCallback? onProgress,
+    LibraryBatchCallback? onBatch,
+    ScanSignal? signal,
   }) async {
+    signal?.throwIfStopped();
     calls++;
     this.pageSize = pageSize;
     onProgress?.call(
@@ -157,6 +190,8 @@ class _FakeLibrary implements MediaLibraryGateway {
         totalSources: scan.sources.length,
       ),
     );
+    await onBatch?.call(LibraryBatch(sources: scan.sources));
+    await onBatch?.call(LibraryBatch(photos: scan.photos));
     return scan;
   }
 }
@@ -174,6 +209,33 @@ class _FakePermission implements MediaPermissionGateway {
   @override
   Future<OperationResult<MediaPermission>> requestAccess() async {
     return OperationSuccess(permission);
+  }
+}
+
+class _StreamingLibrary implements MediaLibraryGateway {
+  _StreamingLibrary({required this.source, required this.photo});
+
+  final MediaSource source;
+  final PhotoAsset photo;
+  final batchHandled = Completer<void>();
+  final finish = Completer<void>();
+
+  @override
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+    LibraryBatchCallback? onBatch,
+    ScanSignal? signal,
+  }) async {
+    signal?.throwIfStopped();
+    onProgress?.call(const LibraryScanProgress(foundPhotos: 0, sourceCount: 0));
+    await onBatch?.call(LibraryBatch(sources: [source]));
+    await onBatch?.call(LibraryBatch(photos: [photo]));
+    onProgress?.call(const LibraryScanProgress(foundPhotos: 1, sourceCount: 1));
+    batchHandled.complete();
+    await finish.future;
+
+    return LibraryScan(sources: [source], photos: [photo]);
   }
 }
 

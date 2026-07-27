@@ -53,10 +53,9 @@ class FirstScanController extends Notifier<FirstScanState> {
       clearError: true,
     );
 
-    final result = await _actions.scanLibrary(
-      pageSize: 100,
-      onProgress: _applyProgress,
-    );
+    final libraryController = ref.read(photoLibraryProvider.notifier);
+    ref.read(mainDestinationProvider.notifier).select(MainDestination.photos);
+    final result = await libraryController.scanNow(onProgress: _applyProgress);
 
     switch (result) {
       case OperationSuccess<LibraryScanResult>(value: final value):
@@ -70,16 +69,21 @@ class FirstScanController extends Notifier<FirstScanState> {
           sourceCount: value.scan.sources.length,
           clearError: true,
         );
-        ref.invalidate(photoLibraryProvider);
-        ref
-            .read(mainDestinationProvider.notifier)
-            .select(MainDestination.photos);
       case OperationFailure<LibraryScanResult>(failure: final failure):
+        if (failure.kind == FailureKind.cancelled) {
+          state = state.copyWith(phase: FirstScanPhase.stopped);
+          return;
+        }
+
         state = state.copyWith(
           phase: FirstScanPhase.failure,
           errorCode: failure.safeMessage ?? failure.code,
         );
     }
+  }
+
+  void stop() {
+    ref.read(photoLibraryProvider.notifier).stopScan();
   }
 
   void _applyProgress(ScanProgress progress) {
