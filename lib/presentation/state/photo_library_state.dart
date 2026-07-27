@@ -1,12 +1,17 @@
 import '../../application/models/photo_library.dart';
 
+enum LibraryFilter { all, camera, social, downloads, screenshots }
+
+enum LibrarySort { dateDesc, dateAsc, nameAsc, nameDesc }
+
 enum PhotoLibraryPhase { loading, loaded, refreshing, failure }
 
 class PhotoLibraryState {
   const PhotoLibraryState({
     required this.phase,
     required this.library,
-    this.selectedCategory,
+    this.filter = LibraryFilter.all,
+    this.sort = LibrarySort.dateDesc,
     this.foundPhotos = 0,
     this.indexedPhotos = 0,
     this.sourceCount = 0,
@@ -21,7 +26,8 @@ class PhotoLibraryState {
 
   final PhotoLibraryPhase phase;
   final PhotoLibrary library;
-  final LibraryCategory? selectedCategory;
+  final LibraryFilter filter;
+  final LibrarySort sort;
   final int foundPhotos;
   final int indexedPhotos;
   final int sourceCount;
@@ -33,6 +39,16 @@ class PhotoLibraryState {
   }
 
   bool get hasPhotos => library.photos.isNotEmpty;
+
+  LibraryCategory? get selectedCategory {
+    return switch (filter) {
+      LibraryFilter.all => null,
+      LibraryFilter.camera => LibraryCategory.camera,
+      LibraryFilter.social => LibraryCategory.social,
+      LibraryFilter.downloads => LibraryCategory.downloads,
+      LibraryFilter.screenshots => LibraryCategory.screenshots,
+    };
+  }
 
   List<LibraryPhoto> get visiblePhotos {
     final category = selectedCategory;
@@ -48,20 +64,19 @@ class PhotoLibraryState {
   PhotoLibraryState copyWith({
     PhotoLibraryPhase? phase,
     PhotoLibrary? library,
-    LibraryCategory? selectedCategory,
+    LibraryFilter? filter,
+    LibrarySort? sort,
     int? foundPhotos,
     int? indexedPhotos,
     int? sourceCount,
-    bool clearCategory = false,
     String? errorCode,
     bool clearError = false,
   }) {
     return PhotoLibraryState(
       phase: phase ?? this.phase,
       library: library ?? this.library,
-      selectedCategory: clearCategory
-          ? null
-          : selectedCategory ?? this.selectedCategory,
+      filter: filter ?? this.filter,
+      sort: sort ?? this.sort,
       foundPhotos: foundPhotos ?? this.foundPhotos,
       indexedPhotos: indexedPhotos ?? this.indexedPhotos,
       sourceCount: sourceCount ?? this.sourceCount,

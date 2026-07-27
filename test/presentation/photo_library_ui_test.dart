@@ -27,9 +27,14 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Library'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Date ↓'), findsOneWidget);
+    expect(find.text('0 photos'), findsOneWidget);
     expect(find.text('No indexed photos yet'), findsOneWidget);
-    expect(find.text('Scan photos'), findsOneWidget);
+    expect(find.text('Scan'), findsOneWidget);
+    expect(find.text('Backup (0%)'), findsOneWidget);
+    expect(find.text('Indexed photos'), findsNothing);
+    expect(find.text('Sources'), findsNothing);
   });
 
   testWidgets('shows indexed photo grid with backup status', (tester) async {
@@ -42,9 +47,10 @@ void main() {
     expect(find.text('camera.jpg'), findsOneWidget);
     expect(find.text('screen.jpg'), findsOneWidget);
     expect(find.text('No backup'), findsNWidgets(2));
-    expect(find.text('Catalogs'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Backup'), findsOneWidget);
+    expect(find.text('2 photos'), findsOneWidget);
+    expect(find.text('Scan'), findsOneWidget);
+    expect(find.text('Backup (0%)'), findsOneWidget);
+    expect(find.text('Catalogs'), findsNothing);
   });
 
   testWidgets('filters photos by selected catalog category', (tester) async {
@@ -54,33 +60,37 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.text('Catalogs'));
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(-320, 0),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Screenshots'));
     await tester.pumpAndSettle();
 
     expect(find.text('screen.jpg'), findsOneWidget);
     expect(find.text('camera.jpg'), findsNothing);
+    expect(find.text('1 photos'), findsOneWidget);
   });
 
-  testWidgets('refresh dialog can run manual refresh', (tester) async {
+  testWidgets('sort control stores selected value', (tester) async {
     final actions = _FakeActions(library: _library());
 
     await tester.pumpWidget(_buildPhotos(actions));
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byTooltip('Refresh'));
+    await tester.tap(find.text('Date ↓'));
     await tester.pumpAndSettle();
-    expect(find.text('Refresh library'), findsOneWidget);
+    expect(find.text('Name A-Z'), findsOneWidget);
 
-    await tester.tap(find.text('Run now'));
+    await tester.tap(find.text('Name A-Z'));
     await tester.pumpAndSettle();
 
-    expect(actions.refreshCalls, 1);
+    expect(find.text('Name A-Z'), findsOneWidget);
   });
 
-  testWidgets('shows refresh progress while library scan is running', (
+  testWidgets('shows stop action while library scan is running', (
     tester,
   ) async {
     final refreshResult = Completer<OperationResult<LibraryScanResult>>();
@@ -93,13 +103,12 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byTooltip('Refresh'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Run now'));
+    await tester.tap(find.text('Scan'));
     await tester.pump();
 
-    expect(find.textContaining('Found photos: 3'), findsOneWidget);
-    expect(find.textContaining('Indexed photos: 2'), findsOneWidget);
+    expect(find.text('Stop'), findsOneWidget);
+    expect(find.text('Indexed photos'), findsNothing);
+    expect(find.text('Sources'), findsNothing);
 
     refreshResult.complete(
       const OperationSuccess(
@@ -126,7 +135,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Backup'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Backup (0%)'));
     await tester.pumpAndSettle();
 
     expect(find.text('Backup target is not configured'), findsOneWidget);
@@ -140,9 +149,10 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Библиотека'), findsOneWidget);
+    expect(find.text('Все'), findsOneWidget);
+    expect(find.text('Дата ↓'), findsOneWidget);
     expect(find.text('Нет бэкапа'), findsNWidgets(2));
-    expect(find.text('Каталоги'), findsOneWidget);
+    expect(find.text('Бэкап (0%)'), findsOneWidget);
   });
 
   testWidgets('successful first scan opens library tab', (tester) async {
@@ -167,7 +177,10 @@ Widget _buildPhotos(
   Locale locale = const Locale('en'),
 }) {
   return ProviderScope(
-    overrides: [photoLibraryActionsProvider.overrideWithValue(actions.value)],
+    overrides: [
+      firstScanActionsProvider.overrideWithValue(_FakeScanActions().value),
+      photoLibraryActionsProvider.overrideWithValue(actions.value),
+    ],
     child: MaterialApp(
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -32,3 +32,4 @@ Each ADR should include:
 - [0017-use-platform-adapter-boundary.md](0017-use-platform-adapter-boundary.md)
 - [0018-centralize-backup-state-machine.md](0018-centralize-backup-state-machine.md)
 - [0019-use-media-source-index.md](0019-use-media-source-index.md)
+- [0020-use-unified-library-screen.md](0020-use-unified-library-screen.md)

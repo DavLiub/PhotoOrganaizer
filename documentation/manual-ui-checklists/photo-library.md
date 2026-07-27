@@ -3,58 +3,60 @@
 ## Preconditions
 
 - App is installed as a debug build.
-- Media permission is granted or limited.
-- At least one manual scan has completed.
+- Media permission is granted or can be granted during the check.
 
 ## Checklist
 
-- [ ] Finish a scan from Home.
-  Expected: the app opens the Photos tab automatically.
+- [ ] Open the app without media permission.
+  Expected: Library shows the permission request state and `Grant access`.
 
-- [ ] Start a scan from Home with an empty or old index.
-  Expected: the Photos tab opens immediately and photo tiles begin appearing before the full scan completes.
+- [ ] Grant media permission.
+  Expected: the app stays on the Library flow and `Scan` becomes available.
 
-- [ ] Verify the library header.
-  Expected: the screen title is visible and photo count matches the visible grid.
+- [ ] Verify the top controls.
+  Expected: `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a segmented filter.
+
+- [ ] Verify sort and count row.
+  Expected: `Date ↓` and the current visible photo count are shown on one line.
+
+- [ ] Tap `Scan` with an empty or old index.
+  Expected: `Scan` changes to `Stop`; photo tiles begin appearing before the full scan completes.
+
+- [ ] Observe scan progress.
+  Expected: the visible photo count and thumbnail grid update live; `Indexed photos` and `Sources` are not shown.
 
 - [ ] Verify photo tiles.
   Expected: each indexed photo appears as a thumbnail tile with safe filename and `No backup` status.
 
-- [ ] Tap `Catalogs`.
-  Expected: a category sheet opens with `All photos`, `Camera`, `Social`, `Downloads`, and `Screenshots`.
-
 - [ ] Select `Screenshots`.
   Expected: the grid shows only screenshot-category photos; no include/exclude setting is changed.
 
-- [ ] Reopen `Catalogs` and select `All photos`.
+- [ ] Select `All`.
   Expected: the full indexed grid is visible again.
 
-- [ ] Tap `Refresh`.
-  Expected: a dialog offers manual refresh and automatic refresh settings.
+- [ ] Open the sort control and choose `Name A-Z`.
+  Expected: the selected sort label changes. Actual ordering can remain unchanged until sorting implementation is added.
 
-- [ ] In the refresh dialog, tap `Run now`.
-  Expected: the library starts a manual refresh and stays on the Photos tab.
+- [ ] Tap `Stop` during scan.
+  Expected: scan stops after already found photos are indexed, and already indexed photos remain visible.
 
-- [ ] Observe manual refresh progress.
-  Expected: the header shows live found, indexed, and source counters; indexed photos remain visible while refresh runs.
+- [ ] Tap `Scan` again after stopping.
+  Expected: visible photo count starts from the current library size rather than dropping to zero.
 
-- [ ] Tap `Stop` during manual refresh.
-  Expected: refresh stops after already found photos are indexed, and already indexed photos remain visible.
+- [ ] Verify bottom navigation.
+  Expected: Library is the first tab, and Settings is available as a bottom tab.
 
-- [ ] Run manual refresh again after stopping.
-  Expected: progress counters start from the current indexed library size rather than dropping to zero.
-
-- [ ] Tap `Refresh` again and choose automatic refresh settings.
-  Expected: the app opens Settings.
-
-- [ ] Tap `Backup`.
+- [ ] Tap `Backup (X%)`.
   Expected: a warning says backup target storage is not configured.
 
 - [ ] In the backup warning, tap `Go to settings`.
-  Expected: the app opens Settings.
+  Expected: the app selects the Settings tab.
 
 - [ ] Switch device locale to Russian and reopen the screen.
   Expected: library labels and action labels are shown in Russian.
 
 - [ ] Rotate the device.
   Expected: thumbnail grid, bottom actions, and dialogs remain readable without overlap.
+
+- [ ] Check launcher icon on the device home/app list.
+  Expected: the new blue cloud/photo app icon is visible.

@@ -154,10 +154,15 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
   }
 
   void selectCategory(LibraryCategory? category) {
-    state = state.copyWith(
-      selectedCategory: category,
-      clearCategory: category == null,
-    );
+    state = state.copyWith(filter: _filterForCategory(category));
+  }
+
+  void selectFilter(LibraryFilter filter) {
+    state = state.copyWith(filter: filter);
+  }
+
+  void selectSort(LibrarySort sort) {
+    state = state.copyWith(sort: sort);
   }
 
   Future<void> _loadIntoState({required PhotoLibraryPhase phase}) async {
@@ -210,4 +215,14 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
 
     _reloadRunning = false;
   }
+}
+
+LibraryFilter _filterForCategory(LibraryCategory? category) {
+  return switch (category) {
+    null => LibraryFilter.all,
+    LibraryCategory.camera => LibraryFilter.camera,
+    LibraryCategory.social => LibraryFilter.social,
+    LibraryCategory.downloads => LibraryFilter.downloads,
+    LibraryCategory.screenshots => LibraryFilter.screenshots,
+  };
 }

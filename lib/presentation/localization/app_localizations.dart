@@ -83,15 +83,22 @@ class AppLocalizations {
   String get refreshLibraryMessage => text('refreshLibraryMessage');
   String get configureAutoRefresh => text('configureAutoRefresh');
   String get runNow => text('runNow');
+  String get all => text('all');
   String get allPhotos => text('allPhotos');
   String get catalogs => text('catalogs');
   String get startBackup => text('startBackup');
+  String get sort => text('sort');
+  String get sortDateDesc => text('sortDateDesc');
+  String get sortDateAsc => text('sortDateAsc');
+  String get sortNameAsc => text('sortNameAsc');
+  String get sortNameDesc => text('sortNameDesc');
   String get backupTargetMissing => text('backupTargetMissing');
   String get backupTargetMessage => text('backupTargetMessage');
   String get goToSettings => text('goToSettings');
   String get cancel => text('cancel');
   String get emptyLibraryTitle => text('emptyLibraryTitle');
   String get emptyLibraryMessage => text('emptyLibraryMessage');
+  String get emptyScanMessage => text('emptyScanMessage');
   String get scanPhotos => text('scanPhotos');
   String get categoryCamera => text('categoryCamera');
   String get categorySocial => text('categorySocial');
@@ -105,6 +112,10 @@ class AppLocalizations {
 
   String countPhotos(int value) {
     return count('photoCount', value);
+  }
+
+  String backupPercent(int value) {
+    return text('backupPercent').replaceAll('{percent}', value.toString());
   }
 
   String emptyCategory(String category) {
@@ -189,17 +200,24 @@ const _en = {
       'Refresh the local photo index now, or configure automatic refresh in settings.',
   'configureAutoRefresh': 'Auto refresh settings',
   'runNow': 'Run now',
+  'all': 'All',
   'allPhotos': 'All photos',
   'catalogs': 'Catalogs',
   'startBackup': 'Backup',
+  'sort': 'Sort',
+  'sortDateDesc': 'Date ↓',
+  'sortDateAsc': 'Date ↑',
+  'sortNameAsc': 'Name A-Z',
+  'sortNameDesc': 'Name Z-A',
+  'backupPercent': 'Backup ({percent}%)',
   'backupTargetMissing': 'Backup target is not configured',
   'backupTargetMessage':
       'Choose where backups should be stored before starting backup.',
   'goToSettings': 'Go to settings',
   'cancel': 'Cancel',
   'emptyLibraryTitle': 'No indexed photos yet',
-  'emptyLibraryMessage':
-      'Run the first scan from Home to build the local photo library.',
+  'emptyLibraryMessage': 'Run Scan to build the local photo library.',
+  'emptyScanMessage': 'Photos will appear here while scanning continues.',
   'scanPhotos': 'Scan photos',
   'categoryCamera': 'Camera',
   'categorySocial': 'Social',
@@ -269,9 +287,16 @@ const _ru = {
       'Обновите локальный индекс сейчас или настройте автоматическое обновление.',
   'configureAutoRefresh': 'Настроить автообновление',
   'runNow': 'Запустить сейчас',
+  'all': 'Все',
   'allPhotos': 'Все фото',
   'catalogs': 'Каталоги',
   'startBackup': 'Бэкап',
+  'sort': 'Сортировка',
+  'sortDateDesc': 'Дата ↓',
+  'sortDateAsc': 'Дата ↑',
+  'sortNameAsc': 'Имя A-Z',
+  'sortNameDesc': 'Имя Z-A',
+  'backupPercent': 'Бэкап ({percent}%)',
   'backupTargetMissing': 'Хранилище бэкапа не настроено',
   'backupTargetMessage':
       'Выберите, куда сохранять бэкапы, перед запуском резервного копирования.',
@@ -279,7 +304,8 @@ const _ru = {
   'cancel': 'Отмена',
   'emptyLibraryTitle': 'Проиндексированных фото пока нет',
   'emptyLibraryMessage':
-      'Запустите первое сканирование на главном экране, чтобы построить локальную библиотеку.',
+      'Запустите сканирование, чтобы построить локальную библиотеку.',
+  'emptyScanMessage': 'Фото будут появляться здесь во время сканирования.',
   'scanPhotos': 'Сканировать фото',
   'categoryCamera': 'Камера',
   'categorySocial': 'Соцсети',
