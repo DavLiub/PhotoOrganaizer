@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/history/history_screen.dart';
-import '../screens/home/home_screen.dart';
 import '../screens/photos/photos_screen.dart';
 import '../screens/premium/premium_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -19,20 +18,6 @@ class MainScaffold extends ConsumerWidget {
     final destination = ref.watch(mainDestinationProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appTitle),
-        actions: [
-          IconButton(
-            tooltip: l10n.settings,
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-              );
-            },
-          ),
-        ],
-      ),
       body: _buildBody(destination),
       bottomNavigationBar: NavigationBar(
         selectedIndex: destination.index,
@@ -55,10 +40,10 @@ class MainScaffold extends ConsumerWidget {
 
   Widget _buildBody(MainDestination destination) {
     return switch (destination) {
-      MainDestination.home => const HomeScreen(),
-      MainDestination.photos => const PhotosScreen(),
+      MainDestination.library => const PhotosScreen(),
       MainDestination.history => const HistoryScreen(),
       MainDestination.premium => const PremiumScreen(),
+      MainDestination.settings => const SettingsScreen(),
     };
   }
 }

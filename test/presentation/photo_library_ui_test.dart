@@ -17,9 +17,48 @@ import 'package:photo_organizer/presentation/navigation/main_scaffold.dart';
 import 'package:photo_organizer/presentation/screens/photos/photos_screen.dart';
 import 'package:photo_organizer/presentation/state/app_providers.dart';
 import 'package:photo_organizer/presentation/state/first_scan_actions.dart';
+import 'package:photo_organizer/presentation/state/photo_library_state.dart';
 import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
 
 void main() {
+  test('sorts visible photos after category filtering', () {
+    final library = _sortLibrary();
+    final defaultState = PhotoLibraryState(
+      phase: PhotoLibraryPhase.loaded,
+      library: library,
+    );
+
+    expect(_names(defaultState.visiblePhotos), [
+      'alpha.jpg',
+      'middle.jpg',
+      'zeta.jpg',
+    ]);
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.dateAsc).visiblePhotos),
+      ['zeta.jpg', 'middle.jpg', 'alpha.jpg'],
+    );
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.nameAsc).visiblePhotos),
+      ['alpha.jpg', 'middle.jpg', 'zeta.jpg'],
+    );
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.nameDesc).visiblePhotos),
+      ['zeta.jpg', 'middle.jpg', 'alpha.jpg'],
+    );
+
+    expect(
+      _names(
+        defaultState
+            .copyWith(filter: LibraryFilter.camera, sort: LibrarySort.nameAsc)
+            .visiblePhotos,
+      ),
+      ['alpha.jpg', 'zeta.jpg'],
+    );
+  });
+
   testWidgets('shows empty state before indexed photos exist', (tester) async {
     final actions = _FakeActions(library: const PhotoLibrary.empty());
 
@@ -27,9 +66,36 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Library'), findsOneWidget);
+    expect(find.byTooltip('All'), findsOneWidget);
+    expect(find.byTooltip('Camera'), findsOneWidget);
+    expect(find.byTooltip('Social'), findsOneWidget);
+    expect(find.byTooltip('Downloads'), findsOneWidget);
+    expect(find.byTooltip('Screenshots'), findsOneWidget);
+    expect(find.text('Date ↓'), findsOneWidget);
+    expect(find.text('0 photos'), findsOneWidget);
+    expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
     expect(find.text('No indexed photos yet'), findsOneWidget);
-    expect(find.text('Scan photos'), findsOneWidget);
+    expect(find.text('Scan'), findsOneWidget);
+    expect(find.text('Backup (0%)'), findsOneWidget);
+    expect(find.text('Indexed photos'), findsNothing);
+    expect(find.text('Sources'), findsNothing);
+  });
+
+  testWidgets('centers category filter when it fits screen width', (
+    tester,
+  ) async {
+    final actions = _FakeActions(library: const PhotoLibrary.empty());
+
+    await tester.pumpWidget(_buildPhotos(actions));
+    await tester.pump();
+    await tester.pump();
+
+    final screenCenter = tester.getCenter(find.byType(PhotosScreen)).dx;
+    final filterCenter = tester
+        .getCenter(find.byType(SegmentedButton<LibraryFilter>))
+        .dx;
+
+    expect(filterCenter, closeTo(screenCenter, 1));
   });
 
   testWidgets('shows indexed photo grid with backup status', (tester) async {
@@ -42,9 +108,14 @@ void main() {
     expect(find.text('camera.jpg'), findsOneWidget);
     expect(find.text('screen.jpg'), findsOneWidget);
     expect(find.text('No backup'), findsNWidgets(2));
-    expect(find.text('Catalogs'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Backup'), findsOneWidget);
+    expect(find.text('2 photos'), findsOneWidget);
+    expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
+    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+    expect(scrollbar.thumbVisibility, isTrue);
+    expect(scrollbar.interactive, isTrue);
+    expect(find.text('Scan'), findsOneWidget);
+    expect(find.text('Backup (0%)'), findsOneWidget);
+    expect(find.text('Catalogs'), findsNothing);
   });
 
   testWidgets('filters photos by selected catalog category', (tester) async {
@@ -54,33 +125,32 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.text('Catalogs'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Screenshots'));
+    await tester.tap(find.byTooltip('Screenshots'));
     await tester.pumpAndSettle();
 
     expect(find.text('screen.jpg'), findsOneWidget);
     expect(find.text('camera.jpg'), findsNothing);
+    expect(find.text('1 photos'), findsOneWidget);
   });
 
-  testWidgets('refresh dialog can run manual refresh', (tester) async {
+  testWidgets('sort control stores selected value', (tester) async {
     final actions = _FakeActions(library: _library());
 
     await tester.pumpWidget(_buildPhotos(actions));
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byTooltip('Refresh'));
+    await tester.tap(find.text('Date ↓'));
     await tester.pumpAndSettle();
-    expect(find.text('Refresh library'), findsOneWidget);
+    expect(find.text('Name A-Z'), findsOneWidget);
 
-    await tester.tap(find.text('Run now'));
+    await tester.tap(find.text('Name A-Z'));
     await tester.pumpAndSettle();
 
-    expect(actions.refreshCalls, 1);
+    expect(find.text('Name A-Z'), findsOneWidget);
   });
 
-  testWidgets('shows refresh progress while library scan is running', (
+  testWidgets('shows stop action while library scan is running', (
     tester,
   ) async {
     final refreshResult = Completer<OperationResult<LibraryScanResult>>();
@@ -93,13 +163,16 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.byTooltip('Refresh'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Run now'));
+    await tester.tap(find.text('Scan'));
     await tester.pump();
 
-    expect(find.textContaining('Found photos: 3'), findsOneWidget);
-    expect(find.textContaining('Indexed photos: 2'), findsOneWidget);
+    expect(find.text('Stop'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('library_scan_indicator')),
+      findsOneWidget,
+    );
+    expect(find.text('Indexed photos'), findsNothing);
+    expect(find.text('Sources'), findsNothing);
 
     refreshResult.complete(
       const OperationSuccess(
@@ -126,7 +199,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Backup'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Backup (0%)'));
     await tester.pumpAndSettle();
 
     expect(find.text('Backup target is not configured'), findsOneWidget);
@@ -140,9 +213,10 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Библиотека'), findsOneWidget);
+    expect(find.byTooltip('Все'), findsOneWidget);
+    expect(find.text('Дата ↓'), findsOneWidget);
     expect(find.text('Нет бэкапа'), findsNWidgets(2));
-    expect(find.text('Каталоги'), findsOneWidget);
+    expect(find.text('Бэкап (0%)'), findsOneWidget);
   });
 
   testWidgets('successful first scan opens library tab', (tester) async {
@@ -167,7 +241,10 @@ Widget _buildPhotos(
   Locale locale = const Locale('en'),
 }) {
   return ProviderScope(
-    overrides: [photoLibraryActionsProvider.overrideWithValue(actions.value)],
+    overrides: [
+      firstScanActionsProvider.overrideWithValue(_FakeScanActions().value),
+      photoLibraryActionsProvider.overrideWithValue(actions.value),
+    ],
     child: MaterialApp(
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -293,10 +370,48 @@ PhotoLibrary _library() {
   );
 }
 
+PhotoLibrary _sortLibrary() {
+  final photos = [
+    _photo(
+      id: 'zeta',
+      displayName: 'zeta.jpg',
+      category: LibraryCategory.camera,
+      createdAt: DateTime.utc(2026, 7, 25),
+    ),
+    _photo(
+      id: 'alpha',
+      displayName: 'alpha.jpg',
+      category: LibraryCategory.camera,
+      createdAt: DateTime.utc(2026, 7, 27),
+    ),
+    _photo(
+      id: 'middle',
+      displayName: 'middle.jpg',
+      category: LibraryCategory.screenshots,
+      createdAt: DateTime.utc(2026, 7, 26),
+    ),
+  ];
+
+  return PhotoLibrary(
+    photos: photos,
+    categories: const [
+      LibraryCategorySummary(category: LibraryCategory.camera, count: 2),
+      LibraryCategorySummary(category: LibraryCategory.social, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.downloads, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.screenshots, count: 1),
+    ],
+  );
+}
+
+List<String> _names(List<LibraryPhoto> photos) {
+  return photos.map((photo) => photo.displayName).toList(growable: false);
+}
+
 LibraryPhoto _photo({
   required String id,
   required String displayName,
   required LibraryCategory category,
+  DateTime? createdAt,
 }) {
   return LibraryPhoto(
     id: id,
@@ -305,7 +420,7 @@ LibraryPhoto _photo({
     sourceName: category.name,
     category: category,
     backupStatus: LibraryBackupStatus.noBackup,
-    createdAt: DateTime.utc(2026, 7, 27),
+    createdAt: createdAt ?? DateTime.utc(2026, 7, 27),
     fileSize: 100,
     width: 100,
     height: 100,

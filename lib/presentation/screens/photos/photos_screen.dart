@@ -4,103 +4,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/models/photo_library.dart';
+import '../../../domain/value_objects/media_permission.dart';
 import '../../localization/app_localizations.dart';
+import '../../navigation/main_destination.dart';
+import '../../state/first_scan_controller.dart';
+import '../../state/first_scan_state.dart';
 import '../../state/main_destination_controller.dart';
 import '../../state/photo_library_controller.dart';
 import '../../state/photo_library_state.dart';
-import '../../navigation/main_destination.dart';
-import '../settings/settings_screen.dart';
 
 class PhotosScreen extends ConsumerWidget {
   const PhotosScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(photoLibraryProvider);
-    final controller = ref.read(photoLibraryProvider.notifier);
+    final accessState = ref.watch(firstScanProvider);
+    final libraryState = ref.watch(photoLibraryProvider);
+    final accessController = ref.read(firstScanProvider.notifier);
+    final libraryController = ref.read(photoLibraryProvider.notifier);
 
-    return Column(
-      children: [
-        _LibraryHeader(
-          state: state,
-          onRefresh: () => _showRefreshDialog(context, ref),
-          onStop: controller.stopScan,
-        ),
-        if (state.errorCode != null)
-          _ErrorBanner(message: state.errorCode!)
-        else if (state.isBusy && !state.hasPhotos)
-          Expanded(
-            child: _LibraryProgress(state: state, onStop: controller.stopScan),
-          )
-        else if (!state.hasPhotos)
-          Expanded(
-            child: _EmptyLibrary(
-              onScan: () {
-                ref
-                    .read(mainDestinationProvider.notifier)
-                    .select(MainDestination.home);
-              },
-            ),
-          )
-        else
-          Expanded(
-            child: _PhotoGrid(
-              photos: state.visiblePhotos,
-              selectedCategory: state.selectedCategory,
-            ),
-          ),
-        _BottomActions(
-          onCatalogs: () => _showCatalogSheet(context, state, controller),
-          onSettings: () => _openSettings(context),
-          onBackup: () => _showBackupDialog(context),
-        ),
-      ],
+    if (!accessState.canReadPhotos) {
+      return _AccessGate(
+        state: accessState,
+        onGrantAccess: accessController.requestAccess,
+      );
+    }
+
+    return _LibraryScreen(
+      state: libraryState,
+      controller: libraryController,
+      onScan: accessController.scan,
+      onBackup: () => _showBackupDialog(context, ref),
     );
   }
 
-  Future<void> _showRefreshDialog(BuildContext context, WidgetRef ref) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = ref.read(photoLibraryProvider.notifier);
-
-    final action = await showDialog<_RefreshAction>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(l10n.refreshLibrary),
-          content: Text(l10n.refreshLibraryMessage),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(_RefreshAction.settings);
-              },
-              child: Text(l10n.configureAutoRefresh),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(context).pop(_RefreshAction.manual);
-              },
-              child: Text(l10n.runNow),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (!context.mounted) {
-      return;
-    }
-
-    switch (action) {
-      case _RefreshAction.manual:
-        await controller.refreshNow();
-      case _RefreshAction.settings:
-        _openSettings(context);
-      case null:
-        return;
-    }
-  }
-
-  Future<void> _showBackupDialog(BuildContext context) async {
+  Future<void> _showBackupDialog(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
 
     final goToSettings = await showDialog<bool>(
@@ -127,157 +65,128 @@ class PhotosScreen extends ConsumerWidget {
       },
     );
 
-    if (goToSettings == true && context.mounted) {
-      _openSettings(context);
+    if (goToSettings == true) {
+      ref
+          .read(mainDestinationProvider.notifier)
+          .select(MainDestination.settings);
     }
-  }
-
-  Future<void> _showCatalogSheet(
-    BuildContext context,
-    PhotoLibraryState state,
-    PhotoLibraryController controller,
-  ) async {
-    final l10n = AppLocalizations.of(context);
-
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.all_inclusive),
-                title: Text(l10n.allPhotos),
-                trailing: Text(state.library.photos.length.toString()),
-                selected: state.selectedCategory == null,
-                onTap: () {
-                  controller.selectCategory(null);
-                  Navigator.of(context).pop();
-                },
-              ),
-              for (final summary in state.library.categories)
-                ListTile(
-                  leading: Icon(_categoryIcon(summary.category)),
-                  title: Text(_categoryLabel(l10n, summary.category)),
-                  trailing: Text(summary.count.toString()),
-                  selected: state.selectedCategory == summary.category,
-                  onTap: () {
-                    controller.selectCategory(summary.category);
-                    Navigator.of(context).pop();
-                  },
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _openSettings(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
   }
 }
 
-class _LibraryHeader extends StatelessWidget {
-  const _LibraryHeader({
-    required this.state,
-    required this.onRefresh,
-    required this.onStop,
-  });
+class _AccessGate extends StatelessWidget {
+  const _AccessGate({required this.state, required this.onGrantAccess});
 
-  final PhotoLibraryState state;
-  final VoidCallback onRefresh;
-  final VoidCallback onStop;
+  final FirstScanState state;
+  final VoidCallback onGrantAccess;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final count = state.visiblePhotos.length;
-    final subtitle = state.phase == PhotoLibraryPhase.refreshing
-        ? _progressText(l10n, state)
-        : state.selectedCategory == null
-        ? l10n.countPhotos(count)
-        : '${_categoryLabel(l10n, state.selectedCategory!)} - ${l10n.countPhotos(count)}';
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.library,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+    return _PageBackground(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            const SizedBox(height: 24),
+            Icon(
+              Icons.photo_library_outlined,
+              size: 56,
+              color: Theme.of(context).colorScheme.primary,
             ),
-          ),
-          if (state.phase == PhotoLibraryPhase.refreshing)
-            IconButton(
-              tooltip: l10n.stop,
-              onPressed: onStop,
-              icon: const Icon(Icons.stop_circle_outlined),
-            )
-          else
-            IconButton(
-              tooltip: l10n.refresh,
-              onPressed: state.isBusy ? null : onRefresh,
-              icon: const Icon(Icons.refresh_outlined),
+            const SizedBox(height: 16),
+            Text(
+              l10n.welcomeTitle,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-        ],
+            const SizedBox(height: 8),
+            Text(l10n.welcomeSubtitle),
+            const SizedBox(height: 24),
+            Card(
+              child: ListTile(
+                leading: Icon(_permissionIcon(state.permission)),
+                title: Text(l10n.photoAccess),
+                subtitle: Text(_permissionText(l10n, state.permission)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: state.canRequestAccess ? onGrantAccess : null,
+              icon: const Icon(Icons.lock_open_outlined),
+              label: Text(l10n.grantAccess),
+            ),
+            if (state.isBusy) ...[
+              const SizedBox(height: 16),
+              const LinearProgressIndicator(),
+            ],
+          ],
+        ),
       ),
     );
   }
+
+  IconData _permissionIcon(MediaPermission? permission) {
+    return switch (permission?.state) {
+      MediaPermissionState.denied => Icons.lock_outline,
+      MediaPermissionState.permanentlyDenied => Icons.block,
+      MediaPermissionState.unavailable => Icons.error_outline,
+      _ => Icons.hourglass_empty,
+    };
+  }
+
+  String _permissionText(AppLocalizations l10n, MediaPermission? permission) {
+    if (permission == null) {
+      return l10n.checkingAccess;
+    }
+
+    return switch (permission.state) {
+      MediaPermissionState.granted => l10n.permissionGranted,
+      MediaPermissionState.limited => l10n.permissionLimited,
+      MediaPermissionState.denied => l10n.photoAccessRequired,
+      MediaPermissionState.permanentlyDenied => l10n.permissionBlocked,
+      MediaPermissionState.unavailable => l10n.permissionUnavailable,
+      MediaPermissionState.unknown => l10n.permissionUnknown,
+    };
+  }
 }
 
-class _LibraryProgress extends StatelessWidget {
-  const _LibraryProgress({required this.state, required this.onStop});
+class _LibraryScreen extends StatelessWidget {
+  const _LibraryScreen({
+    required this.state,
+    required this.controller,
+    required this.onScan,
+    required this.onBackup,
+  });
 
   final PhotoLibraryState state;
-  final VoidCallback onStop;
+  final PhotoLibraryController controller;
+  final VoidCallback onScan;
+  final VoidCallback onBackup;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
+    return _PageBackground(
+      child: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const LinearProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              l10n.scanningLibrary,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _progressText(l10n, state),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: onStop,
-              icon: const Icon(Icons.stop_circle_outlined),
-              label: Text(l10n.stop),
+            _LibraryControls(state: state, controller: controller),
+            if (state.errorCode != null)
+              _ErrorBanner(message: state.errorCode!)
+            else if (!state.hasPhotos)
+              Expanded(child: _EmptyLibrary(isBusy: state.isBusy))
+            else
+              Expanded(
+                child: _PhotoGrid(
+                  photos: state.visiblePhotos,
+                  selectedCategory: state.selectedCategory,
+                ),
+              ),
+            _BottomActions(
+              isScanning: state.phase == PhotoLibraryPhase.refreshing,
+              backupPercent: _backupPercent(state.library),
+              onScan: onScan,
+              onStop: controller.stopScan,
+              onBackup: onBackup,
             ),
           ],
         ),
@@ -286,30 +195,193 @@ class _LibraryProgress extends StatelessWidget {
   }
 }
 
-class _PhotoGrid extends StatelessWidget {
+class _LibraryControls extends StatelessWidget {
+  const _LibraryControls({required this.state, required this.controller});
+
+  final PhotoLibraryState state;
+  final PhotoLibraryController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: Center(
+                    child: SegmentedButton<LibraryFilter>(
+                      showSelectedIcon: true,
+                      segments: [
+                        ButtonSegment(
+                          value: LibraryFilter.all,
+                          icon: const Icon(Icons.all_inclusive),
+                          tooltip: l10n.all,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.camera,
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          tooltip: l10n.categoryCamera,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.social,
+                          icon: const Icon(Icons.people_alt_outlined),
+                          tooltip: l10n.categorySocial,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.downloads,
+                          icon: const Icon(Icons.download_outlined),
+                          tooltip: l10n.categoryDownloads,
+                        ),
+                        ButtonSegment(
+                          value: LibraryFilter.screenshots,
+                          icon: const Icon(Icons.screenshot_outlined),
+                          tooltip: l10n.categoryScreenshots,
+                        ),
+                      ],
+                      selected: {state.filter},
+                      onSelectionChanged: (selection) {
+                        controller.selectFilter(selection.single);
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              PopupMenuButton<LibrarySort>(
+                tooltip: l10n.sort,
+                initialValue: state.sort,
+                onSelected: controller.selectSort,
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      value: LibrarySort.dateDesc,
+                      child: Text(l10n.sortDateDesc),
+                    ),
+                    PopupMenuItem(
+                      value: LibrarySort.dateAsc,
+                      child: Text(l10n.sortDateAsc),
+                    ),
+                    PopupMenuItem(
+                      value: LibrarySort.nameAsc,
+                      child: Text(l10n.sortNameAsc),
+                    ),
+                    PopupMenuItem(
+                      value: LibrarySort.nameDesc,
+                      child: Text(l10n.sortNameDesc),
+                    ),
+                  ];
+                },
+                child: _SortChip(label: _sortLabel(l10n, state.sort)),
+              ),
+              const Spacer(),
+              if (state.phase == PhotoLibraryPhase.refreshing) ...[
+                const SizedBox(
+                  key: ValueKey('library_scan_indicator'),
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                l10n.countPhotos(state.visiblePhotos.length),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SortChip extends StatelessWidget {
+  const _SortChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: ShapeDecoration(
+        color: colorScheme.surface,
+        shape: StadiumBorder(
+          side: BorderSide(color: colorScheme.outlineVariant),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.sort_outlined, size: 18),
+            const SizedBox(width: 6),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PhotoGrid extends StatefulWidget {
   const _PhotoGrid({required this.photos, required this.selectedCategory});
 
   final List<LibraryPhoto> photos;
   final LibraryCategory? selectedCategory;
 
   @override
+  State<_PhotoGrid> createState() => _PhotoGridState();
+}
+
+class _PhotoGridState extends State<_PhotoGrid> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (photos.isEmpty && selectedCategory != null) {
-      return _EmptyFilter(category: selectedCategory!);
+    if (widget.photos.isEmpty && widget.selectedCategory != null) {
+      return _EmptyFilter(category: widget.selectedCategory!);
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150,
-        mainAxisExtent: 216,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+    return Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      interactive: true,
+      radius: const Radius.circular(8),
+      child: GridView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(12, 4, 20, 12),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 150,
+          mainAxisExtent: 216,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: widget.photos.length,
+        itemBuilder: (context, index) {
+          return _PhotoTile(photo: widget.photos[index]);
+        },
       ),
-      itemCount: photos.length,
-      itemBuilder: (context, index) {
-        return _PhotoTile(photo: photos[index]);
-      },
     );
   }
 }
@@ -417,9 +489,9 @@ class _StatusBadge extends StatelessWidget {
 }
 
 class _EmptyLibrary extends StatelessWidget {
-  const _EmptyLibrary({required this.onScan});
+  const _EmptyLibrary({required this.isBusy});
 
-  final VoidCallback onScan;
+  final bool isBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -438,21 +510,15 @@ class _EmptyLibrary extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              l10n.emptyLibraryTitle,
+              isBusy ? l10n.scanningLibrary : l10n.emptyLibraryTitle,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.emptyLibraryMessage,
+              isBusy ? l10n.emptyScanMessage : l10n.emptyLibraryMessage,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: onScan,
-              icon: const Icon(Icons.search_outlined),
-              label: Text(l10n.scanPhotos),
             ),
           ],
         ),
@@ -514,13 +580,17 @@ class _ErrorBanner extends StatelessWidget {
 
 class _BottomActions extends StatelessWidget {
   const _BottomActions({
-    required this.onCatalogs,
-    required this.onSettings,
+    required this.isScanning,
+    required this.backupPercent,
+    required this.onScan,
+    required this.onStop,
     required this.onBackup,
   });
 
-  final VoidCallback onCatalogs;
-  final VoidCallback onSettings;
+  final bool isScanning;
+  final int backupPercent;
+  final VoidCallback onScan;
+  final VoidCallback onStop;
   final VoidCallback onBackup;
 
   @override
@@ -540,23 +610,15 @@ class _BottomActions extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onCatalogs,
-                  icon: const Icon(Icons.folder_outlined),
-                  label: Text(
-                    l10n.catalogs,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                child: FilledButton.icon(
+                  onPressed: isScanning ? onStop : onScan,
+                  icon: Icon(
+                    isScanning
+                        ? Icons.stop_circle_outlined
+                        : Icons.search_outlined,
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onSettings,
-                  icon: const Icon(Icons.tune_outlined),
                   label: Text(
-                    l10n.settings,
+                    isScanning ? l10n.stop : l10n.scan,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -568,7 +630,7 @@ class _BottomActions extends StatelessWidget {
                   onPressed: onBackup,
                   icon: const Icon(Icons.cloud_upload_outlined),
                   label: Text(
-                    l10n.startBackup,
+                    l10n.backupPercent(backupPercent),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -582,15 +644,24 @@ class _BottomActions extends StatelessWidget {
   }
 }
 
-enum _RefreshAction { manual, settings }
+class _PageBackground extends StatelessWidget {
+  const _PageBackground({required this.child});
 
-IconData _categoryIcon(LibraryCategory category) {
-  return switch (category) {
-    LibraryCategory.camera => Icons.photo_camera_outlined,
-    LibraryCategory.social => Icons.people_alt_outlined,
-    LibraryCategory.downloads => Icons.download_outlined,
-    LibraryCategory.screenshots => Icons.screenshot_outlined,
-  };
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset('assets/images/library_background.png', fit: BoxFit.cover),
+        ColoredBox(
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.72),
+        ),
+        child,
+      ],
+    );
+  }
 }
 
 String _categoryLabel(AppLocalizations l10n, LibraryCategory category) {
@@ -612,8 +683,23 @@ String _backupLabel(AppLocalizations l10n, LibraryBackupStatus status) {
   };
 }
 
-String _progressText(AppLocalizations l10n, PhotoLibraryState state) {
-  return '${l10n.foundPhotos}: ${state.foundPhotos} - '
-      '${l10n.indexedPhotos}: ${state.indexedPhotos} - '
-      '${l10n.discoveredSources}: ${state.sourceCount}';
+String _sortLabel(AppLocalizations l10n, LibrarySort sort) {
+  return switch (sort) {
+    LibrarySort.dateDesc => l10n.sortDateDesc,
+    LibrarySort.dateAsc => l10n.sortDateAsc,
+    LibrarySort.nameAsc => l10n.sortNameAsc,
+    LibrarySort.nameDesc => l10n.sortNameDesc,
+  };
+}
+
+int _backupPercent(PhotoLibrary library) {
+  if (library.photos.isEmpty) {
+    return 0;
+  }
+
+  final protectedCount = library.photos.where((photo) {
+    return photo.backupStatus == LibraryBackupStatus.protected;
+  }).length;
+
+  return (protectedCount * 100 / library.photos.length).round();
 }

@@ -10,7 +10,7 @@ final mainDestinationProvider =
 class MainDestinationController extends Notifier<MainDestination> {
   @override
   MainDestination build() {
-    return MainDestination.home;
+    return MainDestination.library;
   }
 
   void select(MainDestination destination) {

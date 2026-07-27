@@ -3,58 +3,69 @@
 ## Preconditions
 
 - App is installed as a debug build.
-- Media permission is granted or limited.
-- At least one manual scan has completed.
+- Media permission is granted or can be granted during the check.
 
 ## Checklist
 
-- [ ] Finish a scan from Home.
-  Expected: the app opens the Photos tab automatically.
+- [ ] Open the app without media permission.
+  Expected: Library shows the permission request state and `Grant access`.
 
-- [ ] Start a scan from Home with an empty or old index.
-  Expected: the Photos tab opens immediately and photo tiles begin appearing before the full scan completes.
+- [ ] Grant media permission.
+  Expected: the app stays on the Library flow and `Scan` becomes available.
 
-- [ ] Verify the library header.
-  Expected: the screen title is visible and photo count matches the visible grid.
+- [ ] Verify the top controls.
+  Expected: icon buttons for `All`, `Camera`, `Social`, `Downloads`, and `Screenshots` are available as a compact segmented filter, fit on phone width, and the whole filter panel is centered.
+
+- [ ] Verify sort and count row.
+  Expected: `Date ↓` and the current visible photo count are shown on one line.
+
+- [ ] Tap `Scan` with an empty or old index.
+  Expected: `Scan` changes to `Stop`; a small circular activity indicator appears next to the photo count; photo tiles begin appearing before the full scan completes.
+
+- [ ] Observe scan progress.
+  Expected: the visible photo count and thumbnail grid update live; `Indexed photos` and `Sources` are not shown.
 
 - [ ] Verify photo tiles.
   Expected: each indexed photo appears as a thumbnail tile with safe filename and `No backup` status.
 
-- [ ] Tap `Catalogs`.
-  Expected: a category sheet opens with `All photos`, `Camera`, `Social`, `Downloads`, and `Screenshots`.
-
 - [ ] Select `Screenshots`.
   Expected: the grid shows only screenshot-category photos; no include/exclude setting is changed.
 
-- [ ] Reopen `Catalogs` and select `All photos`.
+- [ ] Select `All`.
   Expected: the full indexed grid is visible again.
 
-- [ ] Tap `Refresh`.
-  Expected: a dialog offers manual refresh and automatic refresh settings.
+- [ ] Open the sort control and choose `Name A-Z`.
+  Expected: the selected sort label changes and visible thumbnails are ordered by filename ascending.
 
-- [ ] In the refresh dialog, tap `Run now`.
-  Expected: the library starts a manual refresh and stays on the Photos tab.
+- [ ] Open the sort control and choose `Date ↑`.
+  Expected: the selected sort label changes and visible thumbnails are ordered from oldest to newest.
 
-- [ ] Observe manual refresh progress.
-  Expected: the header shows live found, indexed, and source counters; indexed photos remain visible while refresh runs.
+- [ ] Verify grid scrolling.
+  Expected: the thumbnail grid has a visible right-side scrollbar that can be used for fast manual navigation.
 
-- [ ] Tap `Stop` during manual refresh.
-  Expected: refresh stops after already found photos are indexed, and already indexed photos remain visible.
+- [ ] Tap `Stop` during scan.
+  Expected: scan stops after already found photos are indexed, the activity indicator disappears, and already indexed photos remain visible.
 
-- [ ] Run manual refresh again after stopping.
-  Expected: progress counters start from the current indexed library size rather than dropping to zero.
+- [ ] Tap `Scan` again after stopping.
+  Expected: visible photo count starts from the current library size rather than dropping to zero.
 
-- [ ] Tap `Refresh` again and choose automatic refresh settings.
-  Expected: the app opens Settings.
+- [ ] Verify bottom navigation.
+  Expected: Library is the first tab, and Settings is available as a bottom tab.
 
-- [ ] Tap `Backup`.
+- [ ] Tap `Backup (X%)`.
   Expected: a warning says backup target storage is not configured.
 
 - [ ] In the backup warning, tap `Go to settings`.
-  Expected: the app opens Settings.
+  Expected: the app selects the Settings tab.
 
 - [ ] Switch device locale to Russian and reopen the screen.
   Expected: library labels and action labels are shown in Russian.
 
 - [ ] Rotate the device.
   Expected: thumbnail grid, bottom actions, and dialogs remain readable without overlap.
+
+- [ ] Check launcher icon on the device home/app list.
+  Expected: the new blue cloud/photo app icon fills the launcher mask without a white border or a separate white wrapper.
+
+- [ ] Force-close and launch the app again.
+  Expected: the Android startup splash shows the same new app icon, not the old Flutter/default icon.

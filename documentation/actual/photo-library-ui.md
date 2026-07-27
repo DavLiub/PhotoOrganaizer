@@ -2,20 +2,25 @@
 
 ## Current Scope
 
-The Photos tab now shows the local photo library after indexing.
+The Library tab is the primary app screen after media permission is available.
+It combines local scan control, live indexed thumbnails, category filtering, a
+planned sort control, and backup entry point.
 
-The screen is read-oriented and safe before backup configuration exists.
+The old scanner-first Home flow is no longer part of bottom navigation.
+Settings is a bottom navigation destination.
 
 ## Entry Points
 
-- The user can open the Photos tab manually.
-- A successful Home scan invalidates the library state and switches the app to the Photos tab.
+- On app start, users land on Library.
+- If media permission is missing, Library shows the permission request state.
+- If permission is available, Library shows the current local photo index.
 
-If no indexed photos exist, the screen shows an empty state with a `Scan photos` action that returns the user to Home.
+If no indexed photos exist, the screen shows an empty library state and keeps
+the primary `Scan` action visible in the bottom action bar.
 
 ## Library Grid
 
-The library uses a lazy thumbnail grid.
+The library uses a lazy thumbnail grid over the current read model.
 
 Each tile shows:
 
@@ -23,39 +28,87 @@ Each tile shows:
 - safe display filename;
 - current backup status.
 
-The initial status for indexed photos is `No backup`. Durable backup records and real upload progress are not implemented in this PR.
+The initial status for indexed photos is `No backup`. Durable backup records
+and real upload progress are not implemented yet.
 
-## Categories
+The library controller reloads the photo list after indexed batches are written,
+so tiles can appear before the full media scan completes. Thumbnail data is
+still loaded lazily by visible grid tiles through `PhotoThumbnailGateway`; there
+is no durable thumbnail generation queue yet.
 
-The UI supports four global read-only categories:
+## Categories And Sorting
 
+The top control row supports five compact icon filters:
+
+- All
 - Camera
 - Social
 - Downloads
 - Screenshots
 
-`Catalogs` opens a category sheet. Selecting a category filters the visible grid only. It does not persist include/exclude settings and does not change indexing rules.
+Selecting a category filters the visible grid only. It does not persist
+include/exclude settings and does not change indexing rules.
+
+Filter labels are exposed as tooltips/accessibility text instead of permanent
+visible text so the control fits phone width. When the compact filter is
+narrower than the screen, the full segmented control is centered.
+
+The screen also shows a sort selector and visible photo count on one line.
+Sorting is applied in Presentation state after category filtering. Repository
+ordering remains unchanged.
+
+Available sort labels:
+
+- Date descending
+- Date ascending
+- Name A-Z
+- Name Z-A
+
+The thumbnail grid includes a visible interactive right-side scrollbar for
+fast manual navigation through long libraries.
 
 ## Actions
 
 Bottom actions:
 
-- `Catalogs`: opens category filtering.
-- `Settings`: opens the current settings placeholder screen.
-- `Backup`: remains enabled, but warns that a backup target must be configured first.
+- `Scan` starts or continues foreground discovery/indexing.
+- `Stop` replaces `Scan` while scanning and requests cooperative cancellation.
+- `Backup (X%)` remains enabled, but warns that a backup target must be
+  configured first.
 
-The top `Refresh` action opens a dialog:
+`Scan` is the lightweight foreground indexing command. Full `Rescan` is a
+separate future workflow for reconciling deleted, changed, or permission-limited
+media and should be exposed from Settings or overflow rather than the primary
+action row.
 
-- `Run now` starts a manual media refresh through the existing scan use case.
-- `Auto refresh settings` opens settings. Automatic refresh itself is not implemented yet.
+User-facing scan progress is represented by the live photo count, grid, and a
+small circular activity indicator next to the photo count while scanning. The
+technical indexed/source counters are no longer shown on the main Library UI.
 
-While refresh or first scan is running, the library header shows live found/indexed/source counters. If the library is still empty, the screen shows the same counters in a centered progress state instead of a spinner-only state.
+`Stop` cancels further discovery but lets already delivered/current page batches
+finish indexing. When a scan starts with an existing library, visible counts use
+the current library as the baseline so retry scans after `Stop` do not visually
+reset the library to zero.
 
-The library controller reloads the photo list after indexed batches are written, so tiles can appear before the full media scan completes. Thumbnail data is still loaded lazily by visible grid tiles through `PhotoThumbnailGateway`; there is no durable thumbnail generation queue yet.
+## Visual Assets
 
-`Stop` is available while scan/refresh is running. It requests cooperative cancellation and keeps already indexed photos visible.
+The Library and permission states use `assets/images/library_background.png` as
+a light background image.
 
-When a scan starts with an existing library, progress counters use the current indexed library as the baseline. This prevents retry scans after `Stop` from visually resetting indexed/found counts to zero while the app rechecks media from Android.
+The Android launcher icon is generated from a cropped version of
+`assets/branding/app_icon.png` into the standard
+`android/app/src/main/res/mipmap-*` density folders so legacy launchers do not
+show a white border around the icon.
+
+Android 8+ uses adaptive icon resources in
+`android/app/src/main/res/mipmap-anydpi-v26`. The adaptive background fills the
+launcher mask with brand blue, while the foreground reuses density-specific
+launcher artwork. The manifest also sets `android:roundIcon` to the same
+adaptive icon.
+
+Android launch backgrounds reference the launcher icon. Android 12+ splash
+styles in `values-v31` and `values-night-v31` set
+`android:windowSplashScreenAnimatedIcon` to the same launcher icon.
 
 ## Architecture
 
@@ -93,8 +146,9 @@ The localization map is key-based so Hebrew can be added later without changing 
 ## Known Limitations
 
 - The grid does not persist source include/exclude settings.
-- Automatic refresh configuration is only linked to settings; scheduling is not implemented yet.
+- Full rescan and automatic refresh configuration are not implemented yet.
 - Backup target settings are not implemented yet.
 - Backup status is derived from current index state, not from durable backup records.
 - Full photo details and full-resolution preview remain out of scope.
 - Pause/resume controls are not implemented for photo scanning.
+- Sort selection changes visible grid ordering but is not persisted between app launches.

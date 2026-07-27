@@ -54,7 +54,7 @@ class FirstScanController extends Notifier<FirstScanState> {
     );
 
     final libraryController = ref.read(photoLibraryProvider.notifier);
-    ref.read(mainDestinationProvider.notifier).select(MainDestination.photos);
+    ref.read(mainDestinationProvider.notifier).select(MainDestination.library);
     final result = await libraryController.scanNow(onProgress: _applyProgress);
 
     switch (result) {
