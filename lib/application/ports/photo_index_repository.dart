@@ -3,6 +3,8 @@ import '../../domain/models/protection_summary.dart';
 import '../../domain/value_objects/photo_identity.dart';
 
 abstract interface class PhotoIndexRepository {
+  Future<List<PhotoIndexEntry>> findAll();
+
   Future<List<PhotoIndexEntry>> findByAssetIds(Set<String> assetIds);
 
   Future<PhotoIndexEntry?> findByIdentity(PhotoIdentity identity);

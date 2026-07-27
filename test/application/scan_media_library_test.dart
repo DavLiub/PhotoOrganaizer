@@ -189,6 +189,11 @@ class _FakeIndex implements PhotoIndexRepository {
   final entries = <PhotoIndexEntry>[];
 
   @override
+  Future<List<PhotoIndexEntry>> findAll() async {
+    return List.unmodifiable(entries);
+  }
+
+  @override
   Future<List<PhotoIndexEntry>> findByAssetIds(Set<String> assetIds) async {
     return entries
         .where((entry) => assetIds.contains(entry.asset.id))
