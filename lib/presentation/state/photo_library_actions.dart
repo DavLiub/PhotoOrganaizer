@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import '../../application/models/photo_library.dart';
+import '../../application/models/scan_signal.dart';
 import '../../application/use_cases/scan_media_library.dart';
 import '../../domain/value_objects/operation_result.dart';
 
@@ -12,6 +13,7 @@ typedef RefreshLibrary =
     Future<OperationResult<LibraryScanResult>> Function({
       int pageSize,
       ScanProgressCallback? onProgress,
+      ScanSignal? signal,
     });
 
 class PhotoLibraryActions {

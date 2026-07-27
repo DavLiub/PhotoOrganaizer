@@ -46,9 +46,11 @@ class AppLocalizations {
   String get photoAccessRequired => text('photoAccessRequired');
   String get grantAccess => text('grantAccess');
   String get scan => text('scan');
+  String get stop => text('stop');
   String get checkingAccess => text('checkingAccess');
   String get scanningLibrary => text('scanningLibrary');
   String get readyToScan => text('readyToScan');
+  String get scanStopped => text('scanStopped');
   String get scanComplete => text('scanComplete');
   String get scanFailed => text('scanFailed');
   String get foundPhotos => text('foundPhotos');
@@ -149,9 +151,11 @@ const _en = {
       'Photo Organizer cannot work without media access. Grant access to continue.',
   'grantAccess': 'Grant access',
   'scan': 'Scan',
+  'stop': 'Stop',
   'checkingAccess': 'Checking access',
   'scanningLibrary': 'Scanning library',
   'readyToScan': 'Ready to scan',
+  'scanStopped': 'Scan stopped',
   'scanComplete': 'Scan complete',
   'scanFailed': 'Scan failed',
   'foundPhotos': 'Found photos',
@@ -227,9 +231,11 @@ const _ru = {
       'Photo Organizer не может работать без доступа к медиа. Дайте доступ, чтобы продолжить.',
   'grantAccess': 'Дать доступ',
   'scan': 'Сканировать',
+  'stop': 'Стоп',
   'checkingAccess': 'Проверяем доступ',
   'scanningLibrary': 'Сканируем галерею',
   'readyToScan': 'Готово к сканированию',
+  'scanStopped': 'Сканирование остановлено',
   'scanComplete': 'Сканирование завершено',
   'scanFailed': 'Сканирование не выполнено',
   'foundPhotos': 'Найдено фото',

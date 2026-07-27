@@ -66,7 +66,11 @@ Application exposes:
 
 `IndexPhotos` can report write progress through an optional callback. Index entries are persisted in batches of `100` so long foreground indexing runs can update UI counters instead of staying silent until the full write completes.
 
-`ScanMediaLibrary` checks permission, scans Android-visible photo metadata through `MediaLibraryGateway`, upserts media sources, and then delegates photo writes to `IndexPhotos`.
+`ScanMediaLibrary` checks permission and scans Android-visible photo metadata through `MediaLibraryGateway`.
+
+When the gateway supports `LibraryBatch`, `ScanMediaLibrary` persists each source/photo batch immediately and delegates photo batches to `IndexPhotos` before the full media scan completes. If a gateway returns only a final `LibraryScan`, the use case falls back to the older full-result write path.
+
+If a stop request arrives after a batch has been delivered to `ScanMediaLibrary`, the delivered batch is still indexed. Stop cancels further discovery, not already delivered writes.
 
 ## Repository Port And Storage
 

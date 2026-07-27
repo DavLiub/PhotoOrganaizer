@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:photo_manager/photo_manager.dart' as pm;
 
+import '../../application/models/scan_signal.dart';
 import '../../application/ports/media_library_gateway.dart';
 import '../../domain/entities/media_source.dart';
 import '../../domain/entities/photo_asset.dart';
@@ -12,9 +13,12 @@ class AndroidMediaLibraryGateway implements MediaLibraryGateway {
   Future<LibraryScan> scanLibrary({
     int pageSize = 100,
     LibraryProgressCallback? onProgress,
+    LibraryBatchCallback? onBatch,
+    ScanSignal? signal,
   }) async {
     final safePageSize = pageSize <= 0 ? 100 : pageSize;
     final discoveredAt = DateTime.now().toUtc();
+    signal?.throwIfStopped();
     final paths = await pm.PhotoManager.getAssetPathList(
       hasAll: false,
       type: pm.RequestType.image,
@@ -33,6 +37,7 @@ class AndroidMediaLibraryGateway implements MediaLibraryGateway {
     );
 
     for (final path in paths) {
+      signal?.throwIfStopped();
       final assetCount = await path.assetCountAsync;
       if (assetCount <= 0) {
         scannedSources++;
@@ -58,12 +63,15 @@ class AndroidMediaLibraryGateway implements MediaLibraryGateway {
         ),
       );
       sources.add(source);
+      await onBatch?.call(LibraryBatch(sources: [source]));
 
       await _scanPath(
         path: path,
         pageSize: safePageSize,
         discoveredAt: discoveredAt,
         photosById: photosById,
+        onBatch: onBatch,
+        signal: signal,
         onProgress: () {
           _emitProgress(
             onProgress,
@@ -101,11 +109,14 @@ Future<void> _scanPath({
   required int pageSize,
   required DateTime discoveredAt,
   required Map<String, PhotoAsset> photosById,
+  required LibraryBatchCallback? onBatch,
+  required ScanSignal? signal,
   required void Function() onProgress,
 }) async {
   var page = 0;
 
   while (true) {
+    signal?.throwIfStopped();
     final assets = await path.getAssetListPaged(
       page: page,
       size: pageSize,
@@ -115,7 +126,12 @@ Future<void> _scanPath({
       return;
     }
 
+    final pagePhotos = <PhotoAsset>[];
     for (final asset in assets) {
+      if (signal?.stopped == true) {
+        break;
+      }
+
       if (asset.type != pm.AssetType.image) {
         continue;
       }
@@ -125,14 +141,24 @@ Future<void> _scanPath({
         path: path,
         discoveredAt: discoveredAt,
       );
+      if (photosById.containsKey(photo.id)) {
+        continue;
+      }
+
       photosById[photo.id] = photo;
+      pagePhotos.add(photo);
 
       if (photosById.length % 25 == 0) {
         onProgress();
       }
     }
 
+    if (pagePhotos.isNotEmpty) {
+      await onBatch?.call(LibraryBatch(photos: List.unmodifiable(pagePhotos)));
+    }
     onProgress();
+
+    signal?.throwIfStopped();
 
     if (assets.length < pageSize) {
       return;

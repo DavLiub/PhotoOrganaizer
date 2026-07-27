@@ -14,19 +14,28 @@
   Expected: `Scan` is visible and enabled.
 
 - [ ] Tap `Scan`.
-  Expected: the button becomes disabled while scanning starts.
+  Expected: the app switches to the Photos tab and the scan starts.
 
 - [ ] Observe scan status after tapping `Scan`.
-  Expected: the screen shows an in-progress state.
+  Expected: the Photos tab shows an in-progress state with found, indexed, and source counters.
+
+- [ ] Observe progress while scanning.
+  Expected: found/source counts increase during media discovery, and indexed count increases as photo batches are written.
+
+- [ ] Tap `Stop` while scanning.
+  Expected: scanning stops after already found photos are indexed; already indexed photos remain visible.
+
+- [ ] Start scan again after stopping.
+  Expected: scan can run again, counters do not reset below the already indexed library size, and already indexed photos remain visible.
 
 - [ ] Wait for scan completion.
-  Expected: the screen shows scan completion or a visible error.
+  Expected: the Photos tab remains visible with indexed photos or a visible error.
 
 - [ ] Verify found photo count.
   Expected: found photo count matches the selected/full accessible media set closely enough for smoke testing.
 
 - [ ] Verify indexed photo count.
-  Expected: indexed photo count is greater than zero when accessible photos exist.
+  Expected: indexed photo count increases during scanning when accessible photos exist.
 
 - [ ] Verify source count.
   Expected: source count is greater than zero when accessible photos exist.

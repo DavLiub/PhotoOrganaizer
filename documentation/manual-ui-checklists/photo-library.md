@@ -11,6 +11,9 @@
 - [ ] Finish a scan from Home.
   Expected: the app opens the Photos tab automatically.
 
+- [ ] Start a scan from Home with an empty or old index.
+  Expected: the Photos tab opens immediately and photo tiles begin appearing before the full scan completes.
+
 - [ ] Verify the library header.
   Expected: the screen title is visible and photo count matches the visible grid.
 
@@ -31,6 +34,15 @@
 
 - [ ] In the refresh dialog, tap `Run now`.
   Expected: the library starts a manual refresh and stays on the Photos tab.
+
+- [ ] Observe manual refresh progress.
+  Expected: the header shows live found, indexed, and source counters; indexed photos remain visible while refresh runs.
+
+- [ ] Tap `Stop` during manual refresh.
+  Expected: refresh stops after already found photos are indexed, and already indexed photos remain visible.
+
+- [ ] Run manual refresh again after stopping.
+  Expected: progress counters start from the current indexed library size rather than dropping to zero.
 
 - [ ] Tap `Refresh` again and choose automatic refresh settings.
   Expected: the app opens Settings.

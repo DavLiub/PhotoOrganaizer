@@ -24,11 +24,14 @@ class PhotosScreen extends ConsumerWidget {
         _LibraryHeader(
           state: state,
           onRefresh: () => _showRefreshDialog(context, ref),
+          onStop: controller.stopScan,
         ),
         if (state.errorCode != null)
           _ErrorBanner(message: state.errorCode!)
         else if (state.isBusy && !state.hasPhotos)
-          Expanded(child: _LibraryProgress(state: state))
+          Expanded(
+            child: _LibraryProgress(state: state, onStop: controller.stopScan),
+          )
         else if (!state.hasPhotos)
           Expanded(
             child: _EmptyLibrary(
@@ -180,10 +183,15 @@ class PhotosScreen extends ConsumerWidget {
 }
 
 class _LibraryHeader extends StatelessWidget {
-  const _LibraryHeader({required this.state, required this.onRefresh});
+  const _LibraryHeader({
+    required this.state,
+    required this.onRefresh,
+    required this.onStop,
+  });
 
   final PhotoLibraryState state;
   final VoidCallback onRefresh;
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -217,16 +225,18 @@ class _LibraryHeader extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            tooltip: l10n.refresh,
-            onPressed: state.isBusy ? null : onRefresh,
-            icon: state.phase == PhotoLibraryPhase.refreshing
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh_outlined),
-          ),
+          if (state.phase == PhotoLibraryPhase.refreshing)
+            IconButton(
+              tooltip: l10n.stop,
+              onPressed: onStop,
+              icon: const Icon(Icons.stop_circle_outlined),
+            )
+          else
+            IconButton(
+              tooltip: l10n.refresh,
+              onPressed: state.isBusy ? null : onRefresh,
+              icon: const Icon(Icons.refresh_outlined),
+            ),
         ],
       ),
     );
@@ -234,9 +244,10 @@ class _LibraryHeader extends StatelessWidget {
 }
 
 class _LibraryProgress extends StatelessWidget {
-  const _LibraryProgress({required this.state});
+  const _LibraryProgress({required this.state, required this.onStop});
 
   final PhotoLibraryState state;
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -261,6 +272,12 @@ class _LibraryProgress extends StatelessWidget {
               _progressText(l10n, state),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: onStop,
+              icon: const Icon(Icons.stop_circle_outlined),
+              label: Text(l10n.stop),
             ),
           ],
         ),

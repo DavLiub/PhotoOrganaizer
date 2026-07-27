@@ -1,6 +1,7 @@
 import '../../domain/value_objects/index_scope.dart';
 import '../../domain/value_objects/media_permission.dart';
 import '../../domain/value_objects/operation_result.dart';
+import '../models/scan_signal.dart';
 import '../ports/media_library_gateway.dart';
 import '../ports/media_permission_gateway.dart';
 import '../ports/media_source_repository.dart';
@@ -82,6 +83,7 @@ class ScanMediaLibrary {
     DateTime? indexedAt,
     int pageSize = 100,
     ScanProgressCallback? onProgress,
+    ScanSignal? signal,
   }) async {
     if (pageSize <= 0) {
       return OperationFailure(
@@ -113,8 +115,82 @@ class ScanMediaLibrary {
     }
 
     final LibraryScan scan;
+    final scanTime = indexedAt ?? DateTime.now().toUtc();
+    final sourcesById = <String, Object>{};
+    final photosById = <String, Object>{};
+    var wroteSourceBatches = false;
+    var wrotePhotoBatches = false;
+    var indexedPhotos = 0;
+    var updatedPhotos = 0;
+    var ignoredPhotos = 0;
     var progress = const ScanProgress.empty();
+
+    Future<void> handleBatch(LibraryBatch batch) async {
+      if (batch.isEmpty) {
+        return;
+      }
+
+      if (batch.sources.isNotEmpty) {
+        try {
+          await _sourceRepository.upsertSources(batch.sources);
+        } catch (error) {
+          throw _ScanWriteFailure(
+            FailureInfo(
+              kind: FailureKind.storage,
+              code: 'media_sources.write_failed',
+              safeMessage: 'Media sources could not be updated.',
+              retryable: true,
+              diagnostics: {'error_type': error.runtimeType.toString()},
+            ),
+          );
+        }
+
+        wroteSourceBatches = true;
+        for (final source in batch.sources) {
+          sourcesById[source.id] = source;
+        }
+        progress = progress.copyWith(sourceCount: sourcesById.length);
+        onProgress?.call(progress);
+      }
+
+      if (batch.photos.isEmpty) {
+        return;
+      }
+
+      wrotePhotoBatches = true;
+      for (final photo in batch.photos) {
+        photosById[photo.id] = photo;
+      }
+      progress = progress.copyWith(foundPhotos: photosById.length);
+      onProgress?.call(progress);
+
+      final baseIndexed = indexedPhotos;
+      final baseUpdated = updatedPhotos;
+      final indexResult = await _indexPhotos(
+        batch.photos,
+        scope: scope,
+        indexedAt: scanTime,
+        onProgress: (indexProgress) {
+          progress = progress.copyWith(
+            indexedPhotos: baseIndexed + indexProgress.indexedPhotos,
+            updatedPhotos: baseUpdated + indexProgress.updatedPhotos,
+          );
+          onProgress?.call(progress);
+        },
+      );
+
+      switch (indexResult) {
+        case OperationFailure<IndexResult>(failure: final failure):
+          throw _ScanWriteFailure(failure);
+        case OperationSuccess<IndexResult>(value: final value):
+          indexedPhotos += value.indexedPhotos;
+          updatedPhotos += value.updatedPhotos;
+          ignoredPhotos += value.ignoredPhotos;
+      }
+    }
+
     try {
+      signal?.throwIfStopped();
       onProgress?.call(progress);
       scan = await _libraryGateway.scanLibrary(
         pageSize: pageSize,
@@ -127,7 +203,18 @@ class ScanMediaLibrary {
           );
           onProgress?.call(progress);
         },
+        onBatch: handleBatch,
+        signal: signal,
       );
+    } on ScanStopped {
+      return OperationFailure(
+        kind: FailureKind.cancelled,
+        code: 'media_scan.stopped',
+        safeMessage: 'Photo scan stopped.',
+        retryable: true,
+      );
+    } on _ScanWriteFailure catch (error) {
+      return OperationFailure.fromInfo(error.failure);
     } catch (error) {
       return OperationFailure(
         kind: FailureKind.media,
@@ -138,22 +225,38 @@ class ScanMediaLibrary {
       );
     }
 
-    try {
-      await _sourceRepository.upsertSources(scan.sources);
-    } catch (error) {
-      return OperationFailure(
-        kind: FailureKind.storage,
-        code: 'media_sources.write_failed',
-        safeMessage: 'Media sources could not be updated.',
-        retryable: true,
-        diagnostics: {'error_type': error.runtimeType.toString()},
+    if (!wroteSourceBatches) {
+      try {
+        await _sourceRepository.upsertSources(scan.sources);
+      } catch (error) {
+        return OperationFailure(
+          kind: FailureKind.storage,
+          code: 'media_sources.write_failed',
+          safeMessage: 'Media sources could not be updated.',
+          retryable: true,
+          diagnostics: {'error_type': error.runtimeType.toString()},
+        );
+      }
+    }
+
+    if (wrotePhotoBatches) {
+      return OperationSuccess(
+        LibraryScanResult(
+          scan: scan,
+          index: IndexResult(
+            seenPhotos: scan.photos.length,
+            indexedPhotos: indexedPhotos,
+            updatedPhotos: updatedPhotos,
+            ignoredPhotos: ignoredPhotos,
+          ),
+        ),
       );
     }
 
     final indexResult = await _indexPhotos(
       scan.photos,
       scope: scope,
-      indexedAt: indexedAt,
+      indexedAt: scanTime,
       onProgress: (indexProgress) {
         progress = progress.copyWith(
           indexedPhotos: indexProgress.indexedPhotos,
@@ -171,4 +274,10 @@ class ScanMediaLibrary {
       ),
     };
   }
+}
+
+class _ScanWriteFailure implements Exception {
+  const _ScanWriteFailure(this.failure);
+
+  final FailureInfo failure;
 }

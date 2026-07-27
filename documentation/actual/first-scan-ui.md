@@ -35,7 +35,7 @@ The scan screen shows:
 - discovered sources;
 - manual `Scan` action.
 
-The `Scan` button is disabled while scanning.
+The `Scan` button is disabled while scanning. A `Stop` action is available for a running scan.
 
 During scanning, counters are updated from `ScanProgress`:
 
@@ -43,7 +43,11 @@ During scanning, counters are updated from `ScanProgress`:
 - indexed photos update while index rows are written;
 - discovered sources update as media sources are found.
 
-After a successful scan, the app switches to the Photos tab and reloads the photo library UI.
+When scan starts, the app switches to the Photos tab immediately. The Photos tab displays scan progress and reloads indexed photos as batches are written.
+
+After a successful scan, the Photos tab remains visible and the final library is loaded.
+
+If the user stops scanning, already indexed photo batches remain in local storage and the scan can be started again.
 
 `protected` counts are intentionally not shown yet because backup upload and cloud confirmation are not implemented.
 
@@ -77,3 +81,4 @@ The current implementation uses a small in-code localization map. It can later b
 - Permission prompt behavior still requires manual Android device validation.
 - Source include/exclude settings are not available before or during the first scan.
 - The UI does not open Android app settings for permanently denied permission yet.
+- `Pause` is not implemented for foreground scanning; pause/resume is reserved for future backup and thumbnail queues.
