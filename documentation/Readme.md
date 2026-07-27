@@ -10,6 +10,7 @@ This directory contains the project documentation that should evolve together wi
 | [actual](actual) | Current implemented design as it exists in the repository. |
 | [decisions](decisions) | Architecture Decision Records (ADR). |
 | [changelog](changelog) | Documentation and architecture change history. |
+| [manual-ui-checklists](manual-ui-checklists) | Manual UI verification checklists grouped by screen/workflow. |
 
 ## Local Working Documentation
 
@@ -27,6 +28,7 @@ The following directories are intentionally local and ignored by Git:
 2. Check [actual/README.md](actual/README.md) to understand what is currently implemented.
 3. Read relevant ADRs in [decisions](decisions) before changing architecture.
 4. Update [changelog](changelog) when documentation, architecture, or workflow structure changes.
+5. Use [manual-ui-checklists](manual-ui-checklists) for phone-based UI smoke testing.
 
 ## Synchronization Rule
 

@@ -11,6 +11,7 @@
 - Added widget tests for denied access, automatic unknown-permission request, scan result counts, and Russian labels.
 - Localized current shell and placeholder screen labels.
 - Updated project guard diff parsing to handle UTF-8 multilingual UI text on Windows.
+- Added manual UI checklists for welcome/access, first scan, navigation, and settings screens.
 
 ## Notes
 
