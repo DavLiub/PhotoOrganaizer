@@ -6,10 +6,12 @@ import '../application/ports/media_permission_gateway.dart';
 import '../application/ports/media_source_repository.dart';
 import '../application/ports/observability_sink.dart';
 import '../application/ports/photo_index_repository.dart';
+import '../application/ports/photo_thumbnail_gateway.dart';
 import '../application/policies/access_override.dart';
 import '../application/policies/access_policy.dart';
 import '../application/use_cases/check_media_access.dart';
 import '../application/use_cases/index_photos.dart';
+import '../application/use_cases/list_library_photos.dart';
 import '../application/use_cases/observe_protection_summary_use_case.dart';
 import '../application/use_cases/request_media_access.dart';
 import '../application/use_cases/resolve_photo_identity.dart';
@@ -33,6 +35,7 @@ class AppCompositionRoot {
     required this.platform,
     required this.mediaLibraryGateway,
     required this.mediaPermissionGateway,
+    required this.photoThumbnailGateway,
     required this.mediaSourceRepository,
     required this.photoIndexRepository,
     required this.cloudProvider,
@@ -42,6 +45,7 @@ class AppCompositionRoot {
     required this.observabilitySink,
     required this.checkMediaAccess,
     required this.indexPhotos,
+    required this.listLibraryPhotos,
     required this.requestMediaAccess,
     required this.resolvePhotoIdentity,
     required this.scanMediaLibrary,
@@ -53,6 +57,7 @@ class AppCompositionRoot {
   final AppPlatform platform;
   final MediaLibraryGateway mediaLibraryGateway;
   final MediaPermissionGateway mediaPermissionGateway;
+  final PhotoThumbnailGateway photoThumbnailGateway;
   final MediaSourceRepository mediaSourceRepository;
   final PhotoIndexRepository photoIndexRepository;
   final CloudProvider cloudProvider;
@@ -62,6 +67,7 @@ class AppCompositionRoot {
   final ObservabilitySink observabilitySink;
   final CheckMediaAccess checkMediaAccess;
   final IndexPhotos indexPhotos;
+  final ListLibraryPhotos listLibraryPhotos;
   final RequestMediaAccess requestMediaAccess;
   final ResolvePhotoIdentity resolvePhotoIdentity;
   final ScanMediaLibrary scanMediaLibrary;
@@ -83,6 +89,7 @@ class AppCompositionRoot {
     final mediaAdapters = MediaAdapters.forPlatform(platform);
     final mediaLibraryGateway = mediaAdapters.libraryGateway;
     final mediaPermissionGateway = mediaAdapters.permissionGateway;
+    final photoThumbnailGateway = mediaAdapters.thumbnailGateway;
     AppDatabase? database;
     AppDatabase createDatabase() => database ??= AppDatabase.defaults();
     final mediaSourceRepository = MediaSourceStore(
@@ -110,6 +117,7 @@ class AppCompositionRoot {
       platform: platform,
       mediaLibraryGateway: mediaLibraryGateway,
       mediaPermissionGateway: mediaPermissionGateway,
+      photoThumbnailGateway: photoThumbnailGateway,
       mediaSourceRepository: mediaSourceRepository,
       photoIndexRepository: photoIndexRepository,
       cloudProvider: cloudProvider,
@@ -119,6 +127,10 @@ class AppCompositionRoot {
       observabilitySink: observabilitySink,
       checkMediaAccess: CheckMediaAccess(mediaPermissionGateway),
       indexPhotos: indexPhotos,
+      listLibraryPhotos: ListLibraryPhotos(
+        photoIndexRepository: photoIndexRepository,
+        mediaSourceRepository: mediaSourceRepository,
+      ),
       requestMediaAccess: RequestMediaAccess(mediaPermissionGateway),
       resolvePhotoIdentity: ResolvePhotoIdentity(photoIndexRepository),
       scanMediaLibrary: ScanMediaLibrary(

@@ -11,8 +11,10 @@ import 'package:photo_organizer/infrastructure/media/android_media_access.dart';
 import 'package:photo_organizer/infrastructure/media/android_media_library_gateway.dart';
 import 'package:photo_organizer/infrastructure/media/ios_media_access.dart';
 import 'package:photo_organizer/infrastructure/media/ios_media_library_gateway.dart';
+import 'package:photo_organizer/infrastructure/media/photo_thumbnail_adapter.dart';
 import 'package:photo_organizer/infrastructure/media/unsupported_media_access.dart';
 import 'package:photo_organizer/infrastructure/media/unsupported_media_library_gateway.dart';
+import 'package:photo_organizer/infrastructure/media/unsupported_thumbnail_gateway.dart';
 import 'package:photo_organizer/infrastructure/entitlements/test_entitlement_gateway.dart';
 import 'package:photo_organizer/infrastructure/storage/media_source_store.dart';
 
@@ -30,6 +32,7 @@ void main() {
 
       expect(root.mediaPermissionGateway, isA<AndroidMediaAccess>());
       expect(root.mediaLibraryGateway, isA<AndroidMediaLibraryGateway>());
+      expect(root.photoThumbnailGateway, isA<PhotoThumbnailAdapter>());
       expect(root.mediaSourceRepository, isA<MediaSourceStore>());
     });
 
@@ -39,6 +42,7 @@ void main() {
       expect(root.platform, AppPlatform.ios);
       expect(root.mediaPermissionGateway, isA<IosMediaAccess>());
       expect(root.mediaLibraryGateway, isA<IosMediaLibrary>());
+      expect(root.photoThumbnailGateway, isA<PhotoThumbnailAdapter>());
 
       final status = await root.mediaPermissionGateway.currentStatus();
 
@@ -57,6 +61,7 @@ void main() {
       expect(root.platform, AppPlatform.unsupported);
       expect(root.mediaPermissionGateway, isA<UnsupportedMediaAccess>());
       expect(root.mediaLibraryGateway, isA<UnsupportedMediaLibrary>());
+      expect(root.photoThumbnailGateway, isA<UnsupportedThumbnailGateway>());
     });
 
     test('rejects access override in production mode', () {
