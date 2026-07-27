@@ -21,6 +21,44 @@ import 'package:photo_organizer/presentation/state/photo_library_state.dart';
 import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
 
 void main() {
+  test('sorts visible photos after category filtering', () {
+    final library = _sortLibrary();
+    final defaultState = PhotoLibraryState(
+      phase: PhotoLibraryPhase.loaded,
+      library: library,
+    );
+
+    expect(_names(defaultState.visiblePhotos), [
+      'alpha.jpg',
+      'middle.jpg',
+      'zeta.jpg',
+    ]);
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.dateAsc).visiblePhotos),
+      ['zeta.jpg', 'middle.jpg', 'alpha.jpg'],
+    );
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.nameAsc).visiblePhotos),
+      ['alpha.jpg', 'middle.jpg', 'zeta.jpg'],
+    );
+
+    expect(
+      _names(defaultState.copyWith(sort: LibrarySort.nameDesc).visiblePhotos),
+      ['zeta.jpg', 'middle.jpg', 'alpha.jpg'],
+    );
+
+    expect(
+      _names(
+        defaultState
+            .copyWith(filter: LibraryFilter.camera, sort: LibrarySort.nameAsc)
+            .visiblePhotos,
+      ),
+      ['alpha.jpg', 'zeta.jpg'],
+    );
+  });
+
   testWidgets('shows empty state before indexed photos exist', (tester) async {
     final actions = _FakeActions(library: const PhotoLibrary.empty());
 
@@ -72,6 +110,9 @@ void main() {
     expect(find.text('No backup'), findsNWidgets(2));
     expect(find.text('2 photos'), findsOneWidget);
     expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
+    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+    expect(scrollbar.thumbVisibility, isTrue);
+    expect(scrollbar.interactive, isTrue);
     expect(find.text('Scan'), findsOneWidget);
     expect(find.text('Backup (0%)'), findsOneWidget);
     expect(find.text('Catalogs'), findsNothing);
@@ -329,10 +370,48 @@ PhotoLibrary _library() {
   );
 }
 
+PhotoLibrary _sortLibrary() {
+  final photos = [
+    _photo(
+      id: 'zeta',
+      displayName: 'zeta.jpg',
+      category: LibraryCategory.camera,
+      createdAt: DateTime.utc(2026, 7, 25),
+    ),
+    _photo(
+      id: 'alpha',
+      displayName: 'alpha.jpg',
+      category: LibraryCategory.camera,
+      createdAt: DateTime.utc(2026, 7, 27),
+    ),
+    _photo(
+      id: 'middle',
+      displayName: 'middle.jpg',
+      category: LibraryCategory.screenshots,
+      createdAt: DateTime.utc(2026, 7, 26),
+    ),
+  ];
+
+  return PhotoLibrary(
+    photos: photos,
+    categories: const [
+      LibraryCategorySummary(category: LibraryCategory.camera, count: 2),
+      LibraryCategorySummary(category: LibraryCategory.social, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.downloads, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.screenshots, count: 1),
+    ],
+  );
+}
+
+List<String> _names(List<LibraryPhoto> photos) {
+  return photos.map((photo) => photo.displayName).toList(growable: false);
+}
+
 LibraryPhoto _photo({
   required String id,
   required String displayName,
   required LibraryCategory category,
+  DateTime? createdAt,
 }) {
   return LibraryPhoto(
     id: id,
@@ -341,7 +420,7 @@ LibraryPhoto _photo({
     sourceName: category.name,
     category: category,
     backupStatus: LibraryBackupStatus.noBackup,
-    createdAt: DateTime.utc(2026, 7, 27),
+    createdAt: createdAt ?? DateTime.utc(2026, 7, 27),
     fileSize: 100,
     width: 100,
     height: 100,

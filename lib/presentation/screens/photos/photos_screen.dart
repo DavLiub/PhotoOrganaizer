@@ -338,30 +338,50 @@ class _SortChip extends StatelessWidget {
   }
 }
 
-class _PhotoGrid extends StatelessWidget {
+class _PhotoGrid extends StatefulWidget {
   const _PhotoGrid({required this.photos, required this.selectedCategory});
 
   final List<LibraryPhoto> photos;
   final LibraryCategory? selectedCategory;
 
   @override
+  State<_PhotoGrid> createState() => _PhotoGridState();
+}
+
+class _PhotoGridState extends State<_PhotoGrid> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (photos.isEmpty && selectedCategory != null) {
-      return _EmptyFilter(category: selectedCategory!);
+    if (widget.photos.isEmpty && widget.selectedCategory != null) {
+      return _EmptyFilter(category: widget.selectedCategory!);
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150,
-        mainAxisExtent: 216,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+    return Scrollbar(
+      controller: _scrollController,
+      thumbVisibility: true,
+      interactive: true,
+      radius: const Radius.circular(8),
+      child: GridView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(12, 4, 20, 12),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 150,
+          mainAxisExtent: 216,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: widget.photos.length,
+        itemBuilder: (context, index) {
+          return _PhotoTile(photo: widget.photos[index]);
+        },
       ),
-      itemCount: photos.length,
-      itemBuilder: (context, index) {
-        return _PhotoTile(photo: photos[index]);
-      },
     );
   }
 }

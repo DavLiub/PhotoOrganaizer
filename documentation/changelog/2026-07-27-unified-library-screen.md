@@ -7,10 +7,12 @@
 - Added Settings as a bottom navigation destination.
 - Reworked the Library UI around:
   - category filter: All, Camera, Social, Downloads, Screenshots;
-  - sort selector placeholder;
+  - working sort selector;
   - visible photo count;
   - live thumbnail grid with backup status;
   - bottom actions `Scan` / `Stop` and `Backup (X%)`.
+- Added visible grid sorting by date and filename.
+- Added a visible interactive scrollbar to the thumbnail grid.
 - Removed user-facing indexed/source counters from the main Library screen.
 - Added a compact scan activity indicator next to the photo count while scanning.
 - Kept full Rescan out of the primary action row; it remains a future Settings/overflow workflow.

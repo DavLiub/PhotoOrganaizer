@@ -53,8 +53,9 @@ Filter labels are exposed as tooltips/accessibility text instead of permanent
 visible text so the control fits phone width. When the compact filter is
 narrower than the screen, the full segmented control is centered.
 
-The screen also shows a sort selector and visible photo count on one line. Sort
-state is Presentation-only for now. Repository-level ordering remains unchanged.
+The screen also shows a sort selector and visible photo count on one line.
+Sorting is applied in Presentation state after category filtering. Repository
+ordering remains unchanged.
 
 Available sort labels:
 
@@ -62,6 +63,9 @@ Available sort labels:
 - Date ascending
 - Name A-Z
 - Name Z-A
+
+The thumbnail grid includes a visible interactive right-side scrollbar for
+fast manual navigation through long libraries.
 
 ## Actions
 
@@ -147,4 +151,4 @@ The localization map is key-based so Hebrew can be added later without changing 
 - Backup status is derived from current index state, not from durable backup records.
 - Full photo details and full-resolution preview remain out of scope.
 - Pause/resume controls are not implemented for photo scanning.
-- Sort selection is visible but does not yet change repository ordering.
+- Sort selection changes visible grid ordering but is not persisted between app launches.

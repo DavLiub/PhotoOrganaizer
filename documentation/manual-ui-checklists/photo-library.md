@@ -35,7 +35,13 @@
   Expected: the full indexed grid is visible again.
 
 - [ ] Open the sort control and choose `Name A-Z`.
-  Expected: the selected sort label changes. Actual ordering can remain unchanged until sorting implementation is added.
+  Expected: the selected sort label changes and visible thumbnails are ordered by filename ascending.
+
+- [ ] Open the sort control and choose `Date ↑`.
+  Expected: the selected sort label changes and visible thumbnails are ordered from oldest to newest.
+
+- [ ] Verify grid scrolling.
+  Expected: the thumbnail grid has a visible right-side scrollbar that can be used for fast manual navigation.
 
 - [ ] Tap `Stop` during scan.
   Expected: scan stops after already found photos are indexed, the activity indicator disappears, and already indexed photos remain visible.
