@@ -7,6 +7,9 @@ class PhotoLibraryState {
     required this.phase,
     required this.library,
     this.selectedCategory,
+    this.foundPhotos = 0,
+    this.indexedPhotos = 0,
+    this.sourceCount = 0,
     this.errorCode,
   });
 
@@ -19,6 +22,9 @@ class PhotoLibraryState {
   final PhotoLibraryPhase phase;
   final PhotoLibrary library;
   final LibraryCategory? selectedCategory;
+  final int foundPhotos;
+  final int indexedPhotos;
+  final int sourceCount;
   final String? errorCode;
 
   bool get isBusy {
@@ -43,6 +49,9 @@ class PhotoLibraryState {
     PhotoLibraryPhase? phase,
     PhotoLibrary? library,
     LibraryCategory? selectedCategory,
+    int? foundPhotos,
+    int? indexedPhotos,
+    int? sourceCount,
     bool clearCategory = false,
     String? errorCode,
     bool clearError = false,
@@ -53,6 +62,9 @@ class PhotoLibraryState {
       selectedCategory: clearCategory
           ? null
           : selectedCategory ?? this.selectedCategory,
+      foundPhotos: foundPhotos ?? this.foundPhotos,
+      indexedPhotos: indexedPhotos ?? this.indexedPhotos,
+      sourceCount: sourceCount ?? this.sourceCount,
       errorCode: clearError ? null : errorCode ?? this.errorCode,
     );
   }

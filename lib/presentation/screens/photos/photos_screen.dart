@@ -28,7 +28,7 @@ class PhotosScreen extends ConsumerWidget {
         if (state.errorCode != null)
           _ErrorBanner(message: state.errorCode!)
         else if (state.isBusy && !state.hasPhotos)
-          const Expanded(child: Center(child: CircularProgressIndicator()))
+          Expanded(child: _LibraryProgress(state: state))
         else if (!state.hasPhotos)
           Expanded(
             child: _EmptyLibrary(
@@ -189,6 +189,11 @@ class _LibraryHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final count = state.visiblePhotos.length;
+    final subtitle = state.phase == PhotoLibraryPhase.refreshing
+        ? _progressText(l10n, state)
+        : state.selectedCategory == null
+        ? l10n.countPhotos(count)
+        : '${_categoryLabel(l10n, state.selectedCategory!)} - ${l10n.countPhotos(count)}';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
@@ -204,9 +209,7 @@ class _LibraryHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  state.selectedCategory == null
-                      ? l10n.countPhotos(count)
-                      : '${_categoryLabel(l10n, state.selectedCategory!)} - ${l10n.countPhotos(count)}',
+                  subtitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -225,6 +228,42 @@ class _LibraryHeader extends StatelessWidget {
                 : const Icon(Icons.refresh_outlined),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LibraryProgress extends StatelessWidget {
+  const _LibraryProgress({required this.state});
+
+  final PhotoLibraryState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const LinearProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              l10n.scanningLibrary,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _progressText(l10n, state),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -554,4 +593,10 @@ String _backupLabel(AppLocalizations l10n, LibraryBackupStatus status) {
     LibraryBackupStatus.failed => l10n.failed,
     LibraryBackupStatus.ignored => l10n.ignored,
   };
+}
+
+String _progressText(AppLocalizations l10n, PhotoLibraryState state) {
+  return '${l10n.foundPhotos}: ${state.foundPhotos} - '
+      '${l10n.indexedPhotos}: ${state.indexedPhotos} - '
+      '${l10n.discoveredSources}: ${state.sourceCount}';
 }

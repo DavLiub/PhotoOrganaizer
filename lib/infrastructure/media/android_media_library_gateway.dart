@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:photo_manager/photo_manager.dart' as pm;
 
 import '../../application/ports/media_library_gateway.dart';
@@ -7,7 +9,10 @@ import 'photo_manager_mapper.dart';
 
 class AndroidMediaLibraryGateway implements MediaLibraryGateway {
   @override
-  Future<LibraryScan> scanLibrary({int pageSize = 100}) async {
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+  }) async {
     final safePageSize = pageSize <= 0 ? 100 : pageSize;
     final discoveredAt = DateTime.now().toUtc();
     final paths = await pm.PhotoManager.getAssetPathList(
@@ -16,10 +21,28 @@ class AndroidMediaLibraryGateway implements MediaLibraryGateway {
     );
     final sources = <MediaSource>[];
     final photosById = <String, PhotoAsset>{};
+    var scannedSources = 0;
+
+    _logScan('started paths=${paths.length} pageSize=$safePageSize');
+    _emitProgress(
+      onProgress,
+      photosById: photosById,
+      sources: sources,
+      scannedSources: scannedSources,
+      totalSources: paths.length,
+    );
 
     for (final path in paths) {
       final assetCount = await path.assetCountAsync;
       if (assetCount <= 0) {
+        scannedSources++;
+        _emitProgress(
+          onProgress,
+          photosById: photosById,
+          sources: sources,
+          scannedSources: scannedSources,
+          totalSources: paths.length,
+        );
         continue;
       }
 
@@ -41,9 +64,31 @@ class AndroidMediaLibraryGateway implements MediaLibraryGateway {
         pageSize: safePageSize,
         discoveredAt: discoveredAt,
         photosById: photosById,
+        onProgress: () {
+          _emitProgress(
+            onProgress,
+            photosById: photosById,
+            sources: sources,
+            scannedSources: scannedSources,
+            totalSources: paths.length,
+          );
+        },
+      );
+      scannedSources++;
+      _logScan(
+        'path scanned name=${path.name} found=${photosById.length} '
+        'sources=$scannedSources/${paths.length}',
+      );
+      _emitProgress(
+        onProgress,
+        photosById: photosById,
+        sources: sources,
+        scannedSources: scannedSources,
+        totalSources: paths.length,
       );
     }
 
+    _logScan('completed found=${photosById.length} sources=${sources.length}');
     return LibraryScan(
       sources: List.unmodifiable(sources),
       photos: List.unmodifiable(photosById.values),
@@ -56,6 +101,7 @@ Future<void> _scanPath({
   required int pageSize,
   required DateTime discoveredAt,
   required Map<String, PhotoAsset> photosById,
+  required void Function() onProgress,
 }) async {
   var page = 0;
 
@@ -80,7 +126,13 @@ Future<void> _scanPath({
         discoveredAt: discoveredAt,
       );
       photosById[photo.id] = photo;
+
+      if (photosById.length % 25 == 0) {
+        onProgress();
+      }
     }
+
+    onProgress();
 
     if (assets.length < pageSize) {
       return;
@@ -115,4 +167,25 @@ Future<PhotoAsset> _mapAsset({
       height: asset.height,
     ),
   );
+}
+
+void _emitProgress(
+  LibraryProgressCallback? onProgress, {
+  required Map<String, PhotoAsset> photosById,
+  required List<MediaSource> sources,
+  required int scannedSources,
+  required int totalSources,
+}) {
+  onProgress?.call(
+    LibraryScanProgress(
+      foundPhotos: photosById.length,
+      sourceCount: sources.length,
+      scannedSources: scannedSources,
+      totalSources: totalSources,
+    ),
+  );
+}
+
+void _logScan(String message) {
+  developer.log(message, name: 'PhotoOrganizer.Scan');
 }

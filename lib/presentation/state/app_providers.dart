@@ -14,8 +14,8 @@ final firstScanActionsProvider = Provider<FirstScanActions>((ref) {
   return FirstScanActions(
     checkAccess: root.checkMediaAccess.call,
     requestAccess: root.requestMediaAccess.call,
-    scanLibrary: ({int pageSize = 100}) {
-      return root.scanMediaLibrary(pageSize: pageSize);
+    scanLibrary: ({int pageSize = 100, onProgress}) {
+      return root.scanMediaLibrary(pageSize: pageSize, onProgress: onProgress);
     },
   );
 });
@@ -26,8 +26,8 @@ final photoLibraryActionsProvider = Provider<PhotoLibraryActions>((ref) {
   return PhotoLibraryActions(
     listPhotos: root.listLibraryPhotos.call,
     loadThumbnail: root.photoThumbnailGateway.loadThumbnail,
-    refreshLibrary: ({int pageSize = 100}) {
-      return root.scanMediaLibrary(pageSize: pageSize);
+    refreshLibrary: ({int pageSize = 100, onProgress}) {
+      return root.scanMediaLibrary(pageSize: pageSize, onProgress: onProgress);
     },
   );
 });

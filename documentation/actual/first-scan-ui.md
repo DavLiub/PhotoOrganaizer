@@ -37,6 +37,12 @@ The scan screen shows:
 
 The `Scan` button is disabled while scanning.
 
+During scanning, counters are updated from `ScanProgress`:
+
+- found photos update while Android media albums are scanned;
+- indexed photos update while index rows are written;
+- discovered sources update as media sources are found.
+
 After a successful scan, the app switches to the Photos tab and reloads the photo library UI.
 
 `protected` counts are intentionally not shown yet because backup upload and cloud confirmation are not implemented.
@@ -69,6 +75,5 @@ The current implementation uses a small in-code localization map. It can later b
 ## Known Limitations
 
 - Permission prompt behavior still requires manual Android device validation.
-- There is no live per-page progress from the media scan contract yet.
 - Source include/exclude settings are not available before or during the first scan.
 - The UI does not open Android app settings for permanently denied permission yet.

@@ -64,6 +64,8 @@ Application exposes:
 
 `IndexPhotos` checks media permission through `MediaPermissionGateway` before writing index entries. If photo access is not available, it returns a structured permission failure.
 
+`IndexPhotos` can report write progress through an optional callback. Index entries are persisted in batches of `100` so long foreground indexing runs can update UI counters instead of staying silent until the full write completes.
+
 `ScanMediaLibrary` checks permission, scans Android-visible photo metadata through `MediaLibraryGateway`, upserts media sources, and then delegates photo writes to `IndexPhotos`.
 
 ## Repository Port And Storage

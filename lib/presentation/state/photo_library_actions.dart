@@ -9,7 +9,10 @@ typedef ListPhotos = Future<OperationResult<PhotoLibrary>> Function();
 typedef LoadThumbnail = Future<Uint8List?> Function(String assetId, {int size});
 
 typedef RefreshLibrary =
-    Future<OperationResult<LibraryScanResult>> Function({int pageSize});
+    Future<OperationResult<LibraryScanResult>> Function({
+      int pageSize,
+      ScanProgressCallback? onProgress,
+    });
 
 class PhotoLibraryActions {
   const PhotoLibraryActions({

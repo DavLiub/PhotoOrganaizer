@@ -53,7 +53,10 @@ class FirstScanController extends Notifier<FirstScanState> {
       clearError: true,
     );
 
-    final result = await _actions.scanLibrary(pageSize: 100);
+    final result = await _actions.scanLibrary(
+      pageSize: 100,
+      onProgress: _applyProgress,
+    );
 
     switch (result) {
       case OperationSuccess<LibraryScanResult>(value: final value):
@@ -77,6 +80,18 @@ class FirstScanController extends Notifier<FirstScanState> {
           errorCode: failure.safeMessage ?? failure.code,
         );
     }
+  }
+
+  void _applyProgress(ScanProgress progress) {
+    if (state.phase != FirstScanPhase.scanning) {
+      return;
+    }
+
+    state = state.copyWith(
+      foundPhotos: progress.foundPhotos,
+      indexedPhotos: progress.writtenPhotos,
+      sourceCount: progress.sourceCount,
+    );
   }
 
   Future<void> _applyPermission(

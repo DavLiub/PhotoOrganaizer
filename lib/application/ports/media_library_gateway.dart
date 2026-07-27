@@ -12,6 +12,25 @@ class LibraryScan {
   bool get isEmpty => sources.isEmpty && photos.isEmpty;
 }
 
+class LibraryScanProgress {
+  const LibraryScanProgress({
+    required this.foundPhotos,
+    required this.sourceCount,
+    this.scannedSources = 0,
+    this.totalSources,
+  });
+
+  final int foundPhotos;
+  final int sourceCount;
+  final int scannedSources;
+  final int? totalSources;
+}
+
+typedef LibraryProgressCallback = void Function(LibraryScanProgress progress);
+
 abstract interface class MediaLibraryGateway {
-  Future<LibraryScan> scanLibrary({int pageSize = 100});
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+  });
 }

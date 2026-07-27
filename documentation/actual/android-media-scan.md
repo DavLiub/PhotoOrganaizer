@@ -17,9 +17,9 @@ Flow:
 ```text
 ScanMediaLibrary
   -> MediaPermissionGateway.currentStatus
-  -> MediaLibraryGateway.scanLibrary
+  -> MediaLibraryGateway.scanLibrary with progress callback
   -> MediaSourceRepository.upsertSources
-  -> IndexPhotos
+  -> IndexPhotos with progress callback
 ```
 
 If permission is denied or unavailable, scanning is skipped and a structured permission failure is returned.
@@ -44,6 +44,15 @@ If source persistence fails, photo indexing is skipped and a structured storage 
 - `AssetEntity.height`
 
 Default page size is `100`.
+
+The adapter reports `LibraryScanProgress` during discovery:
+
+- initial zero progress after album list discovery;
+- incremental found-photo updates while each album page is processed;
+- source progress after each album is completed;
+- final found photo and source totals.
+
+Android scan diagnostics are emitted through `dart:developer` with the `PhotoOrganizer.Scan` logger name. These logs are intended for local `adb logcat` troubleshooting and do not include asset ids, filenames, or paths.
 
 ## Mapping Rules
 
@@ -87,3 +96,4 @@ Media location is not requested.
 - The scan does not read or copy full image bytes.
 - Deleted or inaccessible local photos are not marked yet.
 - Source include/exclude settings are not implemented yet.
+- Scan progress is callback-based and in-process only; it is not durable and does not survive app termination.

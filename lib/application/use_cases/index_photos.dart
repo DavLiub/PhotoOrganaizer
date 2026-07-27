@@ -22,6 +22,8 @@ class IndexResult {
   int get writtenPhotos => indexedPhotos + updatedPhotos;
 }
 
+typedef IndexProgressCallback = void Function(IndexResult progress);
+
 class IndexPhotos {
   const IndexPhotos({
     required PhotoIndexRepository repository,
@@ -36,6 +38,7 @@ class IndexPhotos {
     List<PhotoAsset> photos, {
     IndexScope scope = const IndexScope.allPhotos(),
     DateTime? indexedAt,
+    IndexProgressCallback? onProgress,
   }) async {
     final permission = await _permissionGateway.currentStatus();
     switch (permission) {
@@ -71,6 +74,14 @@ class IndexPhotos {
     }
 
     if (scopedAssets.isEmpty) {
+      onProgress?.call(
+        IndexResult(
+          seenPhotos: photos.length,
+          indexedPhotos: 0,
+          updatedPhotos: 0,
+          ignoredPhotos: ignoredPhotos,
+        ),
+      );
       return OperationSuccess(
         IndexResult(
           seenPhotos: photos.length,
@@ -90,6 +101,7 @@ class IndexPhotos {
       };
 
       final entries = <PhotoIndexEntry>[];
+      final newAssetIds = <String>{};
       var indexedPhotos = 0;
       var updatedPhotos = 0;
 
@@ -97,6 +109,7 @@ class IndexPhotos {
         final existing = existingByAssetId[photo.id];
         if (existing == null) {
           entries.add(PhotoIndexEntry.fromAsset(photo, indexedAt: now));
+          newAssetIds.add(photo.id);
           indexedPhotos++;
         } else {
           entries.add(existing.refresh(photo, updatedAt: now));
@@ -104,7 +117,34 @@ class IndexPhotos {
         }
       }
 
-      await _repository.upsertEntries(entries);
+      const batchSize = 100;
+      var writtenIndexed = 0;
+      var writtenUpdated = 0;
+
+      for (var start = 0; start < entries.length; start += batchSize) {
+        final end = start + batchSize > entries.length
+            ? entries.length
+            : start + batchSize;
+        final batch = entries.sublist(start, end);
+        await _repository.upsertEntries(batch);
+
+        for (final entry in batch) {
+          if (newAssetIds.contains(entry.asset.id)) {
+            writtenIndexed++;
+          } else {
+            writtenUpdated++;
+          }
+        }
+
+        onProgress?.call(
+          IndexResult(
+            seenPhotos: photos.length,
+            indexedPhotos: writtenIndexed,
+            updatedPhotos: writtenUpdated,
+            ignoredPhotos: ignoredPhotos,
+          ),
+        );
+      }
 
       return OperationSuccess(
         IndexResult(

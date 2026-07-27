@@ -45,6 +45,26 @@ void main() {
       expect(indexRepository.entries.single.asset.id, 'asset-1');
     });
 
+    test('reports scan and index progress', () async {
+      final source = _source(id: 'photo_manager:camera');
+      final photo = _asset(id: 'asset-1', sourceId: source.id);
+      final library = _FakeLibrary(
+        LibraryScan(sources: [source], photos: [photo]),
+      );
+      final useCase = _useCase(library: library);
+      final progress = <ScanProgress>[];
+
+      await useCase(
+        onProgress: progress.add,
+        indexedAt: DateTime.utc(2026, 7, 24),
+      );
+
+      expect(progress, isNotEmpty);
+      expect(progress.map((event) => event.foundPhotos), contains(1));
+      expect(progress.map((event) => event.writtenPhotos), contains(1));
+      expect(progress.map((event) => event.sourceCount), contains(1));
+    });
+
     test('does not scan when permission is denied', () async {
       final library = _FakeLibrary(const LibraryScan.empty());
       final useCase = _useCase(
@@ -123,9 +143,20 @@ class _FakeLibrary implements MediaLibraryGateway {
   int? pageSize;
 
   @override
-  Future<LibraryScan> scanLibrary({int pageSize = 100}) async {
+  Future<LibraryScan> scanLibrary({
+    int pageSize = 100,
+    LibraryProgressCallback? onProgress,
+  }) async {
     calls++;
     this.pageSize = pageSize;
+    onProgress?.call(
+      LibraryScanProgress(
+        foundPhotos: scan.photos.length,
+        sourceCount: scan.sources.length,
+        scannedSources: scan.sources.length,
+        totalSources: scan.sources.length,
+      ),
+    );
     return scan;
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -79,6 +80,43 @@ void main() {
     expect(actions.refreshCalls, 1);
   });
 
+  testWidgets('shows refresh progress while library scan is running', (
+    tester,
+  ) async {
+    final refreshResult = Completer<OperationResult<LibraryScanResult>>();
+    final actions = _FakeActions(
+      library: _library(),
+      refreshResult: refreshResult,
+    );
+
+    await tester.pumpWidget(_buildPhotos(actions));
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Refresh'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Run now'));
+    await tester.pump();
+
+    expect(find.textContaining('Found photos: 3'), findsOneWidget);
+    expect(find.textContaining('Indexed photos: 1'), findsOneWidget);
+
+    refreshResult.complete(
+      const OperationSuccess(
+        LibraryScanResult(
+          scan: LibraryScan.empty(),
+          index: IndexResult(
+            seenPhotos: 0,
+            indexedPhotos: 0,
+            updatedPhotos: 0,
+            ignoredPhotos: 0,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+  });
+
   testWidgets('backup action warns when target is not configured', (
     tester,
   ) async {
@@ -154,17 +192,31 @@ Widget _buildShell(_FakeScanActions scanActions, _FakeActions libraryActions) {
 }
 
 class _FakeActions {
-  _FakeActions({required this.library});
+  _FakeActions({required this.library, this.refreshResult});
 
   PhotoLibrary library;
+  final Completer<OperationResult<LibraryScanResult>>? refreshResult;
   int refreshCalls = 0;
 
   PhotoLibraryActions get value {
     return PhotoLibraryActions(
       listPhotos: () async => OperationSuccess(library),
       loadThumbnail: (assetId, {int size = 200}) async => _transparentPng(),
-      refreshLibrary: ({int pageSize = 100}) async {
+      refreshLibrary: ({int pageSize = 100, onProgress}) async {
         refreshCalls++;
+        onProgress?.call(
+          const ScanProgress(
+            foundPhotos: 3,
+            indexedPhotos: 1,
+            updatedPhotos: 0,
+            sourceCount: 1,
+          ),
+        );
+        final pendingRefresh = refreshResult;
+        if (pendingRefresh != null) {
+          return pendingRefresh.future;
+        }
+
         return const OperationSuccess(
           LibraryScanResult(
             scan: LibraryScan.empty(),
@@ -196,7 +248,7 @@ class _FakeScanActions {
           MediaPermission(state: MediaPermissionState.granted),
         );
       },
-      scanLibrary: ({int pageSize = 100}) async {
+      scanLibrary: ({int pageSize = 100, onProgress}) async {
         scanCalls++;
         return OperationSuccess(
           LibraryScanResult(
