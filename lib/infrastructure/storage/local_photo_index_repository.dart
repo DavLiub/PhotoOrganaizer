@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import '../../application/ports/photo_index_repository.dart';
 import '../../domain/entities/photo_index_entry.dart';
 import '../../domain/models/protection_summary.dart';
@@ -17,6 +19,15 @@ class LocalPhotoIndexRepository implements PhotoIndexRepository {
 
   AppDatabase get database {
     return _database ??= _createDatabase();
+  }
+
+  @override
+  Future<List<PhotoIndexEntry>> findAll() async {
+    final rows = await (database.select(
+      database.photoIndexEntries,
+    )..orderBy([(entry) => OrderingTerm.desc(entry.createdAt)])).get();
+
+    return rows.map(entryFromRow).toList(growable: false);
   }
 
   @override

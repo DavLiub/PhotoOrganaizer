@@ -75,6 +75,39 @@ class AppLocalizations {
   String get qualityAndNetwork => text('qualityAndNetwork');
   String get backupProgress => text('backupProgress');
   String get currentBackupJob => text('currentBackupJob');
+  String get library => text('library');
+  String get refresh => text('refresh');
+  String get refreshLibrary => text('refreshLibrary');
+  String get refreshLibraryMessage => text('refreshLibraryMessage');
+  String get configureAutoRefresh => text('configureAutoRefresh');
+  String get runNow => text('runNow');
+  String get allPhotos => text('allPhotos');
+  String get catalogs => text('catalogs');
+  String get startBackup => text('startBackup');
+  String get backupTargetMissing => text('backupTargetMissing');
+  String get backupTargetMessage => text('backupTargetMessage');
+  String get goToSettings => text('goToSettings');
+  String get cancel => text('cancel');
+  String get emptyLibraryTitle => text('emptyLibraryTitle');
+  String get emptyLibraryMessage => text('emptyLibraryMessage');
+  String get scanPhotos => text('scanPhotos');
+  String get categoryCamera => text('categoryCamera');
+  String get categorySocial => text('categorySocial');
+  String get categoryDownloads => text('categoryDownloads');
+  String get categoryScreenshots => text('categoryScreenshots');
+  String get noBackup => text('noBackup');
+  String get backupQueued => text('backupQueued');
+  String get protected => text('protected');
+  String get failed => text('failed');
+  String get ignored => text('ignored');
+
+  String countPhotos(int value) {
+    return count('photoCount', value);
+  }
+
+  String emptyCategory(String category) {
+    return text('emptyCategory').replaceAll('{category}', category);
+  }
 }
 
 class _AppLocalizationsDelegate
@@ -145,6 +178,36 @@ const _en = {
   'qualityAndNetwork': 'Quality and network',
   'backupProgress': 'Backup progress',
   'currentBackupJob': 'Current backup job',
+  'library': 'Library',
+  'refresh': 'Refresh',
+  'refreshLibrary': 'Refresh library',
+  'refreshLibraryMessage':
+      'Refresh the local photo index now, or configure automatic refresh in settings.',
+  'configureAutoRefresh': 'Auto refresh settings',
+  'runNow': 'Run now',
+  'allPhotos': 'All photos',
+  'catalogs': 'Catalogs',
+  'startBackup': 'Backup',
+  'backupTargetMissing': 'Backup target is not configured',
+  'backupTargetMessage':
+      'Choose where backups should be stored before starting backup.',
+  'goToSettings': 'Go to settings',
+  'cancel': 'Cancel',
+  'emptyLibraryTitle': 'No indexed photos yet',
+  'emptyLibraryMessage':
+      'Run the first scan from Home to build the local photo library.',
+  'scanPhotos': 'Scan photos',
+  'categoryCamera': 'Camera',
+  'categorySocial': 'Social',
+  'categoryDownloads': 'Downloads',
+  'categoryScreenshots': 'Screenshots',
+  'noBackup': 'No backup',
+  'backupQueued': 'Backup queued',
+  'protected': 'Protected',
+  'failed': 'Failed',
+  'ignored': 'Ignored',
+  'photoCount': '{count} photos',
+  'emptyCategory': 'No photos in {category}.',
 };
 
 const _ru = {
@@ -193,4 +256,34 @@ const _ru = {
   'qualityAndNetwork': 'Качество и сеть',
   'backupProgress': 'Прогресс бэкапа',
   'currentBackupJob': 'Текущая задача бэкапа',
+  'library': 'Библиотека',
+  'refresh': 'Обновить',
+  'refreshLibrary': 'Обновить библиотеку',
+  'refreshLibraryMessage':
+      'Обновите локальный индекс сейчас или настройте автоматическое обновление.',
+  'configureAutoRefresh': 'Настроить автообновление',
+  'runNow': 'Запустить сейчас',
+  'allPhotos': 'Все фото',
+  'catalogs': 'Каталоги',
+  'startBackup': 'Бэкап',
+  'backupTargetMissing': 'Хранилище бэкапа не настроено',
+  'backupTargetMessage':
+      'Выберите, куда сохранять бэкапы, перед запуском резервного копирования.',
+  'goToSettings': 'Перейти в настройки',
+  'cancel': 'Отмена',
+  'emptyLibraryTitle': 'Проиндексированных фото пока нет',
+  'emptyLibraryMessage':
+      'Запустите первое сканирование на главном экране, чтобы построить локальную библиотеку.',
+  'scanPhotos': 'Сканировать фото',
+  'categoryCamera': 'Камера',
+  'categorySocial': 'Соцсети',
+  'categoryDownloads': 'Скачанные',
+  'categoryScreenshots': 'Скриншоты',
+  'noBackup': 'Нет бэкапа',
+  'backupQueued': 'В очереди',
+  'protected': 'Защищено',
+  'failed': 'Ошибка',
+  'ignored': 'Игнорируется',
+  'photoCount': '{count} фото',
+  'emptyCategory': 'Нет фото в категории {category}.',
 };

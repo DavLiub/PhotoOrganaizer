@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/history/history_screen.dart';
 import '../screens/home/home_screen.dart';
@@ -7,20 +8,15 @@ import '../screens/premium/premium_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../localization/app_localizations.dart';
 import 'main_destination.dart';
+import '../state/main_destination_controller.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerWidget {
   const MainScaffold({super.key});
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
-}
-
-class _MainScaffoldState extends State<MainScaffold> {
-  MainDestination _destination = MainDestination.home;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final destination = ref.watch(mainDestinationProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,13 +33,13 @@ class _MainScaffoldState extends State<MainScaffold> {
           ),
         ],
       ),
-      body: _buildBody(),
+      body: _buildBody(destination),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _destination.index,
+        selectedIndex: destination.index,
         onDestinationSelected: (index) {
-          setState(() {
-            _destination = MainDestination.values[index];
-          });
+          ref
+              .read(mainDestinationProvider.notifier)
+              .select(MainDestination.values[index]);
         },
         destinations: [
           for (final destination in MainDestination.values)
@@ -57,8 +53,8 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 
-  Widget _buildBody() {
-    return switch (_destination) {
+  Widget _buildBody(MainDestination destination) {
+    return switch (destination) {
       MainDestination.home => const HomeScreen(),
       MainDestination.photos => const PhotosScreen(),
       MainDestination.history => const HistoryScreen(),

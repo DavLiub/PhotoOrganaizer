@@ -96,6 +96,11 @@ class _FakeMediaGateway implements MediaLibraryGateway {
 
 class _FakePhotoIndex implements PhotoIndexRepository {
   @override
+  Future<List<PhotoIndexEntry>> findAll() async {
+    return const [];
+  }
+
+  @override
   Future<List<PhotoIndexEntry>> findByAssetIds(Set<String> assetIds) async {
     return const [];
   }

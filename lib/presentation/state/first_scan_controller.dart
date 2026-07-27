@@ -8,6 +8,9 @@ import '../../domain/value_objects/operation_result.dart';
 import 'app_providers.dart';
 import 'first_scan_actions.dart';
 import 'first_scan_state.dart';
+import 'main_destination_controller.dart';
+import 'photo_library_controller.dart';
+import '../navigation/main_destination.dart';
 
 final firstScanProvider = NotifierProvider<FirstScanController, FirstScanState>(
   FirstScanController.new,
@@ -64,6 +67,10 @@ class FirstScanController extends Notifier<FirstScanState> {
           sourceCount: value.scan.sources.length,
           clearError: true,
         );
+        ref.invalidate(photoLibraryProvider);
+        ref
+            .read(mainDestinationProvider.notifier)
+            .select(MainDestination.photos);
       case OperationFailure<LibraryScanResult>(failure: final failure):
         state = state.copyWith(
           phase: FirstScanPhase.failure,

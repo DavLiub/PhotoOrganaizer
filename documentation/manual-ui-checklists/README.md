@@ -17,6 +17,7 @@ Use these checklists during Android device smoke testing when a UI change cannot
 - [home-welcome.md](home-welcome.md): welcome screen and media permission request.
 - [home-first-scan.md](home-first-scan.md): manual local scan screen.
 - [navigation-shell.md](navigation-shell.md): app shell, tabs, and settings entry.
+- [photo-library.md](photo-library.md): indexed photo grid, category filters, refresh, and backup warning.
 - [settings.md](settings.md): settings placeholder screen.
 
 ## Test Record Template

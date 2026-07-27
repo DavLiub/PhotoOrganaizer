@@ -37,6 +37,8 @@ The scan screen shows:
 
 The `Scan` button is disabled while scanning.
 
+After a successful scan, the app switches to the Photos tab and reloads the photo library UI.
+
 `protected` counts are intentionally not shown yet because backup upload and cloud confirmation are not implemented.
 
 ## State Management

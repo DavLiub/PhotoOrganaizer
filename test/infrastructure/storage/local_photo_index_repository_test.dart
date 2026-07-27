@@ -44,6 +44,17 @@ void main() {
       expect(result.identity, entry.identity);
     });
 
+    test('returns all entries ordered by creation date descending', () async {
+      final older = _entry(id: 'older', createdAt: DateTime.utc(2026, 7, 1));
+      final newer = _entry(id: 'newer', createdAt: DateTime.utc(2026, 7, 2));
+
+      await repository.upsertEntries([older, newer]);
+
+      final result = await repository.findAll();
+
+      expect(result.map((entry) => entry.asset.id), ['newer', 'older']);
+    });
+
     test('upsert refreshes existing entry by stable id', () async {
       final indexedAt = DateTime.utc(2026, 7, 23);
       final original = _entry(
@@ -96,20 +107,25 @@ void main() {
 PhotoIndexEntry _entry({
   required String id,
   int fileSize = 100,
+  DateTime? createdAt,
   DateTime? indexedAt,
   PhotoIndexStatus status = PhotoIndexStatus.indexed,
 }) {
   final timestamp = indexedAt ?? DateTime.utc(2026, 7, 23);
 
   return PhotoIndexEntry.fromAsset(
-    _asset(id: id, fileSize: fileSize),
+    _asset(id: id, fileSize: fileSize, createdAt: createdAt),
     indexedAt: timestamp,
     status: status,
   );
 }
 
-PhotoAsset _asset({required String id, required int fileSize}) {
-  final createdAt = DateTime.utc(2026, 7, 1);
+PhotoAsset _asset({
+  required String id,
+  required int fileSize,
+  DateTime? createdAt,
+}) {
+  final created = createdAt ?? DateTime.utc(2026, 7, 1);
   final modifiedAt = DateTime.utc(2026, 7, 2).add(Duration(seconds: fileSize));
 
   return PhotoAsset(
@@ -122,9 +138,9 @@ PhotoAsset _asset({required String id, required int fileSize}) {
     filename: '$id.jpg',
     mimeType: 'image/jpeg',
     fileSize: fileSize,
-    createdAt: createdAt,
+    createdAt: created,
     modifiedAt: modifiedAt,
-    discoveredAt: createdAt,
+    discoveredAt: created,
     lastSeenAt: modifiedAt,
     availabilityStatus: PhotoAvailabilityStatus.available,
     width: 4000,

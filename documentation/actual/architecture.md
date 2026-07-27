@@ -86,6 +86,8 @@ lib/infrastructure/
 - Presentation uses Riverpod for UI state and use case access.
 - `SmartPhotoArchiveApp` provides the Bootstrap composition root through `appRootProvider`.
 - First scan UI state is owned by `FirstScanController`.
+- Main shell destination state is owned by `MainDestinationController`.
+- Photo library UI state is owned by `PhotoLibraryController`.
 - User-visible UI strings are routed through `AppLocalizations`.
 - Supported UI locales are English and Russian.
 
@@ -103,11 +105,22 @@ lib/infrastructure/
 
 - Domain defines local photo identity, photo index entry, index status, and index scope.
 - Application exposes `IndexPhotos` and `ResolvePhotoIdentity`.
+- Application exposes `ListLibraryPhotos` as the read use case for the Photos tab.
 - `IndexPhotos` checks `MediaPermissionGateway` before writing index entries.
-- `PhotoIndexRepository` is the Application port for identity lookup, asset-id lookup, entry upsert, and protection summary streaming.
+- `PhotoIndexRepository` is the Application port for full index listing, identity lookup, asset-id lookup, entry upsert, and protection summary streaming.
 - Infrastructure storage implements `PhotoIndexRepository` with Drift-backed SQLite persistence.
 - Drift database and generated row types stay inside `lib/infrastructure/storage`.
 - Presentation does not depend on photo index storage or Infrastructure adapters directly.
+
+## Photo Library UI
+
+- Presentation renders indexed photos in the Photos tab through `PhotoLibraryController`.
+- `PhotoLibrary` is an Application read model built from the photo index and media source catalog.
+- The library screen supports Camera, Social, Downloads, and Screenshots categories as read-only filters.
+- Thumbnail loading is hidden behind `PhotoThumbnailGateway`.
+- Android and iOS composition currently use the `photo_manager` thumbnail adapter.
+- Unsupported platforms return null thumbnails through a placeholder adapter.
+- Backup start is intentionally guarded by a missing-target warning until backup target settings exist.
 
 ## Backup State
 
