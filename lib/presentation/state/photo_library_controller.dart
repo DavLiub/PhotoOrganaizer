@@ -73,6 +73,8 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
       foundPhotos: _baseFound,
       indexedPhotos: _baseIndexed,
       sourceCount: _baseSources,
+      scanBaselinePhotos: _baseFound,
+      checkedPhotos: 0,
       clearError: true,
     );
 
@@ -97,6 +99,8 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
           state = state.copyWith(
             phase: PhotoLibraryPhase.failure,
             errorCode: failure.safeMessage ?? failure.code,
+            scanBaselinePhotos: 0,
+            checkedPhotos: 0,
           );
         }
     }
@@ -122,6 +126,8 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
       foundPhotos: nextProgress.foundPhotos,
       indexedPhotos: nextProgress.writtenPhotos,
       sourceCount: nextProgress.sourceCount,
+      scanBaselinePhotos: _baseFound,
+      checkedPhotos: _checkedPhotos(progress),
     );
 
     if (hasNewIndex || nextProgress.writtenPhotos > previousWritten) {
@@ -186,6 +192,12 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
           library: value,
           foundPhotos: foundPhotos,
           indexedPhotos: indexedPhotos,
+          scanBaselinePhotos: nextPhase == PhotoLibraryPhase.refreshing
+              ? state.scanBaselinePhotos
+              : 0,
+          checkedPhotos: nextPhase == PhotoLibraryPhase.refreshing
+              ? state.checkedPhotos
+              : 0,
           clearError: true,
         );
       case OperationFailure<PhotoLibrary>(failure: final failure):
@@ -214,6 +226,19 @@ class PhotoLibraryController extends Notifier<PhotoLibraryState> {
     } while (_reloadPending);
 
     _reloadRunning = false;
+  }
+
+  int _checkedPhotos(ScanProgress progress) {
+    final writtenPhotos = progress.writtenPhotos;
+    if (writtenPhotos <= 0) {
+      return 0;
+    }
+
+    if (writtenPhotos > _baseFound) {
+      return _baseFound;
+    }
+
+    return writtenPhotos;
   }
 }
 

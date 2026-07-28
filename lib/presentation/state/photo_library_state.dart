@@ -15,6 +15,8 @@ class PhotoLibraryState {
     this.foundPhotos = 0,
     this.indexedPhotos = 0,
     this.sourceCount = 0,
+    this.scanBaselinePhotos = 0,
+    this.checkedPhotos = 0,
     this.errorCode,
   });
 
@@ -31,6 +33,8 @@ class PhotoLibraryState {
   final int foundPhotos;
   final int indexedPhotos;
   final int sourceCount;
+  final int scanBaselinePhotos;
+  final int checkedPhotos;
   final String? errorCode;
 
   bool get isBusy {
@@ -79,6 +83,8 @@ class PhotoLibraryState {
     int? foundPhotos,
     int? indexedPhotos,
     int? sourceCount,
+    int? scanBaselinePhotos,
+    int? checkedPhotos,
     String? errorCode,
     bool clearError = false,
   }) {
@@ -90,6 +96,8 @@ class PhotoLibraryState {
       foundPhotos: foundPhotos ?? this.foundPhotos,
       indexedPhotos: indexedPhotos ?? this.indexedPhotos,
       sourceCount: sourceCount ?? this.sourceCount,
+      scanBaselinePhotos: scanBaselinePhotos ?? this.scanBaselinePhotos,
+      checkedPhotos: checkedPhotos ?? this.checkedPhotos,
       errorCode: clearError ? null : errorCode ?? this.errorCode,
     );
   }
