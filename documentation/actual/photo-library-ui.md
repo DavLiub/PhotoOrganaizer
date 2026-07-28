@@ -81,9 +81,19 @@ separate future workflow for reconciling deleted, changed, or permission-limited
 media and should be exposed from Settings or overflow rather than the primary
 action row.
 
-User-facing scan progress is represented by the live photo count, grid, and a
-small circular activity indicator next to the photo count while scanning. The
+User-facing scan progress is represented by the live status label, grid, and a
+small circular activity indicator next to the status label while scanning. The
 technical indexed/source counters are no longer shown on the main Library UI.
+
+When the Library already has a persisted index, a new foreground scan starts in
+checking mode. The status label shows `Checking X/Y`, where `Y` is the current
+indexed library size at scan start and `X` is the number of photos already
+written or refreshed during the current pass. After checking reaches the
+baseline or newly discovered photos exceed the baseline, the label switches to
+`Scanning N photos`.
+
+When no persisted index exists, scan progress starts directly as
+`Scanning N photos`.
 
 `Stop` cancels further discovery but lets already delivered/current page batches
 finish indexing. When a scan starts with an existing library, visible counts use

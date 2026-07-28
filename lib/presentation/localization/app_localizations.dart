@@ -118,6 +118,16 @@ class AppLocalizations {
     return text('backupPercent').replaceAll('{percent}', value.toString());
   }
 
+  String checkingPhotos(int checked, int total) {
+    return text('checkingPhotos')
+        .replaceAll('{checked}', checked.toString())
+        .replaceAll('{total}', total.toString());
+  }
+
+  String scanningPhotos(int value) {
+    return count('scanningPhotos', value);
+  }
+
   String emptyCategory(String category) {
     return text('emptyCategory').replaceAll('{category}', category);
   }
@@ -229,6 +239,8 @@ const _en = {
   'failed': 'Failed',
   'ignored': 'Ignored',
   'photoCount': '{count} photos',
+  'checkingPhotos': 'Checking {checked}/{total}',
+  'scanningPhotos': 'Scanning {count} photos',
   'emptyCategory': 'No photos in {category}.',
 };
 
@@ -317,5 +329,7 @@ const _ru = {
   'failed': 'Ошибка',
   'ignored': 'Игнорируется',
   'photoCount': '{count} фото',
+  'checkingPhotos': 'Проверка {checked}/{total}',
+  'scanningPhotos': 'Сканирование {count} фото',
   'emptyCategory': 'Нет фото в категории {category}.',
 };

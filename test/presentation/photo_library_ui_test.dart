@@ -171,8 +171,56 @@ void main() {
       find.byKey(const ValueKey('library_scan_indicator')),
       findsOneWidget,
     );
+    expect(find.text('Scanning 3 photos'), findsOneWidget);
     expect(find.text('Indexed photos'), findsNothing);
     expect(find.text('Sources'), findsNothing);
+
+    refreshResult.complete(
+      const OperationSuccess(
+        LibraryScanResult(
+          scan: LibraryScan.empty(),
+          index: IndexResult(
+            seenPhotos: 0,
+            indexedPhotos: 0,
+            updatedPhotos: 0,
+            ignoredPhotos: 0,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+  });
+
+  testWidgets('shows checking progress when refreshing existing library', (
+    tester,
+  ) async {
+    final refreshResult = Completer<OperationResult<LibraryScanResult>>();
+    final actions = _FakeActions(
+      library: _library(),
+      refreshResult: refreshResult,
+      refreshProgress: const [
+        ScanProgress(
+          foundPhotos: 1,
+          indexedPhotos: 0,
+          updatedPhotos: 1,
+          sourceCount: 1,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(_buildPhotos(actions));
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.text('Scan'));
+    await tester.pump();
+
+    expect(
+      find.byKey(const ValueKey('library_scan_indicator')),
+      findsOneWidget,
+    );
+    expect(find.text('Checking 1/2'), findsOneWidget);
+    expect(find.text('2 photos'), findsNothing);
 
     refreshResult.complete(
       const OperationSuccess(
@@ -269,10 +317,24 @@ Widget _buildShell(_FakeScanActions scanActions, _FakeActions libraryActions) {
 }
 
 class _FakeActions {
-  _FakeActions({required this.library, this.refreshResult});
+  _FakeActions({
+    required this.library,
+    this.refreshResult,
+    List<ScanProgress>? refreshProgress,
+  }) : refreshProgress =
+           refreshProgress ??
+           const [
+             ScanProgress(
+               foundPhotos: 3,
+               indexedPhotos: 1,
+               updatedPhotos: 0,
+               sourceCount: 1,
+             ),
+           ];
 
   PhotoLibrary library;
   final Completer<OperationResult<LibraryScanResult>>? refreshResult;
+  final List<ScanProgress> refreshProgress;
   int refreshCalls = 0;
 
   PhotoLibraryActions get value {
@@ -282,14 +344,9 @@ class _FakeActions {
       refreshLibrary: ({int pageSize = 100, onProgress, signal}) async {
         signal?.throwIfStopped();
         refreshCalls++;
-        onProgress?.call(
-          const ScanProgress(
-            foundPhotos: 3,
-            indexedPhotos: 1,
-            updatedPhotos: 0,
-            sourceCount: 1,
-          ),
-        );
+        for (final progress in refreshProgress) {
+          onProgress?.call(progress);
+        }
         final pendingRefresh = refreshResult;
         if (pendingRefresh != null) {
           return pendingRefresh.future;

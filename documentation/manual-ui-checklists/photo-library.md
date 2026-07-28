@@ -20,10 +20,16 @@
   Expected: `Date ↓` and the current visible photo count are shown on one line.
 
 - [ ] Tap `Scan` with an empty or old index.
-  Expected: `Scan` changes to `Stop`; a small circular activity indicator appears next to the photo count; photo tiles begin appearing before the full scan completes.
+  Expected: `Scan` changes to `Stop`; a small circular activity indicator appears next to the status label; photo tiles begin appearing before the full scan completes.
 
 - [ ] Observe scan progress.
-  Expected: the visible photo count and thumbnail grid update live; `Indexed photos` and `Sources` are not shown.
+  Expected: the status label and thumbnail grid update live; `Indexed photos` and `Sources` are not shown.
+
+- [ ] Tap `Scan` when the Library already has indexed photos.
+  Expected: the status label first shows `Checking X/Y`, where `Y` is the indexed photo count at scan start.
+
+- [ ] Keep scan running until checking reaches the current library size or new photos are found.
+  Expected: the status label switches to `Scanning N photos` and keeps the circular activity indicator visible.
 
 - [ ] Verify photo tiles.
   Expected: each indexed photo appears as a thumbnail tile with safe filename and `No backup` status.
@@ -47,7 +53,7 @@
   Expected: scan stops after already found photos are indexed, the activity indicator disappears, and already indexed photos remain visible.
 
 - [ ] Tap `Scan` again after stopping.
-  Expected: visible photo count starts from the current library size rather than dropping to zero.
+  Expected: the current library remains visible, the status starts from `Checking 0/Y`, and the count does not visually drop to zero.
 
 - [ ] Verify bottom navigation.
   Expected: Library is the first tab, and Settings is available as a bottom tab.

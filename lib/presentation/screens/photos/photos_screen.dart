@@ -285,19 +285,31 @@ class _LibraryControls extends StatelessWidget {
                 },
                 child: _SortChip(label: _sortLabel(l10n, state.sort)),
               ),
-              const Spacer(),
-              if (state.phase == PhotoLibraryPhase.refreshing) ...[
-                const SizedBox(
-                  key: ValueKey('library_scan_indicator'),
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (state.phase == PhotoLibraryPhase.refreshing) ...[
+                      const SizedBox(
+                        key: ValueKey('library_scan_indicator'),
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Flexible(
+                      child: Text(
+                        _photoStatusLabel(l10n, state),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-              ],
-              Text(
-                l10n.countPhotos(state.visiblePhotos.length),
-                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
@@ -690,6 +702,22 @@ String _sortLabel(AppLocalizations l10n, LibrarySort sort) {
     LibrarySort.nameAsc => l10n.sortNameAsc,
     LibrarySort.nameDesc => l10n.sortNameDesc,
   };
+}
+
+String _photoStatusLabel(AppLocalizations l10n, PhotoLibraryState state) {
+  if (state.phase == PhotoLibraryPhase.refreshing) {
+    final baseline = state.scanBaselinePhotos;
+    final foundPhotos = state.foundPhotos;
+    if (baseline > 0 &&
+        state.checkedPhotos < baseline &&
+        foundPhotos <= baseline) {
+      return l10n.checkingPhotos(state.checkedPhotos, baseline);
+    }
+
+    return l10n.scanningPhotos(foundPhotos);
+  }
+
+  return l10n.countPhotos(state.visiblePhotos.length);
 }
 
 int _backupPercent(PhotoLibrary library) {
