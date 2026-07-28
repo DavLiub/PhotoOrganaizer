@@ -11,6 +11,7 @@ Implemented components:
 - `MediaSources`
 - `LocalPhotoIndexRepository`
 - `MediaSourceStore`
+- `SourceSelectionStore`
 - `photo_index_mapper.dart`
 - `media_source_mapper.dart`
 
@@ -18,9 +19,9 @@ Implemented components:
 
 The default database name is `photo_organizer`.
 
-`AppDatabase.defaults()` uses Drift's Flutter database factory and is created lazily by storage repositories on first repository access. Bootstrap passes a shared lazy database factory to the photo index and media source repositories.
+`AppDatabase.defaults()` uses Drift's Flutter database factory and is created lazily by storage repositories on first repository access. Bootstrap passes a shared lazy database factory to the photo index, media source, and source selection repositories.
 
-Schema version: `2`
+Schema version: `3`
 
 ## Tables
 
@@ -72,6 +73,30 @@ Columns:
 
 `id` is the primary key. `path_hint` is optional and must remain a hint, not a required filesystem path.
 
+### `source_category_selections`
+
+Stores persisted include/exclude state for global media categories.
+
+Columns:
+
+- `category`
+- `enabled`
+- `updated_at`
+
+`category` is the primary key. Missing rows mean the category is enabled.
+
+### `media_source_selections`
+
+Stores persisted include/exclude overrides for individual media sources.
+
+Columns:
+
+- `source_id`
+- `enabled`
+- `updated_at`
+
+`source_id` is the primary key. Missing rows mean the source is enabled.
+
 ## Repository Behavior
 
 `LocalPhotoIndexRepository` supports:
@@ -88,10 +113,17 @@ Columns:
 - upsert of media sources;
 - media source list streaming from stored rows.
 
+`SourceSelectionStore` supports:
+
+- reading category and source include/exclude settings;
+- writing category include/exclude settings;
+- writing individual source include/exclude settings.
+
 Drift row classes and companions do not leave Infrastructure. Application and Domain continue to use project-owned models.
 
 ## Known Limitations
 
 - No backup queue, retry, cloud object, or variant tables exist yet.
 - No explicit secondary indexes are tuned yet.
-- Migration behavior currently creates `media_sources` and adds nullable `source_id` when upgrading from schema version `1`.
+- Migration behavior creates `media_sources` and adds nullable `source_id` when upgrading from schema version `1`.
+- Migration behavior creates source selection tables when upgrading from schema versions before `3`.

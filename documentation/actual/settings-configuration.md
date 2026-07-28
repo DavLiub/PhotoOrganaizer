@@ -6,7 +6,8 @@ Settings is the visible configuration center for app status, one active backup
 storage, backup behavior, media library controls, background work, language, and
 about information.
 
-This PR implements the shell only. Settings values are not persisted yet.
+Most settings values are still shell-only placeholders. Media Library category
+include/exclude values are persisted and shared with Library and Albums.
 
 The Settings UI uses a two-level master-detail layout:
 
@@ -28,8 +29,8 @@ Bottom navigation currently contains:
 Premium is no longer a bottom navigation destination. It is represented as an
 account/status concept inside Settings.
 
-Albums is a placeholder destination for future album management. It does not
-change media indexing rules yet.
+Albums is a source selection destination. It shows indexed media sources grouped
+by enabled category and allows individual source include/exclude toggles.
 
 ## Settings Layout
 
@@ -79,8 +80,12 @@ Media Library:
 - Screenshots
 - Included folders placeholder
 
-Category controls are local placeholder checkboxes. They represent future global
-include/exclude rules for the Library category switcher and Albums list.
+Category controls are persisted global include/exclude rules. They affect:
+
+- the Library category switcher;
+- which indexed photos are shown in Library;
+- which category sections are shown in Albums.
+
 Included folder configuration remains a future workflow.
 
 Backup Configuration:
@@ -133,10 +138,9 @@ localization guard to compare real translation keys.
 
 ## Known Limitations
 
-- Settings values are not persisted.
+- Most Settings values are not persisted.
 - Storage provider authorization is not implemented.
 - Background scheduling is not implemented.
 - Diagnostics consent does not leave the screen state.
-- Albums is a placeholder and does not manage actual albums yet.
-- Media Library settings are preliminary until the real album/source settings
-  workflow is implemented.
+- Media Library source selection is implemented, but full folder include/exclude
+  workflows are not implemented.

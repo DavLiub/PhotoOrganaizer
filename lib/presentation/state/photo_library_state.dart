@@ -45,13 +45,29 @@ class PhotoLibraryState {
   bool get hasPhotos => library.photos.isNotEmpty;
 
   LibraryCategory? get selectedCategory {
-    return switch (filter) {
+    return switch (effectiveFilter) {
       LibraryFilter.all => null,
       LibraryFilter.camera => LibraryCategory.camera,
       LibraryFilter.social => LibraryCategory.social,
       LibraryFilter.downloads => LibraryCategory.downloads,
       LibraryFilter.screenshots => LibraryCategory.screenshots,
     };
+  }
+
+  LibraryFilter get effectiveFilter {
+    if (availableFilters.contains(filter)) {
+      return filter;
+    }
+
+    return LibraryFilter.all;
+  }
+
+  List<LibraryFilter> get availableFilters {
+    return [
+      LibraryFilter.all,
+      for (final summary in library.categories)
+        _filterForCategory(summary.category),
+    ];
   }
 
   List<LibraryPhoto> get visiblePhotos {
@@ -101,6 +117,15 @@ class PhotoLibraryState {
       errorCode: clearError ? null : errorCode ?? this.errorCode,
     );
   }
+}
+
+LibraryFilter _filterForCategory(LibraryCategory category) {
+  return switch (category) {
+    LibraryCategory.camera => LibraryFilter.camera,
+    LibraryCategory.social => LibraryFilter.social,
+    LibraryCategory.downloads => LibraryFilter.downloads,
+    LibraryCategory.screenshots => LibraryFilter.screenshots,
+  };
 }
 
 int _compareDateDesc(LibraryPhoto left, LibraryPhoto right) {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/application/models/photo_library.dart';
+import 'package:photo_organizer/application/models/source_selection.dart';
 import 'package:photo_organizer/application/ports/media_library_gateway.dart';
 import 'package:photo_organizer/application/use_cases/index_photos.dart';
 import 'package:photo_organizer/application/use_cases/scan_media_library.dart';
@@ -15,6 +16,7 @@ import 'package:photo_organizer/presentation/navigation/main_scaffold.dart';
 import 'package:photo_organizer/presentation/state/app_providers.dart';
 import 'package:photo_organizer/presentation/state/first_scan_actions.dart';
 import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
+import 'package:photo_organizer/presentation/state/source_selection_actions.dart';
 import 'package:photo_organizer/presentation/theme/app_theme.dart';
 
 void main() {
@@ -38,6 +40,9 @@ class _SmokeApp extends StatelessWidget {
       overrides: [
         firstScanActionsProvider.overrideWithValue(_scanActions()),
         photoLibraryActionsProvider.overrideWithValue(_libraryActions()),
+        sourceSelectionActionsProvider.overrideWithValue(
+          _sourceSelectionActions(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -100,6 +105,20 @@ PhotoLibraryActions _libraryActions() {
           ),
         ),
       );
+    },
+  );
+}
+
+SourceSelectionActions _sourceSelectionActions() {
+  return SourceSelectionActions(
+    listSources: () async {
+      return const OperationSuccess(MediaSourceSelection.empty());
+    },
+    setCategory: (category, {required enabled}) async {
+      return OperationSuccess(SourceSelectionSettings.defaults());
+    },
+    setSource: (sourceId, {required enabled}) async {
+      return OperationSuccess(SourceSelectionSettings.defaults());
     },
   );
 }

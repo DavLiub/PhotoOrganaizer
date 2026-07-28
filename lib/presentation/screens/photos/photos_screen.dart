@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/models/photo_library.dart';
+import '../../../application/models/source_selection.dart';
 import '../../../domain/value_objects/media_permission.dart';
 import '../../localization/app_localizations.dart';
 import '../../navigation/main_destination.dart';
@@ -12,6 +14,8 @@ import '../../state/first_scan_state.dart';
 import '../../state/main_destination_controller.dart';
 import '../../state/photo_library_controller.dart';
 import '../../state/photo_library_state.dart';
+import '../../state/source_selection_controller.dart';
+import '../../state/source_selection_state.dart';
 
 class PhotosScreen extends ConsumerWidget {
   const PhotosScreen({super.key});
@@ -22,6 +26,20 @@ class PhotosScreen extends ConsumerWidget {
     final libraryState = ref.watch(photoLibraryProvider);
     final accessController = ref.read(firstScanProvider.notifier);
     final libraryController = ref.read(photoLibraryProvider.notifier);
+
+    ref.listen(sourceSelectionProvider, (previous, next) {
+      if (next.phase != SourceSelectionPhase.loaded) {
+        return;
+      }
+
+      final previousSettings = previous?.selection.settings;
+      if (previousSettings == null ||
+          _sameSettings(previousSettings, next.selection.settings)) {
+        return;
+      }
+
+      unawaited(libraryController.load());
+    });
 
     if (!accessState.canReadPhotos) {
       return _AccessGate(
@@ -220,33 +238,14 @@ class _LibraryControls extends StatelessWidget {
                     child: SegmentedButton<LibraryFilter>(
                       showSelectedIcon: true,
                       segments: [
-                        ButtonSegment(
-                          value: LibraryFilter.all,
-                          icon: const Icon(Icons.all_inclusive),
-                          tooltip: l10n.all,
-                        ),
-                        ButtonSegment(
-                          value: LibraryFilter.camera,
-                          icon: const Icon(Icons.photo_camera_outlined),
-                          tooltip: l10n.categoryCamera,
-                        ),
-                        ButtonSegment(
-                          value: LibraryFilter.social,
-                          icon: const Icon(Icons.people_alt_outlined),
-                          tooltip: l10n.categorySocial,
-                        ),
-                        ButtonSegment(
-                          value: LibraryFilter.downloads,
-                          icon: const Icon(Icons.download_outlined),
-                          tooltip: l10n.categoryDownloads,
-                        ),
-                        ButtonSegment(
-                          value: LibraryFilter.screenshots,
-                          icon: const Icon(Icons.screenshot_outlined),
-                          tooltip: l10n.categoryScreenshots,
-                        ),
+                        for (final filter in state.availableFilters)
+                          ButtonSegment(
+                            value: filter,
+                            icon: Icon(_filterIcon(filter)),
+                            tooltip: _filterLabel(l10n, filter),
+                          ),
                       ],
-                      selected: {state.filter},
+                      selected: {state.effectiveFilter},
                       onSelectionChanged: (selection) {
                         controller.selectFilter(selection.single);
                       },
@@ -685,6 +684,26 @@ String _categoryLabel(AppLocalizations l10n, LibraryCategory category) {
   };
 }
 
+String _filterLabel(AppLocalizations l10n, LibraryFilter filter) {
+  return switch (filter) {
+    LibraryFilter.all => l10n.all,
+    LibraryFilter.camera => l10n.categoryCamera,
+    LibraryFilter.social => l10n.categorySocial,
+    LibraryFilter.downloads => l10n.categoryDownloads,
+    LibraryFilter.screenshots => l10n.categoryScreenshots,
+  };
+}
+
+IconData _filterIcon(LibraryFilter filter) {
+  return switch (filter) {
+    LibraryFilter.all => Icons.all_inclusive,
+    LibraryFilter.camera => Icons.photo_camera_outlined,
+    LibraryFilter.social => Icons.people_alt_outlined,
+    LibraryFilter.downloads => Icons.download_outlined,
+    LibraryFilter.screenshots => Icons.screenshot_outlined,
+  };
+}
+
 String _backupLabel(AppLocalizations l10n, LibraryBackupStatus status) {
   return switch (status) {
     LibraryBackupStatus.noBackup => l10n.noBackup,
@@ -730,4 +749,28 @@ int _backupPercent(PhotoLibrary library) {
   }).length;
 
   return (protectedCount * 100 / library.photos.length).round();
+}
+
+bool _sameSettings(
+  SourceSelectionSettings left,
+  SourceSelectionSettings right,
+) {
+  if (left.enabledCategories.length != right.enabledCategories.length ||
+      left.sourceOverrides.length != right.sourceOverrides.length) {
+    return false;
+  }
+
+  for (final category in left.enabledCategories) {
+    if (!right.enabledCategories.contains(category)) {
+      return false;
+    }
+  }
+
+  for (final entry in left.sourceOverrides.entries) {
+    if (right.sourceOverrides[entry.key] != entry.value) {
+      return false;
+    }
+  }
+
+  return true;
 }

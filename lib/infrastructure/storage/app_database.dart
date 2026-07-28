@@ -82,12 +82,15 @@ final class AppDatabase extends _$AppDatabase {
   AppDatabase.defaults() : super(driftDatabase(name: 'photo_organizer'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: (migrator) => migrator.createAll(),
+      onCreate: (migrator) async {
+        await migrator.createAll();
+        await _createSelectionTables();
+      },
       onUpgrade: (migrator, from, to) async {
         if (from < 2) {
           await migrator.createTable(mediaSources);
@@ -96,7 +99,27 @@ final class AppDatabase extends _$AppDatabase {
             photoIndexEntries.sourceId,
           );
         }
+        if (from < 3) {
+          await _createSelectionTables();
+        }
       },
     );
+  }
+
+  Future<void> _createSelectionTables() async {
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS source_category_selections (
+        category TEXT NOT NULL PRIMARY KEY,
+        enabled INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS media_source_selections (
+        source_id TEXT NOT NULL PRIMARY KEY,
+        enabled INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
   }
 }

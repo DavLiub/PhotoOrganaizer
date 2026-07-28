@@ -33,3 +33,4 @@ Each ADR should include:
 - [0018-centralize-backup-state-machine.md](0018-centralize-backup-state-machine.md)
 - [0019-use-media-source-index.md](0019-use-media-source-index.md)
 - [0020-use-unified-library-screen.md](0020-use-unified-library-screen.md)
+- [0021-use-source-selection-policy.md](0021-use-source-selection-policy.md)

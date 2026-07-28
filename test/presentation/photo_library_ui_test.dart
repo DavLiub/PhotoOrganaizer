@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/application/models/photo_library.dart';
+import 'package:photo_organizer/application/models/source_selection.dart';
 import 'package:photo_organizer/application/ports/media_library_gateway.dart';
 import 'package:photo_organizer/application/use_cases/index_photos.dart';
 import 'package:photo_organizer/application/use_cases/scan_media_library.dart';
@@ -22,6 +23,7 @@ import 'package:photo_organizer/presentation/state/app_providers.dart';
 import 'package:photo_organizer/presentation/state/first_scan_actions.dart';
 import 'package:photo_organizer/presentation/state/photo_library_state.dart';
 import 'package:photo_organizer/presentation/state/photo_library_actions.dart';
+import 'package:photo_organizer/presentation/state/source_selection_actions.dart';
 
 void main() {
   test('sorts visible photos after category filtering', () {
@@ -63,7 +65,7 @@ void main() {
   });
 
   testWidgets('shows empty state before indexed photos exist', (tester) async {
-    final actions = _FakeActions(library: const PhotoLibrary.empty());
+    final actions = _FakeActions(library: _emptyLibrary());
 
     await tester.pumpWidget(_buildPhotos(actions));
     await tester.pump();
@@ -87,7 +89,7 @@ void main() {
   testWidgets('centers category filter when it fits screen width', (
     tester,
   ) async {
-    final actions = _FakeActions(library: const PhotoLibrary.empty());
+    final actions = _FakeActions(library: _emptyLibrary());
 
     await tester.pumpWidget(_buildPhotos(actions));
     await tester.pump();
@@ -295,6 +297,7 @@ Widget _buildPhotos(
     overrides: [
       firstScanActionsProvider.overrideWithValue(_FakeScanActions().value),
       photoLibraryActionsProvider.overrideWithValue(actions.value),
+      sourceSelectionActionsProvider.overrideWithValue(_sourceActions()),
     ],
     child: MaterialApp(
       locale: locale,
@@ -310,12 +313,27 @@ Widget _buildShell(_FakeScanActions scanActions, _FakeActions libraryActions) {
     overrides: [
       firstScanActionsProvider.overrideWithValue(scanActions.value),
       photoLibraryActionsProvider.overrideWithValue(libraryActions.value),
+      sourceSelectionActionsProvider.overrideWithValue(_sourceActions()),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const MainScaffold(),
     ),
+  );
+}
+
+SourceSelectionActions _sourceActions() {
+  return SourceSelectionActions(
+    listSources: () async {
+      return const OperationSuccess(MediaSourceSelection.empty());
+    },
+    setCategory: (category, {required enabled}) async {
+      return OperationSuccess(SourceSelectionSettings.defaults());
+    },
+    setSource: (sourceId, {required enabled}) async {
+      return OperationSuccess(SourceSelectionSettings.defaults());
+    },
   );
 }
 
@@ -426,6 +444,18 @@ PhotoLibrary _library() {
       LibraryCategorySummary(category: LibraryCategory.social, count: 0),
       LibraryCategorySummary(category: LibraryCategory.downloads, count: 0),
       LibraryCategorySummary(category: LibraryCategory.screenshots, count: 1),
+    ],
+  );
+}
+
+PhotoLibrary _emptyLibrary() {
+  return const PhotoLibrary(
+    photos: [],
+    categories: [
+      LibraryCategorySummary(category: LibraryCategory.camera, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.social, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.downloads, count: 0),
+      LibraryCategorySummary(category: LibraryCategory.screenshots, count: 0),
     ],
   );
 }

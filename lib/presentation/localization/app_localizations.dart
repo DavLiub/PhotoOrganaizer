@@ -170,6 +170,12 @@ class AppLocalizations {
   String get protected => text('protected');
   String get failed => text('failed');
   String get ignored => text('ignored');
+  String get noMediaSources => text('noMediaSources');
+  String get noMediaSourcesMessage => text('noMediaSourcesMessage');
+  String get sourceAvailable => text('sourceAvailable');
+  String get sourceMissing => text('sourceMissing');
+  String get sourceInaccessible => text('sourceInaccessible');
+  String get lastSeen => text('lastSeen');
 
   String countPhotos(int value) {
     return count('photoCount', value);
@@ -363,6 +369,12 @@ const _en = {
   'protected': 'Protected',
   'failed': 'Failed',
   'ignored': 'Ignored',
+  'noMediaSources': 'No media sources yet',
+  'noMediaSourcesMessage': 'Run Scan to discover albums on this device.',
+  'sourceAvailable': 'Available',
+  'sourceMissing': 'Missing',
+  'sourceInaccessible': 'Inaccessible',
+  'lastSeen': 'Last seen',
   'photoCount': '{count} photos',
   'checkingPhotos': 'Checking {checked}/{total}',
   'scanningPhotos': 'Scanning {count} photos',
@@ -514,6 +526,13 @@ const _ru = {
   'protected': 'Защищено',
   'failed': 'Ошибка',
   'ignored': 'Игнорируется',
+  'noMediaSources': 'Источники пока не найдены',
+  'noMediaSourcesMessage':
+      'Запустите сканирование, чтобы найти альбомы на устройстве.',
+  'sourceAvailable': 'Доступен',
+  'sourceMissing': 'Не найден',
+  'sourceInaccessible': 'Нет доступа',
+  'lastSeen': 'Последний раз',
   'photoCount': '{count} фото',
   'checkingPhotos': 'Проверка {checked}/{total}',
   'scanningPhotos': 'Сканирование {count} фото',

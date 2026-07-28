@@ -43,6 +43,16 @@ Drift schema version `2` adds:
 
 `MediaSourceStore` implements the Application `MediaSourceRepository` port.
 
+Drift schema version `3` adds persisted source selection tables:
+
+- `source_category_selections`
+- `media_source_selections`
+
+`SourceSelectionStore` implements the Application `SourceSelectionRepository`
+port. The selection policy is intentionally separate from the source catalog:
+the catalog describes what exists on the device, while selection describes what
+the user wants the app to include.
+
 ## Platform Boundary
 
 The model intentionally avoids mandatory filesystem paths.
@@ -59,6 +69,5 @@ photo_manager:<albumId>
 
 ## Known Limitations
 
-- No user-facing include/exclude source settings exist yet.
 - No explicit source relationship constraint exists between `photo_index_entries.source_id` and `media_sources.id`.
 - Source id normalization may still change if a native Android adapter replaces `photo_manager`.

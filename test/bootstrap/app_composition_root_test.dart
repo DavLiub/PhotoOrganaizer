@@ -20,6 +20,7 @@ import 'package:photo_organizer/infrastructure/media/unsupported_media_library_g
 import 'package:photo_organizer/infrastructure/media/unsupported_thumbnail_gateway.dart';
 import 'package:photo_organizer/infrastructure/entitlements/test_entitlement_gateway.dart';
 import 'package:photo_organizer/infrastructure/storage/media_source_store.dart';
+import 'package:photo_organizer/infrastructure/storage/source_selection_store.dart';
 
 void main() {
   group('AppCompositionRoot', () {
@@ -37,6 +38,7 @@ void main() {
       expect(root.mediaLibraryGateway, isA<AndroidMediaLibraryGateway>());
       expect(root.photoThumbnailGateway, isA<PhotoThumbnailAdapter>());
       expect(root.mediaSourceRepository, isA<MediaSourceStore>());
+      expect(root.sourceSelectionRepository, isA<SourceSelectionStore>());
     });
 
     test('selects iOS placeholder media adapters when requested', () async {

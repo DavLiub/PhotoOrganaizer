@@ -1,7 +1,9 @@
 import '../../domain/entities/media_source.dart';
 import '../../domain/entities/photo_index_entry.dart';
-
-enum LibraryCategory { camera, social, downloads, screenshots }
+import '../policies/library_category_classifier.dart';
+import 'library_category.dart';
+import 'source_selection.dart';
+export 'library_category.dart';
 
 enum LibraryBackupStatus { noBackup, queued, protected, failed, ignored }
 
@@ -52,14 +54,20 @@ class LibraryCategorySummary {
 PhotoLibrary buildPhotoLibrary({
   required List<PhotoIndexEntry> entries,
   required List<MediaSource> sources,
+  SourceSelectionPolicy? selectionPolicy,
 }) {
   final sourcesById = {for (final source in sources) source.id: source};
   final photos = [
     for (final entry in entries)
-      _mapPhoto(entry, sourcesById[entry.asset.sourceId]),
+      if (selectionPolicy?.allowsEntry(
+            entry,
+            sourcesById[entry.asset.sourceId],
+          ) ??
+          true)
+        _mapPhoto(entry, sourcesById[entry.asset.sourceId]),
   ];
   final counts = <LibraryCategory, int>{
-    for (final category in LibraryCategory.values) category: 0,
+    for (final category in _visibleCategories(selectionPolicy)) category: 0,
   };
 
   for (final photo in photos) {
@@ -69,7 +77,7 @@ PhotoLibrary buildPhotoLibrary({
   return PhotoLibrary(
     photos: List.unmodifiable(photos),
     categories: List.unmodifiable(
-      LibraryCategory.values.map(
+      _visibleCategories(selectionPolicy).map(
         (category) => LibraryCategorySummary(
           category: category,
           count: counts[category] ?? 0,
@@ -88,7 +96,7 @@ LibraryPhoto _mapPhoto(PhotoIndexEntry entry, MediaSource? source) {
     assetId: asset.id,
     displayName: asset.filename,
     sourceName: sourceName,
-    category: _categoryFor(entry, source),
+    category: classifyPhotoEntry(entry, source),
     backupStatus: _backupStatus(entry.status),
     createdAt: asset.createdAt,
     fileSize: asset.fileSize,
@@ -107,41 +115,13 @@ LibraryBackupStatus _backupStatus(PhotoIndexStatus status) {
   };
 }
 
-LibraryCategory _categoryFor(PhotoIndexEntry entry, MediaSource? source) {
-  final asset = entry.asset;
-  final value = [
-    source?.name,
-    source?.pathHint,
-    asset.sourceName,
-    asset.filename,
-  ].whereType<String>().join(' ').toLowerCase();
-
-  if (_hasAny(value, const ['screenshot', 'screen shot', 'screenshots'])) {
-    return LibraryCategory.screenshots;
+Iterable<LibraryCategory> _visibleCategories(
+  SourceSelectionPolicy? selectionPolicy,
+) {
+  final settings = selectionPolicy?.settings;
+  if (settings == null) {
+    return LibraryCategory.values;
   }
 
-  if (source?.cameraLike == true ||
-      _hasAny(value, const ['camera', 'dcim', '100media'])) {
-    return LibraryCategory.camera;
-  }
-
-  if (_hasAny(value, const [
-    'whatsapp',
-    'telegram',
-    'instagram',
-    'facebook',
-    'messenger',
-    'viber',
-    'signal',
-    'tiktok',
-    'snapchat',
-  ])) {
-    return LibraryCategory.social;
-  }
-
-  return LibraryCategory.downloads;
-}
-
-bool _hasAny(String value, List<String> needles) {
-  return needles.any(value.contains);
+  return LibraryCategory.values.where(settings.isCategoryEnabled);
 }

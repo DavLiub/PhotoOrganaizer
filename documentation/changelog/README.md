@@ -24,3 +24,4 @@ Use one file per meaningful change or release.
 - [2026-07-27-photo-library-ui.md](2026-07-27-photo-library-ui.md)
 - [2026-07-28-testing-tags-nightly.md](2026-07-28-testing-tags-nightly.md)
 - [2026-07-28-settings-configuration-shell.md](2026-07-28-settings-configuration-shell.md)
+- [2026-07-28-media-source-selection.md](2026-07-28-media-source-selection.md)
