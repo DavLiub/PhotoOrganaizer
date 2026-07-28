@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../screens/albums/albums_screen.dart';
 import '../screens/history/history_screen.dart';
 import '../screens/photos/photos_screen.dart';
-import '../screens/premium/premium_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../localization/app_localizations.dart';
 import 'main_destination.dart';
@@ -41,8 +41,8 @@ class MainScaffold extends ConsumerWidget {
   Widget _buildBody(MainDestination destination) {
     return switch (destination) {
       MainDestination.library => const PhotosScreen(),
+      MainDestination.albums => const AlbumsScreen(),
       MainDestination.history => const HistoryScreen(),
-      MainDestination.premium => const PremiumScreen(),
       MainDestination.settings => const SettingsScreen(),
     };
   }

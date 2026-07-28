@@ -1,4 +1,4 @@
-# Home Welcome Checklist
+# Library Welcome Checklist
 
 ## Preconditions
 
@@ -8,7 +8,7 @@
 ## Checklist
 
 - [ ] Open the app.
-  Expected: the Home tab shows the welcome/media access screen.
+  Expected: the Library tab shows the welcome/media access screen.
 
 - [ ] Verify the welcome title and explanation.
   Expected: the screen explains that photo access is required before scanning.
@@ -29,10 +29,10 @@
   Expected: the app requests access again if Android allows another request.
 
 - [ ] Grant full media access.
-  Expected: the app navigates to the first scan screen and `Scan` is enabled.
+  Expected: the Library screen shows the photo grid/empty state and `Scan` is enabled.
 
 - [ ] Repeat with limited media access if Android offers it.
-  Expected: the app navigates to the first scan screen and scans only selected photos.
+  Expected: the Library screen becomes available and scans only selected photos.
 
 - [ ] Switch device locale to Russian and reopen the app.
   Expected: welcome screen labels are shown in Russian.

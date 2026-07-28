@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../localization/app_localizations.dart';
 import '../../widgets/section_placeholder.dart';
 
-class PremiumScreen extends StatelessWidget {
-  const PremiumScreen({super.key});
+class AlbumsScreen extends StatelessWidget {
+  const AlbumsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,9 @@ class PremiumScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         SectionPlaceholder(
-          icon: Icons.workspace_premium_outlined,
-          title: l10n.premium,
-          subtitle: l10n.accessLevel,
+          icon: Icons.folder_outlined,
+          title: l10n.albums,
+          subtitle: l10n.albumManagement,
         ),
       ],
     );

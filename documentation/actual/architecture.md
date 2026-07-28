@@ -105,7 +105,7 @@ lib/infrastructure/
 
 - Domain defines local photo identity, photo index entry, index status, and index scope.
 - Application exposes `IndexPhotos` and `ResolvePhotoIdentity`.
-- Application exposes `ListLibraryPhotos` as the read use case for the Photos tab.
+- Application exposes `ListLibraryPhotos` as the read use case for the Library tab.
 - `IndexPhotos` checks `MediaPermissionGateway` before writing index entries.
 - `PhotoIndexRepository` is the Application port for full index listing, identity lookup, asset-id lookup, entry upsert, and protection summary streaming.
 - Infrastructure storage implements `PhotoIndexRepository` with Drift-backed SQLite persistence.
@@ -114,7 +114,7 @@ lib/infrastructure/
 
 ## Photo Library UI
 
-- Presentation renders indexed photos in the Photos tab through `PhotoLibraryController`.
+- Presentation renders indexed photos in the Library tab through `PhotoLibraryController`.
 - `PhotoLibrary` is an Application read model built from the photo index and media source catalog.
 - The library screen supports Camera, Social, Downloads, and Screenshots categories as read-only filters.
 - Thumbnail loading is hidden behind `PhotoThumbnailGateway`.
@@ -152,6 +152,8 @@ tools/ci/architecture_guard.py
 tools/ci/test_import_guard.py
 tools/ci/sdk_leak_guard.py
 tools/ci/secret_guard.py
+tools/ci/test_tag_guard.py
+tools/ci/localization_guard.py
 tools/ci/naming_report.py
 ```
 

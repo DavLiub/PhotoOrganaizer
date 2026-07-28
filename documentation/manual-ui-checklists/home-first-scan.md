@@ -1,44 +1,38 @@
-# Home First Scan Checklist
+# Library First Scan Checklist
 
 ## Preconditions
 
 - Media permission is granted or limited.
-- The app is on the Home tab.
+- The app is on the Library tab.
 
 ## Checklist
 
-- [ ] Open the Home tab after media access is granted.
-  Expected: the first scan screen is shown.
+- [ ] Open the Library tab after media access is granted.
+  Expected: the Library screen is shown.
 
 - [ ] Verify the Scan button before starting.
   Expected: `Scan` is visible and enabled.
 
 - [ ] Tap `Scan`.
-  Expected: the app switches to the Photos tab and the scan starts.
+  Expected: foreground scan starts on the Library tab.
 
 - [ ] Observe scan status after tapping `Scan`.
-  Expected: the Photos tab shows an in-progress state with found, indexed, and source counters.
+  Expected: a circular activity indicator appears next to the status label.
 
 - [ ] Observe progress while scanning.
-  Expected: found/source counts increase during media discovery, and indexed count increases as photo batches are written.
+  Expected: visible photo count or checking/scanning status updates, and thumbnails appear as batches are indexed.
 
 - [ ] Tap `Stop` while scanning.
   Expected: scanning stops after already found photos are indexed; already indexed photos remain visible.
 
 - [ ] Start scan again after stopping.
-  Expected: scan can run again, counters do not reset below the already indexed library size, and already indexed photos remain visible.
+  Expected: scan can run again, counts do not reset below the already indexed library size, and already indexed photos remain visible.
 
 - [ ] Wait for scan completion.
-  Expected: the Photos tab remains visible with indexed photos or a visible error.
+  Expected: the Library tab remains visible with indexed photos or a visible error.
 
-- [ ] Verify found photo count.
-  Expected: found photo count matches the selected/full accessible media set closely enough for smoke testing.
-
-- [ ] Verify indexed photo count.
-  Expected: indexed photo count increases during scanning when accessible photos exist.
-
-- [ ] Verify source count.
-  Expected: source count is greater than zero when accessible photos exist.
+- [ ] Verify visible photo count.
+  Expected: visible count matches the selected category and accessible media set closely enough for smoke testing.
 
 - [ ] Tap `Scan` again after completion.
   Expected: scan runs again and the UI remains stable.
@@ -50,4 +44,4 @@
   Expected: UI remains readable and controls do not overlap.
 
 - [ ] Switch device locale to Russian and reopen the app.
-  Expected: first scan labels are shown in Russian.
+  Expected: Library labels are shown in Russian.
