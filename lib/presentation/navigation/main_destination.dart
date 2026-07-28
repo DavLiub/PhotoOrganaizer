@@ -7,11 +7,8 @@ enum MainDestination {
     icon: Icons.photo_library_outlined,
     selectedIcon: Icons.photo_library,
   ),
+  albums(icon: Icons.folder_outlined, selectedIcon: Icons.folder),
   history(icon: Icons.history_outlined, selectedIcon: Icons.history),
-  premium(
-    icon: Icons.workspace_premium_outlined,
-    selectedIcon: Icons.workspace_premium,
-  ),
   settings(icon: Icons.settings_outlined, selectedIcon: Icons.settings);
 
   const MainDestination({required this.icon, required this.selectedIcon});
@@ -22,8 +19,8 @@ enum MainDestination {
   String label(AppLocalizations l10n) {
     return switch (this) {
       MainDestination.library => l10n.library,
+      MainDestination.albums => l10n.albums,
       MainDestination.history => l10n.history,
-      MainDestination.premium => l10n.premium,
       MainDestination.settings => l10n.settings,
     };
   }

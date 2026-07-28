@@ -38,6 +38,7 @@ class AppLocalizations {
   String get settings => text('settings');
   String get home => text('home');
   String get photos => text('photos');
+  String get albums => text('albums');
   String get history => text('history');
   String get premium => text('premium');
   String get firstScanTitle => text('firstScanTitle');
@@ -64,6 +65,66 @@ class AppLocalizations {
   String get permissionUnknown => text('permissionUnknown');
   String get emptyPhotos => text('emptyPhotos');
   String get language => text('language');
+  String get status => text('status');
+  String get freePlan => text('freePlan');
+  String get storageNotConnected => text('storageNotConnected');
+  String get storage => text('storage');
+  String get provider => text('provider');
+  String get connectedAccount => text('connectedAccount');
+  String get rootFolder => text('rootFolder');
+  String get photoPathTemplate => text('photoPathTemplate');
+  String get general => text('general');
+  String get appPreferences => text('appPreferences');
+  String get mediaLibrary => text('mediaLibrary');
+  String get albumManagement => text('albumManagement');
+  String get categories => text('categories');
+  String get includedFolders => text('includedFolders');
+  String get refreshBehavior => text('refreshBehavior');
+  String get backupConfiguration => text('backupConfiguration');
+  String get photoSize => text('photoSize');
+  String get imageQuality => text('imageQuality');
+  String get keepMetadata => text('keepMetadata');
+  String get backupOriginals => text('backupOriginals');
+  String get backgroundWork => text('backgroundWork');
+  String get backgroundBackup => text('backgroundBackup');
+  String get backgroundRefresh => text('backgroundRefresh');
+  String get wifiOnly => text('wifiOnly');
+  String get runWhileCharging => text('runWhileCharging');
+  String get batteryOptimization => text('batteryOptimization');
+  String get about => text('about');
+  String get appName => text('appName');
+  String get packageId => text('packageId');
+  String get appVersion => text('appVersion');
+  String get author => text('author');
+  String get diagnosticsConsent => text('diagnosticsConsent');
+  String get placeholderDetail => text('placeholderDetail');
+  String get optimizedCopies => text('optimizedCopies');
+  String get originalPhotos => text('originalPhotos');
+  String get english => text('english');
+  String get russian => text('russian');
+  String get hebrewLater => text('hebrewLater');
+  String get hebrew => text('hebrew');
+  String get statusSubtitle => text('statusSubtitle');
+  String get storageSubtitle => text('storageSubtitle');
+  String get generalSubtitle => text('generalSubtitle');
+  String get mediaLibrarySubtitle => text('mediaLibrarySubtitle');
+  String get backupSubtitle => text('backupSubtitle');
+  String get backgroundSubtitle => text('backgroundSubtitle');
+  String get languageSubtitle => text('languageSubtitle');
+  String get aboutSubtitle => text('aboutSubtitle');
+  String get storageFolderLayout => text('storageFolderLayout');
+  String get allInRootFolder => text('allInRootFolder');
+  String get keepAlbumStructure => text('keepAlbumStructure');
+  String get groupByYearMonth => text('groupByYearMonth');
+  String get theme => text('theme');
+  String get systemTheme => text('systemTheme');
+  String get lightTheme => text('lightTheme');
+  String get darkTheme => text('darkTheme');
+  String get confirmImportantActions => text('confirmImportantActions');
+  String get showBackupBadges => text('showBackupBadges');
+  String get disabledForOriginals => text('disabledForOriginals');
+  String get maxPhotoSize => text('maxPhotoSize');
+  String get minBatteryLevel => text('minBatteryLevel');
   String get googleDrive => text('googleDrive');
   String get backupProfile => text('backupProfile');
   String get indexedPhotoList => text('indexedPhotoList');
@@ -163,6 +224,7 @@ const _en = {
   'settings': 'Settings',
   'home': 'Home',
   'photos': 'Photos',
+  'albums': 'Albums',
   'history': 'History',
   'premium': 'Premium',
   'firstScanTitle': 'First photo scan',
@@ -190,6 +252,69 @@ const _en = {
   'permissionUnknown': 'Unknown',
   'emptyPhotos': 'No photos were found.',
   'language': 'Language',
+  'status': 'Status',
+  'freePlan': 'Free plan',
+  'storageNotConnected': 'Storage is not connected',
+  'storage': 'Storage',
+  'provider': 'Provider',
+  'connectedAccount': 'Connected account',
+  'rootFolder': 'Root folder',
+  'photoPathTemplate': 'Photo path template',
+  'general': 'General',
+  'appPreferences': 'App preferences',
+  'mediaLibrary': 'Media Library',
+  'albumManagement': 'Album management',
+  'categories': 'Categories',
+  'includedFolders': 'Included folders',
+  'refreshBehavior': 'Refresh behavior',
+  'backupConfiguration': 'Backup Configuration',
+  'photoSize': 'Photo size',
+  'imageQuality': 'Image quality',
+  'keepMetadata': 'Keep metadata',
+  'backupOriginals': 'Backup originals',
+  'backgroundWork': 'Background Work',
+  'backgroundBackup': 'Background backup',
+  'backgroundRefresh': 'Background refresh',
+  'wifiOnly': 'Wi-Fi only',
+  'runWhileCharging': 'Run while charging',
+  'batteryOptimization': 'Battery optimization',
+  'about': 'About',
+  'appName': 'App name',
+  'packageId': 'Package ID',
+  'appVersion': 'Version',
+  'author': 'Author',
+  'diagnosticsConsent': 'Allow sending debug data',
+  'placeholderDetail': 'Configuration persistence will be added in a later PR.',
+  'optimizedCopies': 'Optimized copies',
+  'originalPhotos': 'Original photos',
+  'english': 'English',
+  'russian': 'Russian',
+  'hebrewLater': 'Hebrew later',
+  'hebrew': 'Hebrew',
+  'statusSubtitle': 'Current plan and backup readiness.',
+  'storageSubtitle':
+      'Choose where backups are stored and how folders are laid out.',
+  'generalSubtitle':
+      'App behavior preferences that do not belong to a feature area.',
+  'mediaLibrarySubtitle':
+      'Control what parts of the device library are considered.',
+  'backupSubtitle': 'Choose whether backups use originals or optimized copies.',
+  'backgroundSubtitle': 'Control when refresh and backup work may run.',
+  'languageSubtitle': 'Choose the app interface language.',
+  'aboutSubtitle': 'App identity, ownership, and diagnostics consent.',
+  'storageFolderLayout': 'Cloud folder layout',
+  'allInRootFolder': 'All in root folder',
+  'keepAlbumStructure': 'Keep album structure',
+  'groupByYearMonth': 'Group by year/month',
+  'theme': 'Theme',
+  'systemTheme': 'System',
+  'lightTheme': 'Light',
+  'darkTheme': 'Dark',
+  'confirmImportantActions': 'Confirm important actions',
+  'showBackupBadges': 'Show backup badges',
+  'disabledForOriginals': 'Disabled when backing up original photos.',
+  'maxPhotoSize': 'Maximum photo size',
+  'minBatteryLevel': 'Run when battery is above',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Backup profile',
   'indexedPhotoList': 'Indexed photo list',
@@ -252,6 +377,7 @@ const _ru = {
   'settings': 'Настройки',
   'home': 'Главная',
   'photos': 'Фото',
+  'albums': 'Альбомы',
   'history': 'История',
   'premium': 'Premium',
   'firstScanTitle': 'Первое сканирование',
@@ -279,6 +405,66 @@ const _ru = {
   'permissionUnknown': 'Неизвестно',
   'emptyPhotos': 'Фото не найдены.',
   'language': 'Язык',
+  'status': 'Статус',
+  'freePlan': 'Бесплатный план',
+  'storageNotConnected': 'Хранилище не подключено',
+  'storage': 'Хранилище',
+  'provider': 'Провайдер',
+  'connectedAccount': 'Подключенный аккаунт',
+  'rootFolder': 'Корневая папка',
+  'photoPathTemplate': 'Шаблон пути фото',
+  'general': 'Общие',
+  'appPreferences': 'Настройки приложения',
+  'mediaLibrary': 'Медиатека',
+  'albumManagement': 'Управление альбомами',
+  'categories': 'Категории',
+  'includedFolders': 'Включенные папки',
+  'refreshBehavior': 'Обновление библиотеки',
+  'backupConfiguration': 'Настройки бэкапа',
+  'photoSize': 'Размер фото',
+  'imageQuality': 'Качество изображения',
+  'keepMetadata': 'Сохранять метаданные',
+  'backupOriginals': 'Бэкап оригиналов',
+  'backgroundWork': 'Фоновая работа',
+  'backgroundBackup': 'Фоновый бэкап',
+  'backgroundRefresh': 'Фоновое обновление',
+  'wifiOnly': 'Только Wi-Fi',
+  'runWhileCharging': 'Только при зарядке',
+  'batteryOptimization': 'Оптимизация батареи',
+  'about': 'О приложении',
+  'appName': 'Название приложения',
+  'packageId': 'Package ID',
+  'appVersion': 'Версия',
+  'author': 'Автор',
+  'diagnosticsConsent': 'Разрешить отправку отладочных данных',
+  'placeholderDetail': 'Сохранение настроек будет добавлено в следующем PR.',
+  'optimizedCopies': 'Оптимизированные копии',
+  'originalPhotos': 'Оригинальные фото',
+  'english': 'Английский',
+  'russian': 'Русский',
+  'hebrewLater': 'Иврит позже',
+  'hebrew': 'Иврит',
+  'statusSubtitle': 'Текущий план и готовность бэкапа.',
+  'storageSubtitle': 'Куда сохранять бэкапы и как строить папки.',
+  'generalSubtitle': 'Общие предпочтения приложения.',
+  'mediaLibrarySubtitle': 'Какие части медиатеки учитывать.',
+  'backupSubtitle': 'Оригиналы или оптимизированные копии.',
+  'backgroundSubtitle': 'Когда можно запускать фоновую работу.',
+  'languageSubtitle': 'Язык интерфейса приложения.',
+  'aboutSubtitle': 'Идентичность, автор, диагностика.',
+  'storageFolderLayout': 'Структура папок в облаке',
+  'allInRootFolder': 'Все в корневую папку',
+  'keepAlbumStructure': 'Сохранять структуру альбомов',
+  'groupByYearMonth': 'Группировать по году/месяцу',
+  'theme': 'Тема',
+  'systemTheme': 'Система',
+  'lightTheme': 'Светлая',
+  'darkTheme': 'Темная',
+  'confirmImportantActions': 'Подтверждать важные действия',
+  'showBackupBadges': 'Показывать статус бэкапа',
+  'disabledForOriginals': 'Неактивно для бэкапа оригиналов.',
+  'maxPhotoSize': 'Максимальный размер фото',
+  'minBatteryLevel': 'Запускать при заряде выше',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Профиль бэкапа',
   'indexedPhotoList': 'Список проиндексированных фото',

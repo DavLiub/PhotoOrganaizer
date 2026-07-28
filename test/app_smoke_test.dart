@@ -23,8 +23,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('Library'), findsOneWidget);
+    expect(find.text('Albums'), findsOneWidget);
     expect(find.text('History'), findsOneWidget);
-    expect(find.text('Premium'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
   });
 }

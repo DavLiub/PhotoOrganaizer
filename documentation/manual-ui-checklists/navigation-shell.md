@@ -3,32 +3,33 @@
 ## Preconditions
 
 - App is installed and launches successfully.
+- Media permission state can be granted or denied.
 
 ## Checklist
 
 - [ ] Open the app.
-  Expected: app title is visible in the top bar.
+  Expected: bottom navigation is visible.
 
-- [ ] Tap the Home tab.
-  Expected: Home content is shown.
+- [ ] Verify bottom navigation destinations.
+  Expected: `Library`, `Albums`, `History`, and `Settings` are visible.
 
-- [ ] Tap the Photos tab.
-  Expected: Photos placeholder screen is shown.
+- [ ] Verify Premium is not a bottom navigation destination.
+  Expected: no `Premium` tab is shown.
 
-- [ ] Tap the History tab.
-  Expected: History placeholder screen is shown.
+- [ ] Tap `Library`.
+  Expected: library permission state or indexed photo grid is shown.
 
-- [ ] Tap the Premium tab.
-  Expected: Premium placeholder screen is shown.
+- [ ] Tap `Albums`.
+  Expected: album management placeholder is shown.
 
-- [ ] Tap the Settings icon in the top bar.
-  Expected: Settings screen opens.
+- [ ] Tap `History`.
+  Expected: history placeholder is shown.
 
-- [ ] Use the Android back action from Settings.
-  Expected: app returns to the previous tab.
+- [ ] Tap `Settings`.
+  Expected: grouped Settings screen opens.
 
 - [ ] Switch device locale to Russian and reopen the app.
-  Expected: navigation labels and settings tooltip are localized.
+  Expected: navigation labels and Settings labels are localized.
 
 - [ ] Test on a narrow phone viewport.
-  Expected: tab labels and top bar actions do not overlap.
+  Expected: bottom navigation labels do not overlap.

@@ -2,7 +2,7 @@
 
 ## Current Scope
 
-The Home area now hosts the first phone-facing flow for local media access and manual photo indexing.
+The Library tab hosts the first phone-facing flow for local media access and manual photo indexing.
 
 The flow has two screens:
 
@@ -25,27 +25,26 @@ Behavior:
 
 ## First Scan
 
-After permission is `granted` or `limited`, the UI switches to the scan screen.
+After permission is `granted` or `limited`, the UI switches to the Library screen.
 
-The scan screen shows:
+The Library screen shows:
 
-- scan status;
-- found photos;
-- indexed photos;
-- discovered sources;
+- scan/checking status;
+- visible photo count;
+- indexed thumbnails as they become available;
 - manual `Scan` action.
 
-The `Scan` button is disabled while scanning. A `Stop` action is available for a running scan.
+The `Scan` button changes to `Stop` while scanning.
 
 During scanning, counters are updated from `ScanProgress`:
 
-- found photos update while Android media albums are scanned;
-- indexed photos update while index rows are written;
-- discovered sources update as media sources are found.
+- indexed batches update the visible photo grid;
+- an existing library starts with `Checking X/Y`;
+- a new or expanded scan shows `Scanning N photos`.
 
-When scan starts, the app switches to the Photos tab immediately. The Photos tab displays scan progress and reloads indexed photos as batches are written.
+When scan starts, the Library tab displays scan progress and reloads indexed photos as batches are written.
 
-After a successful scan, the Photos tab remains visible and the final library is loaded.
+After a successful scan, the Library tab remains visible and the final library is loaded.
 
 If the user stops scanning, already indexed photo batches remain in local storage and the scan can be started again.
 

@@ -32,6 +32,7 @@ Business functionality is represented by domain models, application ports, use c
 - [photo-library-ui.md](photo-library-ui.md): current indexed photo grid, category filtering, refresh, and backup warning UI.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.
 - [platform-boundary.md](platform-boundary.md): current Android-first, iOS-ready platform adapter boundary.
+- [settings-configuration.md](settings-configuration.md): current Settings shell, one-storage model, and configuration placeholders.
 - [storage.md](storage.md): current Drift database schema and storage adapter behavior.
 - [validation.md](validation.md): local and CI validation path.
 
