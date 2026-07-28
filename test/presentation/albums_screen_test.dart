@@ -19,11 +19,17 @@ void main() {
     await tester.pump();
     await tester.pump();
 
+    expect(find.text('Album sources'), findsOneWidget);
+    expect(find.textContaining('Choose which albums'), findsOneWidget);
     expect(find.text('Camera'), findsNWidgets(2));
     expect(find.text('Screenshots'), findsNWidgets(2));
     expect(find.text('Download'), findsNothing);
-    expect(find.text('10 photos'), findsOneWidget);
-    expect(find.text('2 photos'), findsOneWidget);
+    expect(find.byIcon(Icons.folder_rounded), findsNWidgets(2));
+    expect(find.text('10'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('DCIM/Camera'), findsOneWidget);
+    expect(find.text('Pictures/Screenshots'), findsOneWidget);
+    expect(find.byIcon(Icons.check), findsNWidgets(2));
   });
 
   testWidgets('updates source selection through switch', (tester) async {

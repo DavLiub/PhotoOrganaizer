@@ -58,11 +58,41 @@ class _AlbumsContent extends StatelessWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 20),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
       children: [
+        _AlbumsHeader(l10n: l10n),
+        const SizedBox(height: 20),
         for (final group in state.selection.groups)
           if (group.sources.isNotEmpty)
             _SourceGroup(group: group, onSourceChanged: onSourceChanged),
+      ],
+    );
+  }
+}
+
+class _AlbumsHeader extends StatelessWidget {
+  const _AlbumsHeader({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.albumSourcesTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.albumSourcesMessage,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
       ],
     );
   }
@@ -78,49 +108,70 @@ class _SourceGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
-              child: Row(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _SectionHeader(label: _categoryLabel(l10n, group.category)),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 10.0;
+              final columnCount = constraints.maxWidth >= 520 ? 3 : 2;
+              final tileWidth =
+                  (constraints.maxWidth - spacing * (columnCount - 1)) /
+                  columnCount;
+
+              return Wrap(
+                spacing: spacing,
+                runSpacing: 12,
                 children: [
-                  Icon(
-                    _categoryIcon(group.category),
-                    color: colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _categoryLabel(l10n, group.category),
-                      style: Theme.of(context).textTheme.titleMedium,
+                  for (final source in group.sources)
+                    SizedBox(
+                      width: tileWidth,
+                      child: _SourceTile(
+                        item: source,
+                        onChanged: (enabled) {
+                          onSourceChanged(source.source.id, enabled: enabled);
+                        },
+                      ),
                     ),
-                  ),
-                  Text(l10n.countPhotos(group.assetCount)),
                 ],
-              ),
-            ),
-            const Divider(height: 1),
-            for (final source in group.sources)
-              _SourceTile(
-                item: source,
-                onChanged: (enabled) {
-                  onSourceChanged(source.source.id, enabled: enabled);
-                },
-              ),
-          ],
-        ),
+              );
+            },
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Expanded(child: Divider(color: colorScheme.outlineVariant)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: colorScheme.outlineVariant)),
+      ],
     );
   }
 }
@@ -133,28 +184,149 @@ class _SourceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final source = item.source;
-    final subtitleParts = [
-      if (source.pathHint != null) source.pathHint!,
-      l10n.countPhotos(source.assetCount),
-      _statusLabel(l10n, source.availabilityStatus),
-      '${l10n.lastSeen}: ${_shortDate(source.lastSeenAt)}',
-    ];
+    final path = source.pathHint ?? source.provider;
+    final colorScheme = Theme.of(context).colorScheme;
+    final opacity = item.enabled ? 1.0 : 0.54;
 
-    return Material(
-      color: Colors.transparent,
-      child: SwitchListTile(
-        key: ValueKey('media_source_${source.id}'),
-        secondary: Icon(_sourceIcon(source)),
-        title: Text(source.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(
-          subtitleParts.join(' | '),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+    return Semantics(
+      button: true,
+      selected: item.enabled,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Material(
+            key: ValueKey('media_source_${source.id}'),
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(8),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () {
+                onChanged(!item.enabled);
+              },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: colorScheme.outlineVariant),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: SizedBox(
+                  height: 108,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Opacity(
+                        opacity: opacity,
+                        child: _FolderBadge(
+                          count: source.assetCount,
+                          icon: _sourceIcon(source),
+                        ),
+                      ),
+                      Positioned(
+                        right: 8,
+                        bottom: 8,
+                        child: _SelectionMark(selected: item.enabled),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Opacity(
+            opacity: opacity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  source.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  path,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FolderBadge extends StatelessWidget {
+  const _FolderBadge({required this.count, required this.icon});
+
+  final int count;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Icon(
+          Icons.folder_rounded,
+          size: 76,
+          color: colorScheme.primaryContainer,
         ),
-        value: item.enabled,
-        onChanged: onChanged,
+        Positioned(
+          top: 33,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: colorScheme.onPrimaryContainer),
+              const SizedBox(width: 4),
+              Text(
+                count.toString(),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectionMark extends StatelessWidget {
+  const _SelectionMark({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: selected ? colorScheme.primary : colorScheme.surface,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: selected ? colorScheme.primary : colorScheme.outline,
+          width: 2,
+        ),
+      ),
+      child: SizedBox.square(
+        dimension: 28,
+        child: selected
+            ? Icon(Icons.check, size: 18, color: colorScheme.onPrimary)
+            : const SizedBox.shrink(),
       ),
     );
   }
@@ -230,15 +402,6 @@ String _categoryLabel(AppLocalizations l10n, LibraryCategory category) {
   };
 }
 
-IconData _categoryIcon(LibraryCategory category) {
-  return switch (category) {
-    LibraryCategory.camera => Icons.photo_camera_outlined,
-    LibraryCategory.social => Icons.people_alt_outlined,
-    LibraryCategory.downloads => Icons.download_outlined,
-    LibraryCategory.screenshots => Icons.screenshot_outlined,
-  };
-}
-
 IconData _sourceIcon(MediaSource source) {
   if (source.cameraLike) {
     return Icons.photo_camera_outlined;
@@ -249,20 +412,4 @@ IconData _sourceIcon(MediaSource source) {
   }
 
   return Icons.folder_outlined;
-}
-
-String _statusLabel(AppLocalizations l10n, MediaSourceStatus status) {
-  return switch (status) {
-    MediaSourceStatus.available => l10n.sourceAvailable,
-    MediaSourceStatus.missing => l10n.sourceMissing,
-    MediaSourceStatus.inaccessible => l10n.sourceInaccessible,
-  };
-}
-
-String _shortDate(DateTime value) {
-  final date = value.toLocal();
-  final month = date.month.toString().padLeft(2, '0');
-  final day = date.day.toString().padLeft(2, '0');
-
-  return '${date.year}-$month-$day';
 }

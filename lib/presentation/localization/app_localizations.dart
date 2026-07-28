@@ -39,6 +39,8 @@ class AppLocalizations {
   String get home => text('home');
   String get photos => text('photos');
   String get albums => text('albums');
+  String get albumSourcesTitle => text('albumSourcesTitle');
+  String get albumSourcesMessage => text('albumSourcesMessage');
   String get history => text('history');
   String get premium => text('premium');
   String get firstScanTitle => text('firstScanTitle');
@@ -231,6 +233,9 @@ const _en = {
   'home': 'Home',
   'photos': 'Photos',
   'albums': 'Albums',
+  'albumSourcesTitle': 'Album sources',
+  'albumSourcesMessage':
+      'Choose which albums are included in the Library. Global categories are controlled in Settings.',
   'history': 'History',
   'premium': 'Premium',
   'firstScanTitle': 'First photo scan',
@@ -390,6 +395,9 @@ const _ru = {
   'home': 'Главная',
   'photos': 'Фото',
   'albums': 'Альбомы',
+  'albumSourcesTitle': 'Источники альбомов',
+  'albumSourcesMessage':
+      'Выберите альбомы, которые входят в библиотеку. Глобальные категории настраиваются в Настройках.',
   'history': 'История',
   'premium': 'Premium',
   'firstScanTitle': 'Первое сканирование',

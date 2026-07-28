@@ -9,7 +9,10 @@
 
 ## Checks
 
-- Open `Albums` from bottom navigation -> sources are shown grouped by category.
+- Open `Albums` from bottom navigation -> the screen shows a title and short explanation.
+- Scroll the `Albums` screen -> sources are shown as folder-style album tiles grouped by category.
+- Inspect an album tile -> the folder shows a photo count, with name and path below it.
+- Tap an album tile -> the lower-right circular selection mark toggles selected/unselected.
 - Disable `Screenshots` in `Settings > Media Library` -> `Screenshots` section disappears from `Albums`.
 - Return to `Library` -> the `Screenshots` filter is not shown.
 - Re-enable `Screenshots` in `Settings > Media Library` -> `Screenshots` section and Library filter return.

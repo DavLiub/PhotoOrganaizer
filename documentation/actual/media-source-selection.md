@@ -35,11 +35,24 @@ new categories and sources are included unless the user disables them.
 
 ## UI Behavior
 
+The Albums screen starts with a short title and explanation so the purpose is
+visible before the source list.
+
 Settings > Media Library controls global category inclusion.
 
-Albums shows found sources grouped by enabled categories. Each source has an
-individual switch. Disabling a source hides photos linked to that source from
-Library while keeping the source in the source catalog.
+Albums shows found sources grouped by enabled categories. Sections are separated
+by centered category headers with horizontal dividers. Each source is presented
+as an album tile:
+
+- folder icon;
+- photo count on the folder;
+- circular selection mark in the lower-right corner;
+- album/source name below the tile;
+- path or provider hint below the name.
+
+Tapping an album tile toggles whether that source is included. Disabling a
+source hides photos linked to that source from Library while keeping the source
+in the source catalog.
 
 Library filters are dynamic. Disabled global categories are removed from the
 filter row, and photos from disabled categories or disabled sources are not

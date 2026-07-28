@@ -29,8 +29,9 @@ Bottom navigation currently contains:
 Premium is no longer a bottom navigation destination. It is represented as an
 account/status concept inside Settings.
 
-Albums is a source selection destination. It shows indexed media sources grouped
-by enabled category and allows individual source include/exclude toggles.
+Albums is a source selection destination. It shows indexed media sources as
+folder-style album tiles grouped by enabled category and allows individual
+source include/exclude toggles.
 
 ## Settings Layout
 
