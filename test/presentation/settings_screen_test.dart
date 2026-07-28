@@ -19,6 +19,10 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const ValueKey('settings_category_general')),
+      findsNothing,
+    );
+    expect(
       find.byKey(const ValueKey('settings_category_backup')),
       findsOneWidget,
     );
@@ -59,6 +63,21 @@ void main() {
       find.text('Configuration persistence will be added in a later PR.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('media library exposes category exclusions only', (tester) async {
+    await tester.pumpWidget(_buildScreen());
+
+    await tester.tap(find.byKey(const ValueKey('settings_category_library')));
+    await tester.pump();
+
+    expect(find.text('Camera'), findsOneWidget);
+    expect(find.text('Social'), findsOneWidget);
+    expect(find.text('Downloads'), findsOneWidget);
+    expect(find.text('Screenshots'), findsOneWidget);
+    expect(find.text('Included folders'), findsOneWidget);
+    expect(find.text('Categories'), findsNothing);
+    expect(find.text('Refresh behavior'), findsNothing);
   });
 
   testWidgets('backup original mode disables quality and size controls', (

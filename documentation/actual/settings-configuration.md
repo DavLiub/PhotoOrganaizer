@@ -37,7 +37,6 @@ Left-side first-level sections:
 
 - Status
 - Storage
-- General
 - Media Library
 - Backup Configuration
 - Background Work
@@ -72,24 +71,17 @@ account are complex placeholders and open full-screen detail screens.
 There is no free-form path template in the UI. The shell intentionally limits
 the first version to understandable choices.
 
-General:
-
-- Theme
-- Confirm important actions
-- Show backup badges
-
 Media Library:
 
-- Categories
 - Camera
 - Social
 - Downloads
 - Screenshots
 - Included folders placeholder
-- Refresh behavior placeholder
 
-Category controls are local placeholder checkboxes. Included folder and refresh
-configuration remain future workflows.
+Category controls are local placeholder checkboxes. They represent future global
+include/exclude rules for the Library category switcher and Albums list.
+Included folder configuration remains a future workflow.
 
 Backup Configuration:
 

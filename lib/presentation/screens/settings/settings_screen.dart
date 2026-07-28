@@ -5,7 +5,6 @@ import '../../localization/app_localizations.dart';
 enum _SettingsCategory {
   status(Icons.info_outline),
   storage(Icons.cloud_outlined),
-  general(Icons.tune_outlined),
   library(Icons.photo_library_outlined),
   backup(Icons.cloud_upload_outlined),
   background(Icons.sync_outlined),
@@ -20,7 +19,6 @@ enum _SettingsCategory {
     return switch (this) {
       _SettingsCategory.status => l10n.status,
       _SettingsCategory.storage => l10n.storage,
-      _SettingsCategory.general => l10n.general,
       _SettingsCategory.library => l10n.mediaLibrary,
       _SettingsCategory.backup => l10n.backupConfiguration,
       _SettingsCategory.background => l10n.backgroundWork,
@@ -33,8 +31,6 @@ enum _SettingsCategory {
 enum _FolderLayout { root, albums }
 
 enum _PhotoMode { optimized, original }
-
-enum _ThemeMode { system, light, dark }
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,13 +45,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   _SettingsCategory _selectedCategory = _SettingsCategory.status;
   _FolderLayout _folderLayout = _FolderLayout.albums;
   _PhotoMode _photoMode = _PhotoMode.optimized;
-  _ThemeMode _themeMode = _ThemeMode.system;
   double _imageQuality = 85;
   double _maxPhotoSizeMb = 8;
   double _minBatteryPercent = 30;
   bool _groupByDate = true;
-  bool _confirmActions = true;
-  bool _showBackupBadges = true;
   bool _indexCamera = true;
   bool _indexSocial = true;
   bool _indexDownloads = true;
@@ -104,13 +97,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   rootFolderController: _rootFolderController,
                   folderLayout: _folderLayout,
                   photoMode: _photoMode,
-                  themeMode: _themeMode,
                   imageQuality: _imageQuality,
                   maxPhotoSizeMb: _maxPhotoSizeMb,
                   minBatteryPercent: _minBatteryPercent,
                   groupByDate: _groupByDate,
-                  confirmActions: _confirmActions,
-                  showBackupBadges: _showBackupBadges,
                   indexCamera: _indexCamera,
                   indexSocial: _indexSocial,
                   indexDownloads: _indexDownloads,
@@ -131,11 +121,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _photoMode = value;
                     });
                   },
-                  onThemeModeChanged: (value) {
-                    setState(() {
-                      _themeMode = value;
-                    });
-                  },
                   onImageQualityChanged: (value) {
                     setState(() {
                       _imageQuality = value;
@@ -154,16 +139,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onGroupByDateChanged: (value) {
                     setState(() {
                       _groupByDate = value;
-                    });
-                  },
-                  onConfirmActionsChanged: (value) {
-                    setState(() {
-                      _confirmActions = value;
-                    });
-                  },
-                  onShowBackupBadgesChanged: (value) {
-                    setState(() {
-                      _showBackupBadges = value;
                     });
                   },
                   onIndexCameraChanged: (value) {
@@ -323,13 +298,10 @@ class _SettingsDetailPane extends StatelessWidget {
     required this.rootFolderController,
     required this.folderLayout,
     required this.photoMode,
-    required this.themeMode,
     required this.imageQuality,
     required this.maxPhotoSizeMb,
     required this.minBatteryPercent,
     required this.groupByDate,
-    required this.confirmActions,
-    required this.showBackupBadges,
     required this.indexCamera,
     required this.indexSocial,
     required this.indexDownloads,
@@ -342,13 +314,10 @@ class _SettingsDetailPane extends StatelessWidget {
     required this.language,
     required this.onFolderLayoutChanged,
     required this.onPhotoModeChanged,
-    required this.onThemeModeChanged,
     required this.onImageQualityChanged,
     required this.onMaxPhotoSizeChanged,
     required this.onMinBatteryChanged,
     required this.onGroupByDateChanged,
-    required this.onConfirmActionsChanged,
-    required this.onShowBackupBadgesChanged,
     required this.onIndexCameraChanged,
     required this.onIndexSocialChanged,
     required this.onIndexDownloadsChanged,
@@ -365,13 +334,10 @@ class _SettingsDetailPane extends StatelessWidget {
   final TextEditingController rootFolderController;
   final _FolderLayout folderLayout;
   final _PhotoMode photoMode;
-  final _ThemeMode themeMode;
   final double imageQuality;
   final double maxPhotoSizeMb;
   final double minBatteryPercent;
   final bool groupByDate;
-  final bool confirmActions;
-  final bool showBackupBadges;
   final bool indexCamera;
   final bool indexSocial;
   final bool indexDownloads;
@@ -384,13 +350,10 @@ class _SettingsDetailPane extends StatelessWidget {
   final String language;
   final ValueChanged<_FolderLayout> onFolderLayoutChanged;
   final ValueChanged<_PhotoMode> onPhotoModeChanged;
-  final ValueChanged<_ThemeMode> onThemeModeChanged;
   final ValueChanged<double> onImageQualityChanged;
   final ValueChanged<double> onMaxPhotoSizeChanged;
   final ValueChanged<double> onMinBatteryChanged;
   final ValueChanged<bool> onGroupByDateChanged;
-  final ValueChanged<bool> onConfirmActionsChanged;
-  final ValueChanged<bool> onShowBackupBadgesChanged;
   final ValueChanged<bool> onIndexCameraChanged;
   final ValueChanged<bool> onIndexSocialChanged;
   final ValueChanged<bool> onIndexDownloadsChanged;
@@ -429,7 +392,6 @@ class _SettingsDetailPane extends StatelessWidget {
     return switch (category) {
       _SettingsCategory.status => l10n.statusSubtitle,
       _SettingsCategory.storage => l10n.storageSubtitle,
-      _SettingsCategory.general => l10n.generalSubtitle,
       _SettingsCategory.library => l10n.mediaLibrarySubtitle,
       _SettingsCategory.backup => l10n.backupSubtitle,
       _SettingsCategory.background => l10n.backgroundSubtitle,
@@ -501,39 +463,9 @@ class _SettingsDetailPane extends StatelessWidget {
           ],
         ),
       ],
-      _SettingsCategory.general => [
-        _SettingsGroup(
-          children: [
-            _RadioTile<_ThemeMode>(
-              icon: Icons.contrast_outlined,
-              title: l10n.theme,
-              value: themeMode,
-              options: [
-                _Option(value: _ThemeMode.system, label: l10n.systemTheme),
-                _Option(value: _ThemeMode.light, label: l10n.lightTheme),
-                _Option(value: _ThemeMode.dark, label: l10n.darkTheme),
-              ],
-              onChanged: onThemeModeChanged,
-            ),
-            SwitchListTile(
-              secondary: const Icon(Icons.verified_user_outlined),
-              title: Text(l10n.confirmImportantActions),
-              value: confirmActions,
-              onChanged: onConfirmActionsChanged,
-            ),
-            SwitchListTile(
-              secondary: const Icon(Icons.privacy_tip_outlined),
-              title: Text(l10n.showBackupBadges),
-              value: showBackupBadges,
-              onChanged: onShowBackupBadgesChanged,
-            ),
-          ],
-        ),
-      ],
       _SettingsCategory.library => [
         _SettingsGroup(
           children: [
-            _NavTile(icon: Icons.category_outlined, title: l10n.categories),
             CheckboxListTile(
               secondary: const Icon(Icons.photo_camera_outlined),
               title: Text(l10n.categoryCamera),
@@ -578,7 +510,6 @@ class _SettingsDetailPane extends StatelessWidget {
               icon: Icons.create_new_folder_outlined,
               title: l10n.includedFolders,
             ),
-            _NavTile(icon: Icons.refresh_outlined, title: l10n.refreshBehavior),
           ],
         ),
       ],

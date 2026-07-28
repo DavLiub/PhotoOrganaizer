@@ -40,11 +40,11 @@
 - [ ] Verify `Photo path template`.
   Expected: no free-form path template field is shown.
 
-- [ ] Tap `General` on the left.
-  Expected: theme choice, confirm important actions, and backup badge controls are visible directly on the right.
-
 - [ ] Tap `Media Library` on the left.
-  Expected: category controls for Camera, Social, Downloads, Screenshots plus included folders and refresh behavior placeholders are visible.
+  Expected: category controls for Camera, Social, Downloads, Screenshots plus included folders placeholder are visible.
+
+- [ ] Verify removed Media Library placeholders.
+  Expected: no `Refresh behavior` row is visible.
 
 - [ ] Tap `Backup Configuration` on the left.
   Expected: optimized/original choice, image quality slider, maximum photo size slider, and keep metadata switch are visible.
