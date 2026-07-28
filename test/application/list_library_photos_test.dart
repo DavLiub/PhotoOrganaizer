@@ -3,8 +3,10 @@ library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/application/models/photo_library.dart';
+import 'package:photo_organizer/application/models/source_selection.dart';
 import 'package:photo_organizer/application/ports/media_source_repository.dart';
 import 'package:photo_organizer/application/ports/photo_index_repository.dart';
+import 'package:photo_organizer/application/ports/source_selection_repository.dart';
 import 'package:photo_organizer/application/use_cases/list_library_photos.dart';
 import 'package:photo_organizer/domain/entities/media_source.dart';
 import 'package:photo_organizer/domain/entities/photo_asset.dart';
@@ -31,6 +33,7 @@ void main() {
       final useCase = ListLibraryPhotos(
         photoIndexRepository: photos,
         mediaSourceRepository: sources,
+        sourceSelectionRepository: _FakeSelection(),
       );
 
       final result = await useCase();
@@ -53,6 +56,7 @@ void main() {
       final useCase = ListLibraryPhotos(
         photoIndexRepository: _FakePhotos(const [], failRead: true),
         mediaSourceRepository: _FakeSources(const []),
+        sourceSelectionRepository: _FakeSelection(),
       );
 
       final result = await useCase();
@@ -62,6 +66,59 @@ void main() {
         (result as OperationFailure<PhotoLibrary>).kind,
         FailureKind.storage,
       );
+    });
+
+    test('hides photos from disabled categories', () async {
+      final useCase = ListLibraryPhotos(
+        photoIndexRepository: _FakePhotos([
+          _entry(id: 'camera', sourceId: 'source-camera'),
+          _entry(id: 'screenshots', sourceId: 'source-screenshots'),
+        ]),
+        mediaSourceRepository: _FakeSources([
+          _source(id: 'source-camera', name: 'Camera', cameraLike: true),
+          _source(id: 'source-screenshots', name: 'Screenshots'),
+        ]),
+        sourceSelectionRepository: _FakeSelection(
+          settings: SourceSelectionSettings(
+            enabledCategories: {LibraryCategory.camera},
+          ),
+        ),
+      );
+
+      final result = await useCase();
+
+      expect(result, isA<OperationSuccess<PhotoLibrary>>());
+      final library = (result as OperationSuccess<PhotoLibrary>).value;
+      expect(library.photos.map((photo) => photo.displayName), ['camera.jpg']);
+      expect(library.categories.map((summary) => summary.category), [
+        LibraryCategory.camera,
+      ]);
+    });
+
+    test('hides photos from disabled source', () async {
+      final useCase = ListLibraryPhotos(
+        photoIndexRepository: _FakePhotos([
+          _entry(id: 'camera', sourceId: 'source-camera'),
+          _entry(id: 'screenshots', sourceId: 'source-screenshots'),
+        ]),
+        mediaSourceRepository: _FakeSources([
+          _source(id: 'source-camera', name: 'Camera', cameraLike: true),
+          _source(id: 'source-screenshots', name: 'Screenshots'),
+        ]),
+        sourceSelectionRepository: _FakeSelection(
+          settings: SourceSelectionSettings.defaults().withSource(
+            'source-screenshots',
+            enabled: false,
+          ),
+        ),
+      );
+
+      final result = await useCase();
+
+      expect(result, isA<OperationSuccess<PhotoLibrary>>());
+      final library = (result as OperationSuccess<PhotoLibrary>).value;
+      expect(library.photos.map((photo) => photo.displayName), ['camera.jpg']);
+      expect(library.categories.map((summary) => summary.count), [1, 0, 0, 0]);
     });
   });
 }
@@ -135,6 +192,36 @@ class _FakeSources implements MediaSourceRepository {
   @override
   Stream<List<MediaSource>> watchSources() {
     return Stream.value(sources);
+  }
+}
+
+class _FakeSelection implements SourceSelectionRepository {
+  _FakeSelection({SourceSelectionSettings? settings})
+    : settings = settings ?? SourceSelectionSettings.defaults();
+
+  SourceSelectionSettings settings;
+
+  @override
+  Future<SourceSelectionSettings> read() async {
+    return settings;
+  }
+
+  @override
+  Future<void> setCategory(
+    LibraryCategory category, {
+    required bool enabled,
+  }) async {
+    settings = settings.withCategory(category, enabled: enabled);
+  }
+
+  @override
+  Future<void> setSource(String sourceId, {required bool enabled}) async {
+    settings = settings.withSource(sourceId, enabled: enabled);
+  }
+
+  @override
+  Stream<SourceSelectionSettings> watch() {
+    return Stream.value(settings);
   }
 }
 

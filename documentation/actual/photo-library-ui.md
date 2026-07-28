@@ -38,7 +38,7 @@ is no durable thumbnail generation queue yet.
 
 ## Categories And Sorting
 
-The top control row supports five compact icon filters:
+The top control row supports compact icon filters:
 
 - All
 - Camera
@@ -46,8 +46,14 @@ The top control row supports five compact icon filters:
 - Downloads
 - Screenshots
 
-Selecting a category filters the visible grid only. It does not persist
-include/exclude settings and does not change indexing rules.
+The category list is dynamic. It is built from the current library read model,
+which applies the persisted media source selection policy. If a global category
+is disabled in Settings, the corresponding filter is removed from Library and
+photos from that category are hidden.
+
+Selecting a category filters the visible grid within the already selected
+library scope. The selected filter itself is Presentation state and is not
+persisted.
 
 Filter labels are exposed as tooltips/accessibility text instead of permanent
 visible text so the control fits phone width. When the compact filter is
@@ -65,7 +71,9 @@ Available sort labels:
 - Name Z-A
 
 The thumbnail grid includes a visible interactive right-side scrollbar for
-fast manual navigation through long libraries.
+fast manual navigation through long libraries. The thumb is thicker than the
+Flutter default and offset inward from the screen edge so it is easier to hit
+with a finger on a phone.
 
 ## Actions
 
@@ -128,6 +136,7 @@ Presentation uses:
 - `PhotoLibraryActions`
 - `PhotoLibraryState`
 - `MainDestinationController`
+- `SourceSelectionController`
 
 Application owns:
 
@@ -136,6 +145,7 @@ Application owns:
 - `LibraryCategory`
 - `LibraryBackupStatus`
 - `ListLibraryPhotos`
+- `SourceSelectionPolicy`
 - `PhotoThumbnailGateway`
 
 Infrastructure implements thumbnail loading through `PhotoThumbnailAdapter`, which uses `photo_manager` behind the Application port.
@@ -155,7 +165,6 @@ The localization map is key-based so Hebrew can be added later without changing 
 
 ## Known Limitations
 
-- The grid does not persist source include/exclude settings.
 - Full rescan and automatic refresh configuration are not implemented yet.
 - Backup target settings are not implemented yet.
 - Backup status is derived from current index state, not from durable backup records.

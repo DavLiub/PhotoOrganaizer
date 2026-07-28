@@ -1,41 +1,31 @@
 import '../../domain/value_objects/operation_result.dart';
-import '../models/photo_library.dart';
 import '../models/source_selection.dart';
 import '../ports/media_source_repository.dart';
-import '../ports/photo_index_repository.dart';
 import '../ports/source_selection_repository.dart';
 
-class ListLibraryPhotos {
-  const ListLibraryPhotos({
-    required PhotoIndexRepository photoIndexRepository,
+class ListMediaSources {
+  const ListMediaSources({
     required MediaSourceRepository mediaSourceRepository,
     required SourceSelectionRepository sourceSelectionRepository,
-  }) : _photoIndexRepository = photoIndexRepository,
-       _mediaSourceRepository = mediaSourceRepository,
+  }) : _mediaSourceRepository = mediaSourceRepository,
        _sourceSelectionRepository = sourceSelectionRepository;
 
-  final PhotoIndexRepository _photoIndexRepository;
   final MediaSourceRepository _mediaSourceRepository;
   final SourceSelectionRepository _sourceSelectionRepository;
 
-  Future<OperationResult<PhotoLibrary>> call() async {
+  Future<OperationResult<MediaSourceSelection>> call() async {
     try {
-      final entries = await _photoIndexRepository.findAll();
       final sources = await _mediaSourceRepository.findAll();
       final settings = await _sourceSelectionRepository.read();
 
       return OperationSuccess(
-        buildPhotoLibrary(
-          entries: entries,
-          sources: sources,
-          selectionPolicy: SourceSelectionPolicy(settings),
-        ),
+        buildMediaSourceSelection(sources: sources, settings: settings),
       );
     } catch (error) {
       return OperationFailure(
         kind: FailureKind.storage,
-        code: 'photo_library.read_failed',
-        safeMessage: 'Photo library could not be loaded.',
+        code: 'media_sources.read_failed',
+        safeMessage: 'Media sources could not be loaded.',
         retryable: true,
         diagnostics: {'error_type': error.runtimeType.toString()},
       );

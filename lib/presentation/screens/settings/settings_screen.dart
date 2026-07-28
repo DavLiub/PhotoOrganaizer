@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../application/models/library_category.dart';
 import '../../localization/app_localizations.dart';
+import '../../state/source_selection_controller.dart';
 
 enum _SettingsCategory {
   status(Icons.info_outline),
@@ -32,14 +35,14 @@ enum _FolderLayout { root, albums }
 
 enum _PhotoMode { optimized, original }
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _rootFolderController = TextEditingController(text: '/PhotoOrganizer');
 
   _SettingsCategory _selectedCategory = _SettingsCategory.status;
@@ -49,10 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _maxPhotoSizeMb = 8;
   double _minBatteryPercent = 30;
   bool _groupByDate = true;
-  bool _indexCamera = true;
-  bool _indexSocial = true;
-  bool _indexDownloads = true;
-  bool _indexScreenshots = true;
   bool _keepMetadata = true;
   bool _backgroundBackup = false;
   bool _backgroundRefresh = false;
@@ -69,6 +68,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final sourceSelection = ref.watch(sourceSelectionProvider).selection;
+    final sourceSelectionController = ref.read(
+      sourceSelectionProvider.notifier,
+    );
+    final sourceSettings = sourceSelection.settings;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -101,10 +105,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   maxPhotoSizeMb: _maxPhotoSizeMb,
                   minBatteryPercent: _minBatteryPercent,
                   groupByDate: _groupByDate,
-                  indexCamera: _indexCamera,
-                  indexSocial: _indexSocial,
-                  indexDownloads: _indexDownloads,
-                  indexScreenshots: _indexScreenshots,
+                  indexCamera: sourceSettings.isCategoryEnabled(
+                    LibraryCategory.camera,
+                  ),
+                  indexSocial: sourceSettings.isCategoryEnabled(
+                    LibraryCategory.social,
+                  ),
+                  indexDownloads: sourceSettings.isCategoryEnabled(
+                    LibraryCategory.downloads,
+                  ),
+                  indexScreenshots: sourceSettings.isCategoryEnabled(
+                    LibraryCategory.screenshots,
+                  ),
                   keepMetadata: _keepMetadata,
                   backgroundBackup: _backgroundBackup,
                   backgroundRefresh: _backgroundRefresh,
@@ -142,24 +154,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     });
                   },
                   onIndexCameraChanged: (value) {
-                    setState(() {
-                      _indexCamera = value;
-                    });
+                    sourceSelectionController.setCategory(
+                      LibraryCategory.camera,
+                      enabled: value,
+                    );
                   },
                   onIndexSocialChanged: (value) {
-                    setState(() {
-                      _indexSocial = value;
-                    });
+                    sourceSelectionController.setCategory(
+                      LibraryCategory.social,
+                      enabled: value,
+                    );
                   },
                   onIndexDownloadsChanged: (value) {
-                    setState(() {
-                      _indexDownloads = value;
-                    });
+                    sourceSelectionController.setCategory(
+                      LibraryCategory.downloads,
+                      enabled: value,
+                    );
                   },
                   onIndexScreenshotsChanged: (value) {
-                    setState(() {
-                      _indexScreenshots = value;
-                    });
+                    sourceSelectionController.setCategory(
+                      LibraryCategory.screenshots,
+                      enabled: value,
+                    );
                   },
                   onKeepMetadataChanged: (value) {
                     setState(() {

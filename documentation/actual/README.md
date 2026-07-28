@@ -28,6 +28,7 @@ Business functionality is represented by domain models, application ports, use c
 - [library-decisions.md](library-decisions.md): approved dependency and integration direction.
 - [media-permissions.md](media-permissions.md): current media permission boundary and privacy rules.
 - [media-source-index.md](media-source-index.md): current media source and album catalog model.
+- [media-source-selection.md](media-source-selection.md): current category/source include-exclude policy and UI wiring.
 - [ownership.md](ownership.md): current authorship and ownership attribution.
 - [photo-library-ui.md](photo-library-ui.md): current indexed photo grid, category filtering, refresh, and backup warning UI.
 - [photo-index.md](photo-index.md): current local photo index domain and application model.

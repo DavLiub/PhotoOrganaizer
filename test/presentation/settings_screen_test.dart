@@ -2,9 +2,14 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:photo_organizer/application/models/source_selection.dart';
+import 'package:photo_organizer/domain/value_objects/operation_result.dart';
 import 'package:photo_organizer/presentation/localization/app_localizations.dart';
 import 'package:photo_organizer/presentation/screens/settings/settings_screen.dart';
+import 'package:photo_organizer/presentation/state/app_providers.dart';
+import 'package:photo_organizer/presentation/state/source_selection_actions.dart';
 
 void main() {
   testWidgets('renders two-level settings shell', (tester) async {
@@ -158,10 +163,37 @@ Future<void> _pumpSettings(
 }
 
 Widget _buildScreen({Locale locale = const Locale('en')}) {
-  return MaterialApp(
-    locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: const SettingsScreen(),
+  return ProviderScope(
+    overrides: [
+      sourceSelectionActionsProvider.overrideWithValue(_FakeSources().value),
+    ],
+    child: MaterialApp(
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const SettingsScreen(),
+    ),
   );
+}
+
+class _FakeSources {
+  SourceSelectionSettings settings = SourceSelectionSettings.defaults();
+
+  SourceSelectionActions get value {
+    return SourceSelectionActions(
+      listSources: () async {
+        return OperationSuccess(
+          buildMediaSourceSelection(sources: const [], settings: settings),
+        );
+      },
+      setCategory: (category, {required enabled}) async {
+        settings = settings.withCategory(category, enabled: enabled);
+        return OperationSuccess(settings);
+      },
+      setSource: (sourceId, {required enabled}) async {
+        settings = settings.withSource(sourceId, enabled: enabled);
+        return OperationSuccess(settings);
+      },
+    );
+  }
 }
