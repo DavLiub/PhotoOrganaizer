@@ -51,6 +51,8 @@ Jobs:
 - `Project Checks / Test Import Guard`
 - `Project Checks / SDK Leak Guard`
 - `Project Checks / Secret Guard`
+- `Project Checks / Test Tag Guard`
+- `Project Checks / Localization Guard`
 - `Project Checks / Naming Report`
 
 Flutter Format:
@@ -83,6 +85,14 @@ Secret Guard:
 
 - `python tools/ci/secret_guard.py --base <base-sha> --head <head-sha>`
 
+Test Tag Guard:
+
+- `python tools/ci/test_tag_guard.py --base <base-sha> --head <head-sha>`
+
+Localization Guard:
+
+- `python tools/ci/localization_guard.py --base <base-sha> --head <head-sha>`
+
 Naming Report:
 
 - `python tools/ci/naming_report.py --base <base-sha> --head <head-sha>`
@@ -96,6 +106,8 @@ tools/ci/architecture_guard.py
 tools/ci/test_import_guard.py
 tools/ci/sdk_leak_guard.py
 tools/ci/secret_guard.py
+tools/ci/test_tag_guard.py
+tools/ci/localization_guard.py
 tools/ci/naming_report.py
 ```
 
@@ -116,6 +128,8 @@ Blocking checks:
 - Production code must not import test/debug packages or files.
 - Domain/Application must not import blocked SDK/plugin packages.
 - Changed files and lines must not contain common secret files or secret assignments.
+- Changed test files must declare file-level test classification tags.
+- Changed localization files must keep supported locales and translation keys synchronized.
 
 Advisory checks:
 
@@ -153,6 +167,8 @@ Night Project Guards:
 - `python tools/ci/test_import_guard.py --all`
 - `python tools/ci/sdk_leak_guard.py --all`
 - `python tools/ci/secret_guard.py --all`
+- `python tools/ci/test_tag_guard.py --all`
+- `python tools/ci/localization_guard.py --all`
 - `python tools/ci/naming_report.py --all`
 
 Night validation is intentionally nonblocking for ordinary pull request merge.
@@ -197,6 +213,8 @@ Configure GitHub branch protection for `main`:
 - require `Project Checks / Test Import Guard`;
 - require `Project Checks / SDK Leak Guard`;
 - require `Project Checks / Secret Guard`;
+- require `Project Checks / Test Tag Guard`;
+- require `Project Checks / Localization Guard`;
 - require `Project Checks / Naming Report`;
 - block direct pushes;
 - keep tag creation limited to the release workflow.
@@ -268,6 +286,8 @@ python tools/ci/architecture_guard.py
 python tools/ci/test_import_guard.py
 python tools/ci/sdk_leak_guard.py
 python tools/ci/secret_guard.py
+python tools/ci/test_tag_guard.py
+python tools/ci/localization_guard.py
 python tools/ci/naming_report.py
 flutter analyze
 flutter test --tags pr-gate

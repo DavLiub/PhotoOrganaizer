@@ -59,5 +59,11 @@ jobs:
       - name: Check all secrets
         run: python tools/ci/secret_guard.py --all
 
+      - name: Check all test classification tags
+        run: python tools/ci/test_tag_guard.py --all
+
+      - name: Check all localization keys
+        run: python tools/ci/localization_guard.py --all
+
       - name: Report all naming recommendations
         run: python tools/ci/naming_report.py --all

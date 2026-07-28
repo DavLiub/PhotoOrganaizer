@@ -185,11 +185,13 @@ dart format .
 flutter analyze
 flutter test --tags pr-gate
 flutter test --tags night
+python tools/ci/test_tag_guard.py
+python tools/ci/localization_guard.py
 flutter run
 flutter build apk --debug
 ```
 
-`flutter pub get` restores dependencies. `dart format .` applies Dart formatting. `flutter analyze` runs static analysis. `flutter test --tags pr-gate` runs tests selected for pull request validation. `flutter test --tags night` runs tests selected for scheduled/manual night validation. `flutter run` launches the app on a connected device. `flutter build apk --debug` verifies Android debug APK packaging.
+`flutter pub get` restores dependencies. `dart format .` applies Dart formatting. `flutter analyze` runs static analysis. `flutter test --tags pr-gate` runs tests selected for pull request validation. `flutter test --tags night` runs tests selected for scheduled/manual night validation. `python tools/ci/test_tag_guard.py` checks test classification tags. `python tools/ci/localization_guard.py` checks supported locale and translation key synchronization. `flutter run` launches the app on a connected device. `flutter build apk --debug` verifies Android debug APK packaging.
 
 ## Coding Style & Naming Conventions
 
@@ -231,6 +233,8 @@ When multiple implementations are possible, always prefer:
 ## Testing Guidelines
 
 Use `flutter_test`. Keep skeleton tests lightweight and focused on app shell behavior until real features are implemented.
+
+Every test file must declare file-level tags before `library;`. Use one test type tag (`smoke`, `ci-gate`, `extended`, or `sanity`) and one run profile tag (`pr-gate` or `night`).
 
 Name test files with `_test.dart`, for example:
 

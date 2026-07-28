@@ -17,6 +17,10 @@
   - `flutter test --tags night`;
   - full project guards with `--all`;
   - debug APK build.
+- Added `tools/ci/test_tag_guard.py` to block unclassified test files.
+- Added `tools/ci/localization_guard.py` to block mismatched supported locales
+  and translation keys.
+- Added both guards to PR validation and nightly full-project validation.
 - Documented PR Gate vs Night validation and the independent test type/run
   profile tag axes.
 - Added Android device validation checklist.
@@ -31,6 +35,10 @@
 - `python tools\ci\test_import_guard.py`
 - `python tools\ci\sdk_leak_guard.py`
 - `python tools\ci\secret_guard.py`
+- `python tools\ci\test_tag_guard.py`
+- `python tools\ci\localization_guard.py`
+- `python tools\ci\test_tag_guard.py --all`
+- `python tools\ci\localization_guard.py --all`
 - `python tools\ci\naming_report.py`
 - `flutter test --tags pr-gate` was not completed locally because
   `flutter.bat` timed out in the local shell.

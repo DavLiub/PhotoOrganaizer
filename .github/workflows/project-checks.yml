@@ -135,6 +135,38 @@ jobs:
           GUARD_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: python tools/ci/secret_guard.py --base "$GUARD_BASE_SHA" --head "$GUARD_HEAD_SHA"
 
+  test-tag-guard:
+    name: Test Tag Guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check test classification tags
+        env:
+          GUARD_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          GUARD_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: python tools/ci/test_tag_guard.py --base "$GUARD_BASE_SHA" --head "$GUARD_HEAD_SHA"
+
+  localization-guard:
+    name: Localization Guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check localization keys
+        env:
+          GUARD_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          GUARD_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: python tools/ci/localization_guard.py --base "$GUARD_BASE_SHA" --head "$GUARD_HEAD_SHA"
+
   naming-report:
     name: Naming Report
     runs-on: ubuntu-latest
