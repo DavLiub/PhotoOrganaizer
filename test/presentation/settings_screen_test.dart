@@ -8,7 +8,7 @@ import 'package:photo_organizer/presentation/screens/settings/settings_screen.da
 
 void main() {
   testWidgets('renders two-level settings shell', (tester) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     expect(
       find.byKey(const ValueKey('settings_category_status')),
@@ -35,7 +35,7 @@ void main() {
   testWidgets('shows storage layout controls and opens complex editor', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     await tester.tap(find.byKey(const ValueKey('settings_category_storage')));
     await tester.pump();
@@ -66,7 +66,7 @@ void main() {
   });
 
   testWidgets('media library exposes category exclusions only', (tester) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     await tester.tap(find.byKey(const ValueKey('settings_category_library')));
     await tester.pump();
@@ -83,7 +83,7 @@ void main() {
   testWidgets('backup original mode disables quality and size controls', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     await tester.tap(find.byKey(const ValueKey('settings_category_backup')));
     await tester.pump();
@@ -105,7 +105,7 @@ void main() {
   testWidgets('background uses battery threshold instead of charging only', (
     tester,
   ) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     await tester.tap(
       find.byKey(const ValueKey('settings_category_background')),
@@ -118,7 +118,7 @@ void main() {
   });
 
   testWidgets('language is selected through flag cards', (tester) async {
-    await tester.pumpWidget(_buildScreen());
+    await _pumpSettings(tester);
 
     await tester.tap(find.byKey(const ValueKey('settings_category_language')));
     await tester.pump();
@@ -136,7 +136,7 @@ void main() {
   });
 
   testWidgets('renders Russian settings labels', (tester) async {
-    await tester.pumpWidget(_buildScreen(locale: const Locale('ru')));
+    await _pumpSettings(tester, locale: const Locale('ru'));
 
     expect(find.text('Настройки'), findsOneWidget);
     expect(find.text('Статус'), findsWidgets);
@@ -147,6 +147,14 @@ void main() {
     expect(find.text('Провайдер'), findsOneWidget);
     expect(find.text('Корневая папка'), findsOneWidget);
   });
+}
+
+Future<void> _pumpSettings(
+  WidgetTester tester, {
+  Locale locale = const Locale('en'),
+}) async {
+  await tester.pumpWidget(_buildScreen(locale: locale));
+  await tester.pump();
 }
 
 Widget _buildScreen({Locale locale = const Locale('en')}) {
