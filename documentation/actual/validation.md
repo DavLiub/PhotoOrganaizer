@@ -1,8 +1,40 @@
 # Actual Validation
 
-## CI Validation
+## Test Classification
 
-GitHub Actions runs project checks for pull requests and pushes to `main` or `master`.
+Automated tests use two independent tag axes.
+
+Test type tags describe the intent and expected depth of a test:
+
+- `smoke`: the smallest checks proving that a critical app path is alive.
+- `ci-gate`: fast tests that should block pull requests.
+- `extended`: heavier integration tests, migration checks, larger fixtures, or
+  slower workflows.
+- `sanity`: broad health checks intended for nightly or pre-release confidence.
+
+Run profile tags describe where a test is executed:
+
+- `pr-gate`: tests selected by pull request validation.
+- `night`: tests selected by scheduled or manually started nightly validation.
+
+The axes are independent. A single test can be tagged with both a type and one
+or more run profiles. Current tests are tagged as `ci-gate`, `pr-gate`, and
+`night`. `test/app_smoke_test.dart` is also tagged as `smoke`.
+
+Declared tags live in:
+
+```text
+dart_test.yaml
+```
+
+At the current project size, all automated tests still run in both PR Gate and
+Night. As the test suite grows, slower `extended` and `sanity` tests may remain
+Night-only.
+
+## PR Gate Validation
+
+GitHub Actions runs project checks for pull requests and pushes to `main` or
+`master`.
 
 Workflow:
 
@@ -14,11 +46,13 @@ Jobs:
 
 - `Project Checks / Flutter Format`
 - `Project Checks / Flutter Analyze`
-- `Project Checks / Flutter Test`
+- `Project Checks / Flutter Test PR Gate`
 - `Project Checks / Architecture Layers`
 - `Project Checks / Test Import Guard`
 - `Project Checks / SDK Leak Guard`
 - `Project Checks / Secret Guard`
+- `Project Checks / Test Tag Guard`
+- `Project Checks / Localization Guard`
 - `Project Checks / Naming Report`
 
 Flutter Format:
@@ -30,10 +64,10 @@ Flutter Analyze:
 - `flutter pub get`
 - `flutter analyze`
 
-Flutter Test:
+Flutter Test PR Gate:
 
 - `flutter pub get`
-- `flutter test`
+- `flutter test --tags pr-gate`
 
 Architecture Layers:
 
@@ -51,6 +85,14 @@ Secret Guard:
 
 - `python tools/ci/secret_guard.py --base <base-sha> --head <head-sha>`
 
+Test Tag Guard:
+
+- `python tools/ci/test_tag_guard.py --base <base-sha> --head <head-sha>`
+
+Localization Guard:
+
+- `python tools/ci/localization_guard.py --base <base-sha> --head <head-sha>`
+
 Naming Report:
 
 - `python tools/ci/naming_report.py --base <base-sha> --head <head-sha>`
@@ -64,6 +106,8 @@ tools/ci/architecture_guard.py
 tools/ci/test_import_guard.py
 tools/ci/sdk_leak_guard.py
 tools/ci/secret_guard.py
+tools/ci/test_tag_guard.py
+tools/ci/localization_guard.py
 tools/ci/naming_report.py
 ```
 
@@ -84,6 +128,8 @@ Blocking checks:
 - Production code must not import test/debug packages or files.
 - Domain/Application must not import blocked SDK/plugin packages.
 - Changed files and lines must not contain common secret files or secret assignments.
+- Changed test files must declare file-level test classification tags.
+- Changed localization files must keep supported locales and translation keys synchronized.
 
 Advisory checks:
 
@@ -93,6 +139,41 @@ Advisory checks:
 Advisory naming findings are emitted as warnings and do not fail CI by themselves. In normal diff mode, naming checks inspect declarations in changed lines. File-name recommendations are part of manual `--all` audits.
 
 Generated Dart files such as `*.g.dart`, `*.freezed.dart`, and `*.mocks.dart` are excluded from advisory naming reports because their identifiers are produced by tools.
+
+## Night Validation
+
+Scheduled and manually started night validation runs through:
+
+```text
+.github/workflows/nightly-tests.yml
+```
+
+Triggers:
+
+- nightly schedule at `02:00 UTC`;
+- manual `workflow_dispatch`.
+
+Night Flutter Tests:
+
+- `flutter pub get`
+- `dart format --set-exit-if-changed .`
+- `flutter analyze`
+- `flutter test --tags night`
+- `flutter build apk --debug`
+
+Night Project Guards:
+
+- `python tools/ci/architecture_guard.py --all`
+- `python tools/ci/test_import_guard.py --all`
+- `python tools/ci/sdk_leak_guard.py --all`
+- `python tools/ci/secret_guard.py --all`
+- `python tools/ci/test_tag_guard.py --all`
+- `python tools/ci/localization_guard.py --all`
+- `python tools/ci/naming_report.py --all`
+
+Night validation is intentionally nonblocking for ordinary pull request merge.
+Failures should be reviewed and fixed, but the workflow is not configured as a
+required PR status check.
 
 ## Main Branch Tags
 
@@ -127,11 +208,13 @@ Configure GitHub branch protection for `main`:
 - require pull requests before merging;
 - require `Project Checks / Flutter Format`;
 - require `Project Checks / Flutter Analyze`;
-- require `Project Checks / Flutter Test`;
+- require `Project Checks / Flutter Test PR Gate`;
 - require `Project Checks / Architecture Layers`;
 - require `Project Checks / Test Import Guard`;
 - require `Project Checks / SDK Leak Guard`;
 - require `Project Checks / Secret Guard`;
+- require `Project Checks / Test Tag Guard`;
+- require `Project Checks / Localization Guard`;
 - require `Project Checks / Naming Report`;
 - block direct pushes;
 - keep tag creation limited to the release workflow.
@@ -203,9 +286,12 @@ python tools/ci/architecture_guard.py
 python tools/ci/test_import_guard.py
 python tools/ci/sdk_leak_guard.py
 python tools/ci/secret_guard.py
+python tools/ci/test_tag_guard.py
+python tools/ci/localization_guard.py
 python tools/ci/naming_report.py
 flutter analyze
-flutter test
+flutter test --tags pr-gate
+flutter test --tags night
 ```
 
 ## Codex Shell Note

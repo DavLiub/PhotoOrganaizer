@@ -1,3 +1,6 @@
+@Tags(<String>['ci-gate', 'pr-gate', 'night'])
+library;
+
 import 'dart:async';
 import 'dart:typed_data';
 

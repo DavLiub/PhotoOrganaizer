@@ -1,3 +1,6 @@
+@Tags(<String>['ci-gate', 'pr-gate', 'night'])
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/domain/entities/backup_record.dart';
 import 'package:photo_organizer/domain/value_objects/operation_result.dart';

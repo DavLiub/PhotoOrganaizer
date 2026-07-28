@@ -19,6 +19,7 @@ Use these checklists during Android device smoke testing when a UI change cannot
 - [navigation-shell.md](navigation-shell.md): app shell, tabs, and settings entry.
 - [photo-library.md](photo-library.md): indexed photo grid, category filters, refresh, and backup warning.
 - [settings.md](settings.md): settings placeholder screen.
+- [android-device-validation.md](android-device-validation.md): repeated real-device validation for PRs, night checks, and pre-release sanity.
 
 ## Test Record Template
 

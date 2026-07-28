@@ -1,3 +1,6 @@
+@Tags(<String>['ci-gate', 'pr-gate', 'night'])
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_manager/photo_manager.dart' as pm;
 import 'package:photo_organizer/domain/value_objects/media_permission.dart';

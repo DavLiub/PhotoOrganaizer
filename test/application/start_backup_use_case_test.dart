@@ -1,3 +1,6 @@
+@Tags(<String>['ci-gate', 'pr-gate', 'night'])
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:photo_organizer/application/models/scan_signal.dart';
 import 'package:photo_organizer/application/policies/access_override.dart';

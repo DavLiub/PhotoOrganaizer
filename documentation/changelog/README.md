@@ -22,3 +22,4 @@ Use one file per meaningful change or release.
 - [2026-07-24-android-media-scan.md](2026-07-24-android-media-scan.md)
 - [2026-07-25-first-scan-ui.md](2026-07-25-first-scan-ui.md)
 - [2026-07-27-photo-library-ui.md](2026-07-27-photo-library-ui.md)
+- [2026-07-28-testing-tags-nightly.md](2026-07-28-testing-tags-nightly.md)

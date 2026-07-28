@@ -26,9 +26,12 @@ python tools/ci/architecture_guard.py
 python tools/ci/test_import_guard.py
 python tools/ci/sdk_leak_guard.py
 python tools/ci/secret_guard.py
+python tools/ci/test_tag_guard.py
+python tools/ci/localization_guard.py
 python tools/ci/naming_report.py
 flutter analyze
-flutter test
+flutter test --tags pr-gate
+flutter test --tags night
 flutter run
 ```
 
