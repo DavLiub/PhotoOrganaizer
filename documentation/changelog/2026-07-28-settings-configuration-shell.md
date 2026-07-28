@@ -22,6 +22,22 @@
 - Added direct local controls for root folder, photo path template, backup
   quality, backup switches, background switches, language selection, and
   diagnostics consent.
+- Replaced free-form storage path template with:
+  - root folder field;
+  - all-in-root versus keep-albums radio-style choice;
+  - independent year/month grouping checkbox.
+- Reworked Backup controls:
+  - optimized copies versus original photos;
+  - image quality;
+  - maximum photo size;
+  - keep metadata.
+- Disabled quality and maximum size controls when original photos are selected.
+- Replaced charging-only and battery optimization rows with a battery threshold
+  slider for background work.
+- Replaced language dropdown with large flag language cards and selected-state
+  checkmark based on the UX source material.
+- Improved Settings visual treatment with selected left navigation, soft right
+  panels, icon boxes, chips, sliders, and card-style language choices.
 - Represented storage as one active backup storage with provider, connected
   account, root folder, and photo path template placeholders.
 - Kept Backup Configuration focused on photo backup behavior, not provider

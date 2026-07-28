@@ -28,7 +28,7 @@ void main() {
     expect(find.text('Provider'), findsNothing);
   });
 
-  testWidgets('shows storage subitems and opens complex item editor', (
+  testWidgets('shows storage layout controls and opens complex editor', (
     tester,
   ) async {
     await tester.pumpWidget(_buildScreen());
@@ -39,7 +39,11 @@ void main() {
     expect(find.text('Provider'), findsOneWidget);
     expect(find.text('Connected account'), findsOneWidget);
     expect(find.text('Root folder'), findsOneWidget);
-    expect(find.text('Photo path template'), findsOneWidget);
+    expect(find.text('Cloud folder layout'), findsOneWidget);
+    expect(find.text('All in root folder'), findsOneWidget);
+    expect(find.text('Keep album structure'), findsOneWidget);
+    expect(find.text('Group by year/month'), findsOneWidget);
+    expect(find.text('Photo path template'), findsNothing);
 
     await tester.enterText(
       find.widgetWithText(TextField, 'Root folder'),
@@ -57,22 +61,59 @@ void main() {
     );
   });
 
-  testWidgets('direct settings toggle locally without detail screen', (
+  testWidgets('backup original mode disables quality and size controls', (
     tester,
   ) async {
     await tester.pumpWidget(_buildScreen());
 
-    await tester.tap(find.byKey(const ValueKey('settings_category_about')));
+    await tester.tap(find.byKey(const ValueKey('settings_category_backup')));
     await tester.pump();
 
-    SwitchListTile tile = tester.widget(find.byType(SwitchListTile));
-    expect(tile.value, isFalse);
+    expect(find.text('Optimized copies'), findsOneWidget);
+    expect(find.text('Original photos'), findsOneWidget);
+    expect(find.text('Image quality'), findsOneWidget);
+    expect(find.text('Maximum photo size'), findsOneWidget);
 
-    await tester.tap(find.text('Allow sending debug data'));
+    await tester.tap(find.text('Original photos'));
     await tester.pump();
 
-    tile = tester.widget(find.byType(SwitchListTile));
-    expect(tile.value, isTrue);
+    expect(
+      find.text('Disabled when backing up original photos.'),
+      findsNWidgets(2),
+    );
+  });
+
+  testWidgets('background uses battery threshold instead of charging only', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_buildScreen());
+
+    await tester.tap(
+      find.byKey(const ValueKey('settings_category_background')),
+    );
+    await tester.pump();
+
+    expect(find.text('Run when battery is above'), findsOneWidget);
+    expect(find.text('Battery optimization'), findsNothing);
+    expect(find.text('Run while charging'), findsNothing);
+  });
+
+  testWidgets('language is selected through flag cards', (tester) async {
+    await tester.pumpWidget(_buildScreen());
+
+    await tester.tap(find.byKey(const ValueKey('settings_category_language')));
+    await tester.pump();
+
+    expect(find.text('🇺🇸'), findsOneWidget);
+    expect(find.text('🇷🇺'), findsOneWidget);
+    expect(find.text('🇮🇱'), findsOneWidget);
+    expect(find.text('English'), findsNWidgets(2));
+    expect(find.text('Russian'), findsOneWidget);
+
+    await tester.tap(find.text('Russian'));
+    await tester.pump();
+
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
   testWidgets('renders Russian settings labels', (tester) async {

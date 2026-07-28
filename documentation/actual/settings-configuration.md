@@ -11,8 +11,8 @@ This PR implements the shell only. Settings values are not persisted yet.
 The Settings UI uses a two-level master-detail layout:
 
 - first-level sections are selected from the left side;
-- the right side displays subitems and direct controls for the selected
-  section;
+- the right side displays subitems and direct controls for the selected section
+  in soft Material-style panels;
 - complex subitems open a full-screen placeholder editor;
 - simple values can be entered or toggled directly in the right side.
 
@@ -58,46 +58,67 @@ Storage:
 - Provider
 - Connected account
 - Root folder
-- Photo path template
+- Cloud folder layout:
+  - all photos in the root folder
+  - keep album structure
+- Group by year/month
 
 Storage represents one active backup storage. The intended model is a single
 configured target such as Google Drive, Dropbox, S3, or a later provider. The
-Root folder and relative photo path template are direct editable fields in the
-right-side pane. Provider and connected account are complex placeholders and
-open full-screen detail screens.
+root folder is a direct editable field. Folder layout is a radio-style choice,
+and year/month grouping is an independent checkbox. Provider and connected
+account are complex placeholders and open full-screen detail screens.
+
+There is no free-form path template in the UI. The shell intentionally limits
+the first version to understandable choices.
+
+General:
+
+- Theme
+- Confirm important actions
+- Show backup badges
 
 Media Library:
 
 - Categories
-- Included folders
-- Refresh behavior
+- Camera
+- Social
+- Downloads
+- Screenshots
+- Included folders placeholder
+- Refresh behavior placeholder
 
-These are placeholders for future include/exclude and refresh configuration.
+Category controls are local placeholder checkboxes. Included folder and refresh
+configuration remain future workflows.
 
 Backup Configuration:
 
-- Photo size
+- Photo mode:
+  - optimized copies
+  - original photos
 - Image quality
+- Maximum photo size
 - Keep metadata
-- Backup originals
 
 Backup Configuration describes what is backed up. It does not select the cloud
 provider; provider setup belongs to Storage.
+
+When original photos are selected, image quality and maximum size controls are
+disabled because originals are not recompressed by the app.
 
 Background Work:
 
 - Background backup
 - Background refresh
 - Wi-Fi only
-- Run while charging
-- Battery optimization
+- Run when battery is above X%
 
 Background Work describes when app work is allowed. Real scheduling is not
 implemented yet.
 
 Language:
 
-- Language placeholder
+- Large language cards with flag, language name, and selected-state checkmark
 
 About:
 
@@ -125,3 +146,5 @@ localization guard to compare real translation keys.
 - Background scheduling is not implemented.
 - Diagnostics consent does not leave the screen state.
 - Albums is a placeholder and does not manage actual albums yet.
+- Media Library settings are preliminary until the real album/source settings
+  workflow is implemented.

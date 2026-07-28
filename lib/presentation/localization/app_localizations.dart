@@ -103,6 +103,28 @@ class AppLocalizations {
   String get english => text('english');
   String get russian => text('russian');
   String get hebrewLater => text('hebrewLater');
+  String get hebrew => text('hebrew');
+  String get statusSubtitle => text('statusSubtitle');
+  String get storageSubtitle => text('storageSubtitle');
+  String get generalSubtitle => text('generalSubtitle');
+  String get mediaLibrarySubtitle => text('mediaLibrarySubtitle');
+  String get backupSubtitle => text('backupSubtitle');
+  String get backgroundSubtitle => text('backgroundSubtitle');
+  String get languageSubtitle => text('languageSubtitle');
+  String get aboutSubtitle => text('aboutSubtitle');
+  String get storageFolderLayout => text('storageFolderLayout');
+  String get allInRootFolder => text('allInRootFolder');
+  String get keepAlbumStructure => text('keepAlbumStructure');
+  String get groupByYearMonth => text('groupByYearMonth');
+  String get theme => text('theme');
+  String get systemTheme => text('systemTheme');
+  String get lightTheme => text('lightTheme');
+  String get darkTheme => text('darkTheme');
+  String get confirmImportantActions => text('confirmImportantActions');
+  String get showBackupBadges => text('showBackupBadges');
+  String get disabledForOriginals => text('disabledForOriginals');
+  String get maxPhotoSize => text('maxPhotoSize');
+  String get minBatteryLevel => text('minBatteryLevel');
   String get googleDrive => text('googleDrive');
   String get backupProfile => text('backupProfile');
   String get indexedPhotoList => text('indexedPhotoList');
@@ -268,6 +290,31 @@ const _en = {
   'english': 'English',
   'russian': 'Russian',
   'hebrewLater': 'Hebrew later',
+  'hebrew': 'Hebrew',
+  'statusSubtitle': 'Current plan and backup readiness.',
+  'storageSubtitle':
+      'Choose where backups are stored and how folders are laid out.',
+  'generalSubtitle':
+      'App behavior preferences that do not belong to a feature area.',
+  'mediaLibrarySubtitle':
+      'Control what parts of the device library are considered.',
+  'backupSubtitle': 'Choose whether backups use originals or optimized copies.',
+  'backgroundSubtitle': 'Control when refresh and backup work may run.',
+  'languageSubtitle': 'Choose the app interface language.',
+  'aboutSubtitle': 'App identity, ownership, and diagnostics consent.',
+  'storageFolderLayout': 'Cloud folder layout',
+  'allInRootFolder': 'All in root folder',
+  'keepAlbumStructure': 'Keep album structure',
+  'groupByYearMonth': 'Group by year/month',
+  'theme': 'Theme',
+  'systemTheme': 'System',
+  'lightTheme': 'Light',
+  'darkTheme': 'Dark',
+  'confirmImportantActions': 'Confirm important actions',
+  'showBackupBadges': 'Show backup badges',
+  'disabledForOriginals': 'Disabled when backing up original photos.',
+  'maxPhotoSize': 'Maximum photo size',
+  'minBatteryLevel': 'Run when battery is above',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Backup profile',
   'indexedPhotoList': 'Indexed photo list',
@@ -396,6 +443,28 @@ const _ru = {
   'english': 'Английский',
   'russian': 'Русский',
   'hebrewLater': 'Иврит позже',
+  'hebrew': 'Иврит',
+  'statusSubtitle': 'Текущий план и готовность бэкапа.',
+  'storageSubtitle': 'Куда сохранять бэкапы и как строить папки.',
+  'generalSubtitle': 'Общие предпочтения приложения.',
+  'mediaLibrarySubtitle': 'Какие части медиатеки учитывать.',
+  'backupSubtitle': 'Оригиналы или оптимизированные копии.',
+  'backgroundSubtitle': 'Когда можно запускать фоновую работу.',
+  'languageSubtitle': 'Язык интерфейса приложения.',
+  'aboutSubtitle': 'Идентичность, автор, диагностика.',
+  'storageFolderLayout': 'Структура папок в облаке',
+  'allInRootFolder': 'Все в корневую папку',
+  'keepAlbumStructure': 'Сохранять структуру альбомов',
+  'groupByYearMonth': 'Группировать по году/месяцу',
+  'theme': 'Тема',
+  'systemTheme': 'Система',
+  'lightTheme': 'Светлая',
+  'darkTheme': 'Темная',
+  'confirmImportantActions': 'Подтверждать важные действия',
+  'showBackupBadges': 'Показывать статус бэкапа',
+  'disabledForOriginals': 'Неактивно для бэкапа оригиналов.',
+  'maxPhotoSize': 'Максимальный размер фото',
+  'minBatteryLevel': 'Запускать при заряде выше',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Профиль бэкапа',
   'indexedPhotoList': 'Список проиндексированных фото',

@@ -20,7 +20,7 @@
   Expected: `Premium / Free plan` and `Storage / Storage is not connected` are visible on the right.
 
 - [ ] Tap `Storage` on the left.
-  Expected: Provider, connected account, root folder, and photo path template controls are visible on the right.
+  Expected: Provider, connected account, root folder, cloud folder layout, and year/month grouping controls are visible on the right.
 
 - [ ] Tap `Provider`.
   Expected: Placeholder detail screen opens and says configuration persistence will be added later.
@@ -31,17 +31,35 @@
 - [ ] Edit `Root folder`.
   Expected: text can be entered directly on the right without opening a new screen.
 
+- [ ] Select `All in root folder`, then `Keep album structure`.
+  Expected: only one folder layout option is selected at a time.
+
+- [ ] Toggle `Group by year/month`.
+  Expected: checkbox changes state independently from the folder layout choice.
+
+- [ ] Verify `Photo path template`.
+  Expected: no free-form path template field is shown.
+
+- [ ] Tap `General` on the left.
+  Expected: theme choice, confirm important actions, and backup badge controls are visible directly on the right.
+
 - [ ] Tap `Media Library` on the left.
-  Expected: Categories, included folders, and refresh behavior rows are visible.
+  Expected: category controls for Camera, Social, Downloads, Screenshots plus included folders and refresh behavior placeholders are visible.
 
 - [ ] Tap `Backup Configuration` on the left.
-  Expected: photo size selector, image quality slider, keep metadata switch, and backup originals switch are visible.
+  Expected: optimized/original choice, image quality slider, maximum photo size slider, and keep metadata switch are visible.
+
+- [ ] Select `Original photos`.
+  Expected: image quality and maximum photo size controls become disabled.
 
 - [ ] Tap `Background Work` on the left.
-  Expected: background backup, background refresh, Wi-Fi only, charging, and battery optimization controls are visible.
+  Expected: background backup, background refresh, Wi-Fi only, and battery threshold controls are visible.
+
+- [ ] Verify charging/battery optimization controls.
+  Expected: no `Run while charging` or `Battery optimization` row is visible.
 
 - [ ] Tap `Language` on the left.
-  Expected: language selector is visible on the right.
+  Expected: language cards with flags are visible, and the selected language has a checkmark.
 
 - [ ] Tap `About` on the left.
   Expected: app name, package ID, version, author, and diagnostics consent are visible.
