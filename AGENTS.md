@@ -183,12 +183,13 @@ Run these from the repository root:
 flutter pub get
 dart format .
 flutter analyze
-flutter test
+flutter test --tags pr-gate
+flutter test --tags night
 flutter run
 flutter build apk --debug
 ```
 
-`flutter pub get` restores dependencies. `dart format .` applies Dart formatting. `flutter analyze` runs static analysis. `flutter test` runs widget/unit tests. `flutter run` launches the app on a connected device. `flutter build apk --debug` verifies Android debug APK packaging.
+`flutter pub get` restores dependencies. `dart format .` applies Dart formatting. `flutter analyze` runs static analysis. `flutter test --tags pr-gate` runs tests selected for pull request validation. `flutter test --tags night` runs tests selected for scheduled/manual night validation. `flutter run` launches the app on a connected device. `flutter build apk --debug` verifies Android debug APK packaging.
 
 ## Coding Style & Naming Conventions
 
@@ -236,6 +237,8 @@ Name test files with `_test.dart`, for example:
 ```text
 test/app_smoke_test.dart
 ```
+
+Tag automated tests on two independent axes. Test type tags are `smoke`, `ci-gate`, `extended`, and `sanity`. Run profile tags are `pr-gate` and `night`. Current tests should run in both profiles unless they are intentionally too slow for PR validation.
 
 When adding feature logic, place tests close to the behavior being validated and include edge cases for backup state, idempotency, and failure handling.
 

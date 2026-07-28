@@ -51,7 +51,7 @@ jobs:
         run: flutter analyze
 
   flutter-test:
-    name: Flutter Test
+    name: Flutter Test PR Gate
     runs-on: ubuntu-latest
 
     steps:
@@ -69,7 +69,7 @@ jobs:
         run: flutter pub get
 
       - name: Test
-        run: flutter test
+        run: flutter test --tags pr-gate
 
   architecture-layers:
     name: Architecture Layers

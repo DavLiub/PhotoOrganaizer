@@ -1,3 +1,6 @@
+@Tags(<String>['ci-gate', 'pr-gate', 'night'])
+library;
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
