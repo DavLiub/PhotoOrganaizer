@@ -6,8 +6,15 @@ Settings is the visible configuration center for app status, one active backup
 storage, backup behavior, media library controls, background work, language, and
 about information.
 
-This PR implements the shell only. Settings rows are structured and navigable,
-but values are not persisted yet.
+This PR implements the shell only. Settings values are not persisted yet.
+
+The Settings UI uses a two-level master-detail layout:
+
+- first-level sections are selected from the left side;
+- the right side displays subitems and direct controls for the selected
+  section;
+- complex subitems open a full-screen placeholder editor;
+- simple values can be entered or toggled directly in the right side.
 
 ## Navigation
 
@@ -23,6 +30,21 @@ account/status concept inside Settings.
 
 Albums is a placeholder destination for future album management. It does not
 change media indexing rules yet.
+
+## Settings Layout
+
+Left-side first-level sections:
+
+- Status
+- Storage
+- General
+- Media Library
+- Backup Configuration
+- Background Work
+- Language
+- About
+
+The selected section owns the right-side content.
 
 ## Settings Sections
 
@@ -40,8 +62,9 @@ Storage:
 
 Storage represents one active backup storage. The intended model is a single
 configured target such as Google Drive, Dropbox, S3, or a later provider. The
-root folder and relative photo path template determine where uploaded photos
-will be placed.
+Root folder and relative photo path template are direct editable fields in the
+right-side pane. Provider and connected account are complex placeholders and
+open full-screen detail screens.
 
 Media Library:
 
@@ -84,8 +107,8 @@ About:
 - Author
 - Diagnostics consent checkbox
 
-Diagnostics consent is local UI state only in this PR. It is not persisted and
-does not send data.
+Diagnostics consent is direct local UI state only in this PR. It is not
+persisted and does not send data.
 
 ## Localization
 

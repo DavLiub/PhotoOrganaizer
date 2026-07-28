@@ -98,6 +98,11 @@ class AppLocalizations {
   String get author => text('author');
   String get diagnosticsConsent => text('diagnosticsConsent');
   String get placeholderDetail => text('placeholderDetail');
+  String get optimizedCopies => text('optimizedCopies');
+  String get originalPhotos => text('originalPhotos');
+  String get english => text('english');
+  String get russian => text('russian');
+  String get hebrewLater => text('hebrewLater');
   String get googleDrive => text('googleDrive');
   String get backupProfile => text('backupProfile');
   String get indexedPhotoList => text('indexedPhotoList');
@@ -258,6 +263,11 @@ const _en = {
   'author': 'Author',
   'diagnosticsConsent': 'Allow sending debug data',
   'placeholderDetail': 'Configuration persistence will be added in a later PR.',
+  'optimizedCopies': 'Optimized copies',
+  'originalPhotos': 'Original photos',
+  'english': 'English',
+  'russian': 'Russian',
+  'hebrewLater': 'Hebrew later',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Backup profile',
   'indexedPhotoList': 'Indexed photo list',
@@ -381,6 +391,11 @@ const _ru = {
   'author': 'Автор',
   'diagnosticsConsent': 'Разрешить отправку отладочных данных',
   'placeholderDetail': 'Сохранение настроек будет добавлено в следующем PR.',
+  'optimizedCopies': 'Оптимизированные копии',
+  'originalPhotos': 'Оригинальные фото',
+  'english': 'Английский',
+  'russian': 'Русский',
+  'hebrewLater': 'Иврит позже',
   'googleDrive': 'Google Drive',
   'backupProfile': 'Профиль бэкапа',
   'indexedPhotoList': 'Список проиндексированных фото',

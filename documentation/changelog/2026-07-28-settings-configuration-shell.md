@@ -14,6 +14,14 @@
   - Background Work;
   - Language;
   - About.
+- Changed Settings from a long one-column list to a two-level master-detail
+  shell:
+  - first-level sections on the left;
+  - selected section subitems and direct controls on the right;
+  - complex subitems open full-screen placeholder editors.
+- Added direct local controls for root folder, photo path template, backup
+  quality, backup switches, background switches, language selection, and
+  diagnostics consent.
 - Represented storage as one active backup storage with provider, connected
   account, root folder, and photo path template placeholders.
 - Kept Backup Configuration focused on photo backup behavior, not provider
