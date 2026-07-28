@@ -374,11 +374,21 @@ class _PhotoGridState extends State<_PhotoGrid> {
       return _EmptyFilter(category: widget.selectedCategory!);
     }
 
-    return Scrollbar(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return RawScrollbar(
       controller: _scrollController,
       thumbVisibility: true,
+      trackVisibility: true,
       interactive: true,
-      radius: const Radius.circular(8),
+      thickness: 10,
+      minThumbLength: 64,
+      crossAxisMargin: 10,
+      radius: const Radius.circular(10),
+      trackRadius: const Radius.circular(10),
+      thumbColor: colorScheme.primary.withValues(alpha: 0.72),
+      trackColor: colorScheme.primary.withValues(alpha: 0.10),
+      trackBorderColor: Colors.transparent,
       child: GridView.builder(
         controller: _scrollController,
         padding: const EdgeInsets.fromLTRB(12, 4, 20, 12),

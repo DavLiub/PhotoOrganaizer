@@ -71,7 +71,9 @@ Available sort labels:
 - Name Z-A
 
 The thumbnail grid includes a visible interactive right-side scrollbar for
-fast manual navigation through long libraries.
+fast manual navigation through long libraries. The thumb is thicker than the
+Flutter default and offset inward from the screen edge so it is easier to hit
+with a finger on a phone.
 
 ## Actions
 

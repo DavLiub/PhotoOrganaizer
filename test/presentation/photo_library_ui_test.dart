@@ -115,9 +115,13 @@ void main() {
     expect(find.text('No backup'), findsNWidgets(2));
     expect(find.text('2 photos'), findsOneWidget);
     expect(find.byKey(const ValueKey('library_scan_indicator')), findsNothing);
-    final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
+    final scrollbar = tester.widget<RawScrollbar>(find.byType(RawScrollbar));
     expect(scrollbar.thumbVisibility, isTrue);
+    expect(scrollbar.trackVisibility, isTrue);
     expect(scrollbar.interactive, isTrue);
+    expect(scrollbar.thickness, 10);
+    expect(scrollbar.crossAxisMargin, 10);
+    expect(scrollbar.minThumbLength, 64);
     expect(find.text('Scan'), findsOneWidget);
     expect(find.text('Backup (0%)'), findsOneWidget);
     expect(find.text('Catalogs'), findsNothing);
