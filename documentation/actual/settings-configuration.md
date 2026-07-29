@@ -8,6 +8,7 @@ about information.
 
 Most settings values are still shell-only placeholders. Media Library category
 include/exclude values are persisted and shared with Library and Albums.
+Language selection is persisted as an app-level setting and applies immediately.
 
 The Settings UI uses a two-level master-detail layout:
 
@@ -118,6 +119,10 @@ Language:
 - Large language cards with flag, language name, and selected-state checkmark
 - English and Russian are selectable for Release 1.0
 - Hebrew is not shown or selectable yet
+- Before manual selection, the app follows Android system locale when it is
+  English or Russian and falls back to English otherwise
+- After manual selection, the stored app language overrides the system locale
+  and survives restart
 
 About:
 
@@ -141,7 +146,7 @@ common mojibake markers in user-visible localization values.
 
 ## Known Limitations
 
-- Most Settings values are not persisted.
+- Language selection is persisted; other app-level Settings placeholders are not.
 - Storage provider authorization is not implemented.
 - Background scheduling is not implemented.
 - Diagnostics consent does not leave the screen state.

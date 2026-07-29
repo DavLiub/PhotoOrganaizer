@@ -34,3 +34,4 @@ Each ADR should include:
 - [0019-use-media-source-index.md](0019-use-media-source-index.md)
 - [0020-use-unified-library-screen.md](0020-use-unified-library-screen.md)
 - [0021-use-source-selection-policy.md](0021-use-source-selection-policy.md)
+- [0022-use-null-locale-override.md](0022-use-null-locale-override.md)

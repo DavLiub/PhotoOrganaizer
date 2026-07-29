@@ -82,7 +82,7 @@ final class AppDatabase extends _$AppDatabase {
   AppDatabase.defaults() : super(driftDatabase(name: 'photo_organizer'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -90,6 +90,7 @@ final class AppDatabase extends _$AppDatabase {
       onCreate: (migrator) async {
         await migrator.createAll();
         await _createSelectionTables();
+        await _createAppSettings();
       },
       onUpgrade: (migrator, from, to) async {
         if (from < 2) {
@@ -101,6 +102,9 @@ final class AppDatabase extends _$AppDatabase {
         }
         if (from < 3) {
           await _createSelectionTables();
+        }
+        if (from < 4) {
+          await _createAppSettings();
         }
       },
     );
@@ -118,6 +122,16 @@ final class AppDatabase extends _$AppDatabase {
       CREATE TABLE IF NOT EXISTS media_source_selections (
         source_id TEXT NOT NULL PRIMARY KEY,
         enabled INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  Future<void> _createAppSettings() async {
+    await customStatement('''
+      CREATE TABLE IF NOT EXISTS app_settings (
+        setting_key TEXT NOT NULL PRIMARY KEY,
+        setting_value TEXT,
         updated_at INTEGER NOT NULL
       )
     ''');

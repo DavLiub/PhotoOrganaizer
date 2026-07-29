@@ -19,6 +19,7 @@ import 'package:photo_organizer/infrastructure/media/unsupported_media_access.da
 import 'package:photo_organizer/infrastructure/media/unsupported_media_library_gateway.dart';
 import 'package:photo_organizer/infrastructure/media/unsupported_thumbnail_gateway.dart';
 import 'package:photo_organizer/infrastructure/entitlements/test_entitlement_gateway.dart';
+import 'package:photo_organizer/infrastructure/storage/app_settings_store.dart';
 import 'package:photo_organizer/infrastructure/storage/media_source_store.dart';
 import 'package:photo_organizer/infrastructure/storage/source_selection_store.dart';
 
@@ -37,6 +38,7 @@ void main() {
       expect(root.mediaPermissionGateway, isA<AndroidMediaAccess>());
       expect(root.mediaLibraryGateway, isA<AndroidMediaLibraryGateway>());
       expect(root.photoThumbnailGateway, isA<PhotoThumbnailAdapter>());
+      expect(root.appSettingsRepository, isA<AppSettingsStore>());
       expect(root.mediaSourceRepository, isA<MediaSourceStore>());
       expect(root.sourceSelectionRepository, isA<SourceSelectionStore>());
     });

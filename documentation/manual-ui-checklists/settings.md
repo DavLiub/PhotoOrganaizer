@@ -64,6 +64,15 @@
 - [ ] Verify unsupported languages.
   Expected: Hebrew is not visible and cannot be selected.
 
+- [ ] Tap `Russian`.
+  Expected: Settings labels switch to Russian immediately without restarting the app.
+
+- [ ] Close and reopen the app.
+  Expected: Russian remains selected and visible.
+
+- [ ] Tap `English`.
+  Expected: Settings labels switch to English immediately and remain English after restart.
+
 - [ ] Tap `About` on the left.
   Expected: app name, package ID, version, author, and diagnostics consent are visible.
 

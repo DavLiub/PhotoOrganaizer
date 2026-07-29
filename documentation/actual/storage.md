@@ -12,6 +12,7 @@ Implemented components:
 - `LocalPhotoIndexRepository`
 - `MediaSourceStore`
 - `SourceSelectionStore`
+- `AppSettingsStore`
 - `photo_index_mapper.dart`
 - `media_source_mapper.dart`
 
@@ -19,9 +20,9 @@ Implemented components:
 
 The default database name is `photo_organizer`.
 
-`AppDatabase.defaults()` uses Drift's Flutter database factory and is created lazily by storage repositories on first repository access. Bootstrap passes a shared lazy database factory to the photo index, media source, and source selection repositories.
+`AppDatabase.defaults()` uses Drift's Flutter database factory and is created lazily by storage repositories on first repository access. Bootstrap passes a shared lazy database factory to the photo index, media source, source selection, and app settings repositories.
 
-Schema version: `3`
+Schema version: `4`
 
 ## Tables
 
@@ -97,6 +98,23 @@ Columns:
 
 `source_id` is the primary key. Missing rows mean the source is enabled.
 
+### `app_settings`
+
+Stores app-level settings that are independent from media source selection.
+
+Columns:
+
+- `setting_key`
+- `setting_value`
+- `updated_at`
+
+`setting_key` is the primary key.
+
+Current key:
+
+- `selected_locale`: persisted only after the user manually selects a language.
+  A missing row means system locale fallback, not English or Russian override.
+
 ## Repository Behavior
 
 `LocalPhotoIndexRepository` supports:
@@ -119,6 +137,12 @@ Columns:
 - writing category include/exclude settings;
 - writing individual source include/exclude settings.
 
+`AppSettingsStore` supports:
+
+- reading app-level settings;
+- saving the selected app locale override;
+- removing an app setting when the model value is null.
+
 Drift row classes and companions do not leave Infrastructure. Application and Domain continue to use project-owned models.
 
 ## Known Limitations
@@ -127,3 +151,5 @@ Drift row classes and companions do not leave Infrastructure. Application and Do
 - No explicit secondary indexes are tuned yet.
 - Migration behavior creates `media_sources` and adds nullable `source_id` when upgrading from schema version `1`.
 - Migration behavior creates source selection tables when upgrading from schema versions before `3`.
+- Migration behavior creates `app_settings` when upgrading from schema versions
+  before `4`.
