@@ -12,6 +12,17 @@ LOCALIZATION_PATH = "lib/presentation/localization/app_localizations.dart"
 LOCALE_RE = re.compile(r"Locale\(['\"]([a-z]{2})['\"]\)")
 MAP_DECL_RE = re.compile(r"const\s+_([a-z]{2})\s*=\s*\{")
 KEY_RE = re.compile(r"^\s*['\"]([^'\"]+)['\"]\s*:", re.MULTILINE)
+MOJIBAKE_MARKERS = [
+    "Ã",
+    "Ã‘",
+    "Ã°",
+    "Ã¢",
+    "Ð",
+    "Ñ",
+    "ðŸ",
+    "â†",
+    "â€",
+]
 
 
 def main() -> int:
@@ -38,7 +49,9 @@ def main() -> int:
             print(f"- {finding.path}:{finding.line}: {finding.message}")
         return 1
 
-    print("Localization guard: supported locales and translation keys are synchronized.")
+    print(
+        "Localization guard: supported locales, translation keys, and string encoding are valid."
+    )
     return 0
 
 
@@ -110,6 +123,8 @@ def find_violations(text: str) -> list[Finding]:
                 )
             )
 
+    findings.extend(mojibake_findings(text))
+
     return findings
 
 
@@ -164,6 +179,25 @@ def line_for_map(text: str, locale: str) -> int:
     if match is None:
         return 1
     return text[: match.start()].count("\n") + 1
+
+
+def mojibake_findings(text: str) -> list[Finding]:
+    findings: list[Finding] = []
+
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        marker = next((item for item in MOJIBAKE_MARKERS if item in line), None)
+        if marker is None:
+            continue
+
+        findings.append(
+            Finding(
+                LOCALIZATION_PATH,
+                line_number,
+                f"Localization value appears to contain mojibake marker `{marker}`.",
+            )
+        )
+
+    return findings
 
 
 if __name__ == "__main__":

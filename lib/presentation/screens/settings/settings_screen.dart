@@ -625,14 +625,6 @@ class _SettingsDetailPane extends StatelessWidget {
           selected: language == 'ru',
           onTap: () => onLanguageChanged('ru'),
         ),
-        const SizedBox(height: 10),
-        _LanguageCard(
-          flag: '🇮🇱',
-          title: l10n.hebrew,
-          subtitle: l10n.hebrewLater,
-          selected: language == 'he',
-          onTap: () => onLanguageChanged('he'),
-        ),
       ],
       _SettingsCategory.about => [
         _SettingsGroup(

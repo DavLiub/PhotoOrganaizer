@@ -130,9 +130,10 @@ void main() {
 
     expect(find.text('🇺🇸'), findsOneWidget);
     expect(find.text('🇷🇺'), findsOneWidget);
-    expect(find.text('🇮🇱'), findsOneWidget);
     expect(find.text('English'), findsNWidgets(2));
     expect(find.text('Russian'), findsOneWidget);
+    expect(find.text('🇮🇱'), findsNothing);
+    expect(find.text('Hebrew'), findsNothing);
 
     await tester.tap(find.text('Russian'));
     await tester.pump();
