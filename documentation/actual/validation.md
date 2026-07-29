@@ -92,6 +92,8 @@ Test Tag Guard:
 Localization Guard:
 
 - `python tools/ci/localization_guard.py --base <base-sha> --head <head-sha>`
+- verifies that user-visible localization values do not contain common mojibake
+  markers such as corrupted Cyrillic, emoji, arrows, or quotes.
 
 Naming Report:
 
@@ -130,6 +132,8 @@ Blocking checks:
 - Changed files and lines must not contain common secret files or secret assignments.
 - Changed test files must declare file-level test classification tags.
 - Changed localization files must keep supported locales and translation keys synchronized.
+- Changed localization files must not contain common mojibake markers in
+  user-visible values.
 
 Advisory checks:
 

@@ -161,7 +161,8 @@ Supported languages remain:
 - English
 - Russian
 
-The localization map is key-based so Hebrew can be added later without changing widget call sites.
+The localization map is key-based. Release 1.0 exposes English and Russian UI
+strings; Hebrew remains a future localization task.
 
 ## Known Limitations
 

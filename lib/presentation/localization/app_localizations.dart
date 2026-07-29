@@ -102,8 +102,6 @@ class AppLocalizations {
   String get originalPhotos => text('originalPhotos');
   String get english => text('english');
   String get russian => text('russian');
-  String get hebrewLater => text('hebrewLater');
-  String get hebrew => text('hebrew');
   String get statusSubtitle => text('statusSubtitle');
   String get storageSubtitle => text('storageSubtitle');
   String get generalSubtitle => text('generalSubtitle');
@@ -295,8 +293,6 @@ const _en = {
   'originalPhotos': 'Original photos',
   'english': 'English',
   'russian': 'Russian',
-  'hebrewLater': 'Hebrew later',
-  'hebrew': 'Hebrew',
   'statusSubtitle': 'Current plan and backup readiness.',
   'storageSubtitle':
       'Choose where backups are stored and how folders are laid out.',
@@ -454,8 +450,6 @@ const _ru = {
   'originalPhotos': 'Оригинальные фото',
   'english': 'Английский',
   'russian': 'Русский',
-  'hebrewLater': 'Иврит позже',
-  'hebrew': 'Иврит',
   'statusSubtitle': 'Текущий план и готовность бэкапа.',
   'storageSubtitle': 'Куда сохранять бэкапы и как строить папки.',
   'generalSubtitle': 'Общие предпочтения приложения.',

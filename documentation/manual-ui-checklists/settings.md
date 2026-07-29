@@ -59,7 +59,10 @@
   Expected: no `Run while charging` or `Battery optimization` row is visible.
 
 - [ ] Tap `Language` on the left.
-  Expected: language cards with flags are visible, and the selected language has a checkmark.
+  Expected: English and Russian language cards with flags are visible, and the selected language has a checkmark.
+
+- [ ] Verify unsupported languages.
+  Expected: Hebrew is not visible and cannot be selected.
 
 - [ ] Tap `About` on the left.
   Expected: app name, package ID, version, author, and diagnostics consent are visible.

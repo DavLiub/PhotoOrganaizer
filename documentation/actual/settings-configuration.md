@@ -116,6 +116,8 @@ implemented yet.
 Language:
 
 - Large language cards with flag, language name, and selected-state checkmark
+- English and Russian are selectable for Release 1.0
+- Hebrew is not shown or selectable yet
 
 About:
 
@@ -134,7 +136,8 @@ Settings strings are routed through `AppLocalizations`.
 
 The localization file has been normalized to UTF-8 for English and Russian
 labels. This removes the previous mojibake Russian text and allows the
-localization guard to compare real translation keys.
+localization guard to compare real translation keys. The guard also blocks
+common mojibake markers in user-visible localization values.
 
 ## Known Limitations
 
