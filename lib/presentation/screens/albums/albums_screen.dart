@@ -7,6 +7,10 @@ import '../../../domain/entities/media_source.dart';
 import '../../localization/app_localizations.dart';
 import '../../state/source_selection_controller.dart';
 import '../../state/source_selection_state.dart';
+import '../../theme/app_status_palette.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/failure_state.dart';
+import '../../widgets/status_badge.dart';
 
 class AlbumsScreen extends ConsumerWidget {
   const AlbumsScreen({super.key});
@@ -50,11 +54,15 @@ class _AlbumsContent extends StatelessWidget {
     }
 
     if (state.errorCode != null) {
-      return _ErrorBanner(message: state.errorCode!);
+      return FailureState(message: state.errorCode!);
     }
 
     if (state.selection.isEmpty) {
-      return _EmptySources(l10n: l10n);
+      return EmptyState(
+        icon: Icons.folder_off_outlined,
+        title: l10n.noMediaSources,
+        message: l10n.noMediaSourcesMessage,
+      );
     }
 
     return ListView(
@@ -82,12 +90,7 @@ class _SourceGroup extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(8),
-        ),
+      child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -135,10 +138,9 @@ class _SourceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final source = item.source;
-    final subtitleParts = [
+    final metadataParts = [
       if (source.pathHint != null) source.pathHint!,
       l10n.countPhotos(source.assetCount),
-      _statusLabel(l10n, source.availabilityStatus),
       '${l10n.lastSeen}: ${_shortDate(source.lastSeenAt)}',
     ];
 
@@ -148,74 +150,27 @@ class _SourceTile extends StatelessWidget {
         key: ValueKey('media_source_${source.id}'),
         secondary: Icon(_sourceIcon(source)),
         title: Text(source.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text(
-          subtitleParts.join(' | '),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                metadataParts.join(' | '),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              StatusBadge(
+                label: _statusLabel(l10n, source.availabilityStatus),
+                tone: _sourceTone(source.availabilityStatus),
+                icon: _sourceStatusIcon(source.availabilityStatus),
+              ),
+            ],
+          ),
         ),
         value: item.enabled,
         onChanged: onChanged,
-      ),
-    );
-  }
-}
-
-class _EmptySources extends StatelessWidget {
-  const _EmptySources({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.folder_off_outlined,
-              size: 48,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.noMediaSources,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.noMediaSourcesMessage, textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        color: colorScheme.errorContainer,
-        child: ListTile(
-          leading: Icon(
-            Icons.error_outline,
-            color: colorScheme.onErrorContainer,
-          ),
-          title: Text(
-            message,
-            style: TextStyle(color: colorScheme.onErrorContainer),
-          ),
-        ),
       ),
     );
   }
@@ -256,6 +211,22 @@ String _statusLabel(AppLocalizations l10n, MediaSourceStatus status) {
     MediaSourceStatus.available => l10n.sourceAvailable,
     MediaSourceStatus.missing => l10n.sourceMissing,
     MediaSourceStatus.inaccessible => l10n.sourceInaccessible,
+  };
+}
+
+AppStatusTone _sourceTone(MediaSourceStatus status) {
+  return switch (status) {
+    MediaSourceStatus.available => AppStatusTone.neutral,
+    MediaSourceStatus.missing => AppStatusTone.ignored,
+    MediaSourceStatus.inaccessible => AppStatusTone.failed,
+  };
+}
+
+IconData _sourceStatusIcon(MediaSourceStatus status) {
+  return switch (status) {
+    MediaSourceStatus.available => Icons.check_circle_outline,
+    MediaSourceStatus.missing => Icons.folder_off_outlined,
+    MediaSourceStatus.inaccessible => Icons.lock_outline,
   };
 }
 

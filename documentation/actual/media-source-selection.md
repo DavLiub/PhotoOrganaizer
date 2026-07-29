@@ -38,8 +38,15 @@ new categories and sources are included unless the user disables them.
 Settings > Media Library controls global category inclusion.
 
 Albums shows found sources grouped by enabled categories. Each source has an
-individual switch. Disabling a source hides photos linked to that source from
-Library while keeping the source in the source catalog.
+individual switch and a semantic availability badge. Disabling a source hides
+photos linked to that source from Library while keeping the source in the
+source catalog.
+
+Source availability badges use the shared `StatusBadge` widget:
+
+- available: neutral;
+- missing: ignored;
+- inaccessible: failed.
 
 Library filters are dynamic. Disabled global categories are removed from the
 filter row, and photos from disabled categories or disabled sources are not

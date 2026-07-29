@@ -97,6 +97,15 @@ lib/infrastructure/
 - `selectedLocaleCode == "en"` or `"ru"` is a persisted user override and is
   passed to `MaterialApp.locale`.
 
+## Presentation Design System
+
+- Presentation uses Flutter Material 3 through `buildLightTheme`.
+- `AppStatusPalette` is a ThemeExtension for semantic status tones.
+- Shared widgets live in `lib/presentation/widgets`.
+- `StatusBadge`, `StatusBanner`, `EmptyState`, and `FailureState` are dumb
+  rendering widgets and must not own Application state or business decisions.
+- Screens should use semantic status tones instead of hard-coded status colors.
+
 ## Media Source Index
 
 - Domain defines `MediaSource` as a platform-neutral source/album model.
