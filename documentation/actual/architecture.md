@@ -49,7 +49,8 @@ lib/infrastructure/
 - Real iOS media access is not implemented.
 - Real Google Drive integration is not implemented.
 - Real billing and entitlement verification are not implemented.
-- Photo index persistence is implemented; other persistence areas are not implemented yet.
+- Photo index, media source, source selection, and app language preference
+  persistence are implemented; backup persistence is not implemented yet.
 - Background scheduling is represented by a placeholder adapter.
 
 ## Access Model
@@ -88,8 +89,13 @@ lib/infrastructure/
 - First scan UI state is owned by `FirstScanController`.
 - Main shell destination state is owned by `MainDestinationController`.
 - Photo library UI state is owned by `PhotoLibraryController`.
+- App language preference state is owned by `AppSettingsController`.
 - User-visible UI strings are routed through `AppLocalizations`.
 - Supported UI locales are English and Russian.
+- `selectedLocaleCode == null` means no user override; Flutter resolves the
+  system locale through `supportedLocales`.
+- `selectedLocaleCode == "en"` or `"ru"` is a persisted user override and is
+  passed to `MaterialApp.locale`.
 
 ## Media Source Index
 

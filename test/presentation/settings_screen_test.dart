@@ -4,11 +4,13 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:photo_organizer/application/models/app_settings.dart';
 import 'package:photo_organizer/application/models/source_selection.dart';
 import 'package:photo_organizer/domain/value_objects/operation_result.dart';
 import 'package:photo_organizer/presentation/localization/app_localizations.dart';
 import 'package:photo_organizer/presentation/screens/settings/settings_screen.dart';
 import 'package:photo_organizer/presentation/state/app_providers.dart';
+import 'package:photo_organizer/presentation/state/app_settings_actions.dart';
 import 'package:photo_organizer/presentation/state/source_selection_actions.dart';
 
 void main() {
@@ -166,6 +168,7 @@ Future<void> _pumpSettings(
 Widget _buildScreen({Locale locale = const Locale('en')}) {
   return ProviderScope(
     overrides: [
+      appSettingsActionsProvider.overrideWithValue(_FakeAppSettings().value),
       sourceSelectionActionsProvider.overrideWithValue(_FakeSources().value),
     ],
     child: MaterialApp(
@@ -175,6 +178,22 @@ Widget _buildScreen({Locale locale = const Locale('en')}) {
       home: const SettingsScreen(),
     ),
   );
+}
+
+class _FakeAppSettings {
+  AppSettings settings = const AppSettings();
+
+  AppSettingsActions get value {
+    return AppSettingsActions(
+      readSettings: () async {
+        return OperationSuccess(settings);
+      },
+      saveLocale: (localeCode) async {
+        settings = AppSettings(selectedLocaleCode: localeCode);
+        return OperationSuccess(settings);
+      },
+    );
+  }
 }
 
 class _FakeSources {

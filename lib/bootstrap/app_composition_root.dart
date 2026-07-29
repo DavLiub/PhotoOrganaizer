@@ -1,4 +1,5 @@
 import '../application/ports/background_scheduler.dart';
+import '../application/ports/app_settings_repository.dart';
 import '../application/ports/cloud_provider.dart';
 import '../application/ports/entitlement_gateway.dart';
 import '../application/ports/media_library_gateway.dart';
@@ -15,8 +16,10 @@ import '../application/use_cases/index_photos.dart';
 import '../application/use_cases/list_media_sources.dart';
 import '../application/use_cases/list_library_photos.dart';
 import '../application/use_cases/observe_protection_summary_use_case.dart';
+import '../application/use_cases/read_app_settings.dart';
 import '../application/use_cases/request_media_access.dart';
 import '../application/use_cases/resolve_photo_identity.dart';
+import '../application/use_cases/save_app_locale.dart';
 import '../application/use_cases/scan_media_library.dart';
 import '../application/use_cases/start_backup_use_case.dart';
 import '../application/use_cases/update_source_selection.dart';
@@ -26,6 +29,7 @@ import '../infrastructure/cloud/google_drive_cloud_provider.dart';
 import '../infrastructure/entitlements/static_entitlement_gateway.dart';
 import '../infrastructure/observability/console_observability_sink.dart';
 import '../infrastructure/storage/app_database.dart';
+import '../infrastructure/storage/app_settings_store.dart';
 import '../infrastructure/storage/media_source_store.dart';
 import '../infrastructure/storage/local_photo_index_repository.dart';
 import '../infrastructure/storage/source_selection_store.dart';
@@ -40,6 +44,7 @@ class AppCompositionRoot {
     required this.mediaLibraryGateway,
     required this.mediaPermissionGateway,
     required this.photoThumbnailGateway,
+    required this.appSettingsRepository,
     required this.mediaSourceRepository,
     required this.sourceSelectionRepository,
     required this.photoIndexRepository,
@@ -48,12 +53,14 @@ class AppCompositionRoot {
     required this.entitlementGateway,
     required this.accessPolicy,
     required this.observabilitySink,
+    required this.readAppSettings,
     required this.checkMediaAccess,
     required this.indexPhotos,
     required this.listMediaSources,
     required this.listLibraryPhotos,
     required this.requestMediaAccess,
     required this.resolvePhotoIdentity,
+    required this.saveAppLocale,
     required this.scanMediaLibrary,
     required this.observeProtectionSummary,
     required this.startBackup,
@@ -65,6 +72,7 @@ class AppCompositionRoot {
   final MediaLibraryGateway mediaLibraryGateway;
   final MediaPermissionGateway mediaPermissionGateway;
   final PhotoThumbnailGateway photoThumbnailGateway;
+  final AppSettingsRepository appSettingsRepository;
   final MediaSourceRepository mediaSourceRepository;
   final SourceSelectionRepository sourceSelectionRepository;
   final PhotoIndexRepository photoIndexRepository;
@@ -73,12 +81,14 @@ class AppCompositionRoot {
   final EntitlementGateway entitlementGateway;
   final AccessPolicy accessPolicy;
   final ObservabilitySink observabilitySink;
+  final ReadAppSettings readAppSettings;
   final CheckMediaAccess checkMediaAccess;
   final IndexPhotos indexPhotos;
   final ListMediaSources listMediaSources;
   final ListLibraryPhotos listLibraryPhotos;
   final RequestMediaAccess requestMediaAccess;
   final ResolvePhotoIdentity resolvePhotoIdentity;
+  final SaveAppLocale saveAppLocale;
   final ScanMediaLibrary scanMediaLibrary;
   final ObserveProtectionSummaryUseCase observeProtectionSummary;
   final StartBackupUseCase startBackup;
@@ -102,6 +112,9 @@ class AppCompositionRoot {
     final photoThumbnailGateway = mediaAdapters.thumbnailGateway;
     AppDatabase? database;
     AppDatabase createDatabase() => database ??= AppDatabase.defaults();
+    final appSettingsRepository = AppSettingsStore(
+      createDatabase: createDatabase,
+    );
     final mediaSourceRepository = MediaSourceStore(
       createDatabase: createDatabase,
     );
@@ -131,6 +144,7 @@ class AppCompositionRoot {
       mediaLibraryGateway: mediaLibraryGateway,
       mediaPermissionGateway: mediaPermissionGateway,
       photoThumbnailGateway: photoThumbnailGateway,
+      appSettingsRepository: appSettingsRepository,
       mediaSourceRepository: mediaSourceRepository,
       sourceSelectionRepository: sourceSelectionRepository,
       photoIndexRepository: photoIndexRepository,
@@ -139,6 +153,7 @@ class AppCompositionRoot {
       entitlementGateway: resolvedEntitlementGateway,
       accessPolicy: accessPolicy,
       observabilitySink: observabilitySink,
+      readAppSettings: ReadAppSettings(appSettingsRepository),
       checkMediaAccess: CheckMediaAccess(mediaPermissionGateway),
       indexPhotos: indexPhotos,
       listMediaSources: ListMediaSources(
@@ -152,6 +167,7 @@ class AppCompositionRoot {
       ),
       requestMediaAccess: RequestMediaAccess(mediaPermissionGateway),
       resolvePhotoIdentity: ResolvePhotoIdentity(photoIndexRepository),
+      saveAppLocale: SaveAppLocale(appSettingsRepository),
       scanMediaLibrary: ScanMediaLibrary(
         libraryGateway: mediaLibraryGateway,
         permissionGateway: mediaPermissionGateway,

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/models/library_category.dart';
 import '../../localization/app_localizations.dart';
+import '../../state/app_settings_controller.dart';
 import '../../state/source_selection_controller.dart';
 
 enum _SettingsCategory {
@@ -57,7 +60,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _backgroundRefresh = false;
   bool _wifiOnly = true;
   bool _diagnosticsEnabled = false;
-  String _language = 'en';
 
   @override
   void dispose() {
@@ -73,6 +75,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       sourceSelectionProvider.notifier,
     );
     final sourceSettings = sourceSelection.settings;
+    final appSettings = ref.watch(appSettingsProvider);
+    final appSettingsController = ref.read(appSettingsProvider.notifier);
+    final language = appSettings.selectedLocaleCode ?? l10n.locale.languageCode;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -122,7 +127,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   backgroundRefresh: _backgroundRefresh,
                   wifiOnly: _wifiOnly,
                   diagnosticsEnabled: _diagnosticsEnabled,
-                  language: _language,
+                  language: language,
                   onFolderLayoutChanged: (value) {
                     setState(() {
                       _folderLayout = value;
@@ -203,9 +208,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     });
                   },
                   onLanguageChanged: (value) {
-                    setState(() {
-                      _language = value;
-                    });
+                    unawaited(appSettingsController.selectLocale(value));
                   },
                 ),
               ),

@@ -25,3 +25,5 @@ Use one file per meaningful change or release.
 - [2026-07-28-testing-tags-nightly.md](2026-07-28-testing-tags-nightly.md)
 - [2026-07-28-settings-configuration-shell.md](2026-07-28-settings-configuration-shell.md)
 - [2026-07-28-media-source-selection.md](2026-07-28-media-source-selection.md)
+- [2026-07-29-ui-localization-repair.md](2026-07-29-ui-localization-repair.md)
+- [2026-07-29-app-settings-language.md](2026-07-29-app-settings-language.md)
