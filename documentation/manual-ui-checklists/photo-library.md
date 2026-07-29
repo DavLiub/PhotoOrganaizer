@@ -32,7 +32,8 @@
   Expected: the status label switches to `Scanning N photos` and keeps the circular activity indicator visible.
 
 - [ ] Verify photo tiles.
-  Expected: each indexed photo appears as a thumbnail tile with safe filename and `No backup` status.
+  Expected: each indexed photo appears as a thumbnail tile with safe filename
+  and a compact semantic `No backup` status badge.
 
 - [ ] Select `Screenshots`.
   Expected: the grid shows only screenshot-category photos; no include/exclude setting is changed.

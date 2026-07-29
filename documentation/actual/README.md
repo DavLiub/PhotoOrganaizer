@@ -22,6 +22,7 @@ Business functionality is represented by domain models, application ports, use c
 - [android-media-scan.md](android-media-scan.md): current Android photo discovery, source mapping, and scan workflow.
 - [backup-state.md](backup-state.md): current backup job and per-photo record state machine.
 - [data-model.md](data-model.md): currently implemented domain model skeleton.
+- [design-system.md](design-system.md): current Presentation design tokens and shared UI widgets.
 - [documentation-layout.md](documentation-layout.md): tracked and local documentation structure.
 - [error-model-observability.md](error-model-observability.md): current failure model and observability boundary.
 - [first-scan-ui.md](first-scan-ui.md): current welcome, media access, manual scan UI, and localization state.

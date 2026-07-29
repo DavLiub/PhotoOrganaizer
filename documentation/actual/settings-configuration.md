@@ -14,8 +14,9 @@ The Settings UI uses a two-level master-detail layout:
 
 - first-level sections are selected from the left side;
 - the right side displays subitems and direct controls for the selected section
-  in soft Material-style panels;
-- complex subitems open a full-screen placeholder editor;
+  in themed Material cards;
+- complex subitems open a full-screen placeholder editor rendered through the
+  shared `StatusBanner` widget;
 - simple values can be entered or toggled directly in the right side.
 
 ## Navigation
@@ -53,6 +54,9 @@ Status:
 
 - Premium status, currently `Free plan`
 - Storage status, currently `Storage is not connected`
+
+Status values use the shared `StatusBadge` widget so informational and
+not-configured states are visually distinct.
 
 Storage:
 

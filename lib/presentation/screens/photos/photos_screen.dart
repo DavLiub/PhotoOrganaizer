@@ -16,6 +16,10 @@ import '../../state/photo_library_controller.dart';
 import '../../state/photo_library_state.dart';
 import '../../state/source_selection_controller.dart';
 import '../../state/source_selection_state.dart';
+import '../../theme/app_status_palette.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/failure_state.dart';
+import '../../widgets/status_badge.dart';
 
 class PhotosScreen extends ConsumerWidget {
   const PhotosScreen({super.key});
@@ -189,9 +193,19 @@ class _LibraryScreen extends StatelessWidget {
           children: [
             _LibraryControls(state: state, controller: controller),
             if (state.errorCode != null)
-              _ErrorBanner(message: state.errorCode!)
+              Expanded(child: FailureState(message: state.errorCode!))
             else if (!state.hasPhotos)
-              Expanded(child: _EmptyLibrary(isBusy: state.isBusy))
+              Expanded(
+                child: EmptyState(
+                  icon: Icons.photo_library_outlined,
+                  title: state.isBusy
+                      ? AppLocalizations.of(context).scanningLibrary
+                      : AppLocalizations.of(context).emptyLibraryTitle,
+                  message: state.isBusy
+                      ? AppLocalizations.of(context).emptyScanMessage
+                      : AppLocalizations.of(context).emptyLibraryMessage,
+                ),
+              )
             else
               Expanded(
                 child: _PhotoGrid(
@@ -371,7 +385,14 @@ class _PhotoGridState extends State<_PhotoGrid> {
   @override
   Widget build(BuildContext context) {
     if (widget.photos.isEmpty && widget.selectedCategory != null) {
-      return _EmptyFilter(category: widget.selectedCategory!);
+      final l10n = AppLocalizations.of(context);
+      return EmptyState(
+        icon: Icons.filter_alt_off_outlined,
+        title: l10n.emptyPhotos,
+        message: l10n.emptyCategory(
+          _categoryLabel(l10n, widget.selectedCategory!),
+        ),
+      );
     }
 
     final colorScheme = Theme.of(context).colorScheme;
@@ -449,7 +470,11 @@ class _PhotoTile extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 2, 8, 8),
-            child: _StatusBadge(label: _backupLabel(l10n, photo.backupStatus)),
+            child: StatusBadge(
+              label: _backupLabel(l10n, photo.backupStatus),
+              tone: _backupTone(photo.backupStatus),
+              icon: _backupIcon(photo.backupStatus),
+            ),
           ),
         ],
       ),
@@ -474,126 +499,6 @@ class _ThumbnailView extends StatelessWidget {
       child: Icon(
         Icons.image_outlined,
         color: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: colorScheme.onSecondaryContainer,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyLibrary extends StatelessWidget {
-  const _EmptyLibrary({required this.isBusy});
-
-  final bool isBusy;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.photo_library_outlined,
-              size: 48,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              isBusy ? l10n.scanningLibrary : l10n.emptyLibraryTitle,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isBusy ? l10n.emptyScanMessage : l10n.emptyLibraryMessage,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyFilter extends StatelessWidget {
-  const _EmptyFilter({required this.category});
-
-  final LibraryCategory category;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(
-          l10n.emptyCategory(_categoryLabel(l10n, category)),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Card(
-          color: colorScheme.errorContainer,
-          child: ListTile(
-            leading: Icon(
-              Icons.error_outline,
-              color: colorScheme.onErrorContainer,
-            ),
-            title: Text(
-              message,
-              style: TextStyle(color: colorScheme.onErrorContainer),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -721,6 +626,26 @@ String _backupLabel(AppLocalizations l10n, LibraryBackupStatus status) {
     LibraryBackupStatus.protected => l10n.protected,
     LibraryBackupStatus.failed => l10n.failed,
     LibraryBackupStatus.ignored => l10n.ignored,
+  };
+}
+
+AppStatusTone _backupTone(LibraryBackupStatus status) {
+  return switch (status) {
+    LibraryBackupStatus.noBackup => AppStatusTone.notConfigured,
+    LibraryBackupStatus.queued => AppStatusTone.queued,
+    LibraryBackupStatus.protected => AppStatusTone.protected,
+    LibraryBackupStatus.failed => AppStatusTone.failed,
+    LibraryBackupStatus.ignored => AppStatusTone.ignored,
+  };
+}
+
+IconData _backupIcon(LibraryBackupStatus status) {
+  return switch (status) {
+    LibraryBackupStatus.noBackup => Icons.cloud_off_outlined,
+    LibraryBackupStatus.queued => Icons.schedule_outlined,
+    LibraryBackupStatus.protected => Icons.verified_outlined,
+    LibraryBackupStatus.failed => Icons.error_outline,
+    LibraryBackupStatus.ignored => Icons.visibility_off_outlined,
   };
 }
 

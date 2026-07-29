@@ -7,6 +7,9 @@ import '../../../application/models/library_category.dart';
 import '../../localization/app_localizations.dart';
 import '../../state/app_settings_controller.dart';
 import '../../state/source_selection_controller.dart';
+import '../../theme/app_status_palette.dart';
+import '../../widgets/status_badge.dart';
+import '../../widgets/status_banner.dart';
 
 enum _SettingsCategory {
   status(Icons.info_outline),
@@ -428,11 +431,15 @@ class _SettingsDetailPane extends StatelessWidget {
               icon: Icons.workspace_premium_outlined,
               title: l10n.premium,
               subtitle: l10n.freePlan,
+              tone: AppStatusTone.neutral,
+              badgeIcon: Icons.info_outline,
             ),
             _InfoTile(
               icon: Icons.cloud_off_outlined,
               title: l10n.storage,
               subtitle: l10n.storageNotConnected,
+              tone: AppStatusTone.notConfigured,
+              badgeIcon: Icons.tune_outlined,
             ),
           ],
         ),
@@ -672,21 +679,7 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        border: Border.all(color: colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(children: children),
@@ -700,18 +693,33 @@ class _InfoTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.tone,
+    this.badgeIcon,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final AppStatusTone? tone;
+  final IconData? badgeIcon;
 
   @override
   Widget build(BuildContext context) {
+    final statusTone = tone;
+
     return ListTile(
       leading: _IconBox(icon: icon),
       title: Text(title),
-      subtitle: Text(subtitle),
+      subtitle: statusTone == null
+          ? Text(subtitle)
+          : Align(
+              alignment: Alignment.centerLeft,
+              child: StatusBadge(
+                label: subtitle,
+                tone: statusTone,
+                icon: badgeIcon,
+              ),
+            ),
       contentPadding: EdgeInsets.zero,
     );
   }
@@ -983,23 +991,11 @@ class _SettingsDetailScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.construction_outlined,
-                size: 48,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(l10n.placeholderDetail, textAlign: TextAlign.center),
-            ],
+          child: StatusBanner(
+            title: title,
+            message: l10n.placeholderDetail,
+            tone: AppStatusTone.notConfigured,
+            icon: Icons.construction_outlined,
           ),
         ),
       ),

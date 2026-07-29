@@ -17,13 +17,15 @@
   Expected: first-level sections are listed on the left, and selected section content is shown on the right.
 
 - [ ] Verify the initial `Status` selection.
-  Expected: `Premium / Free plan` and `Storage / Storage is not connected` are visible on the right.
+  Expected: `Premium / Free plan` and `Storage / Storage is not connected` are
+  visible on the right as compact semantic status badges.
 
 - [ ] Tap `Storage` on the left.
   Expected: Provider, connected account, root folder, cloud folder layout, and year/month grouping controls are visible on the right.
 
 - [ ] Tap `Provider`.
-  Expected: Placeholder detail screen opens and says configuration persistence will be added later.
+  Expected: Placeholder detail screen opens as a status banner and says
+  configuration persistence will be added later.
 
 - [ ] Return to Settings.
   Expected: Storage remains selected and the right-side Storage content is visible.

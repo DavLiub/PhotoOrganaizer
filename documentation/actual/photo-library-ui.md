@@ -26,10 +26,18 @@ Each tile shows:
 
 - thumbnail loaded through an Application port;
 - safe display filename;
-- current backup status.
+- current backup status through the shared `StatusBadge` widget.
 
 The initial status for indexed photos is `No backup`. Durable backup records
 and real upload progress are not implemented yet.
+
+Backup status badges use semantic Presentation tones:
+
+- `No backup`: not configured;
+- `Queued`: queued;
+- `Protected`: protected;
+- `Failed`: failed;
+- `Ignored`: ignored.
 
 The library controller reloads the photo list after indexed batches are written,
 so tiles can appear before the full media scan completes. Thumbnail data is
@@ -112,6 +120,9 @@ reset the library to zero.
 
 The Library and permission states use `assets/images/library_background.png` as
 a light background image.
+
+Library empty and failure states use the shared `EmptyState` and `FailureState`
+widgets from the Presentation design foundation.
 
 The Android launcher icon is generated from a cropped version of
 `assets/branding/app_icon.png` into the standard

@@ -10,6 +10,8 @@
 ## Checks
 
 - Open `Albums` from bottom navigation -> sources are shown grouped by category.
+- Verify source rows -> each source shows an availability badge such as
+  `Available`, `Missing`, or `Inaccessible`.
 - Disable `Screenshots` in `Settings > Media Library` -> `Screenshots` section disappears from `Albums`.
 - Return to `Library` -> the `Screenshots` filter is not shown.
 - Re-enable `Screenshots` in `Settings > Media Library` -> `Screenshots` section and Library filter return.
